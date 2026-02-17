@@ -151,11 +151,11 @@
 
 ## Phase N: Polish & Cross-Cutting Concerns
 
-- [ ] T042 [P] Finalize WCAG 2.2 AA accessibility audit and fixes
+- [x] T042 [P] Finalize WCAG 2.2 AA accessibility audit and fixes
 - [x] T043 [P] Implement mobile-specific search and profiles in apps/mobile/src/
-- [ ] T044 Run full integration test suite against local Docker environment
+- [x] T044 Run full integration test suite against local Docker environment
 - [x] T045 Update root README.md with final deployment and usage instructions
-- [ ] T046 Run quickstart.md validation from scratch
+- [x] T046 Run quickstart.md validation from scratch
 
 ---
 
