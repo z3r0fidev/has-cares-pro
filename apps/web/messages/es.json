@@ -1,14 +1,14 @@
 {
   "Home": {
-    "title": "Encuentra un Médico",
+    "title": "Buscar un Médico",
     "subtitle": "Conectándote con atención culturalmente competente.",
     "search": "Buscar Proveedores",
     "loading": "Buscando proveedores...",
     "noResults": "No se encontraron médicos que coincidan con sus criterios.",
-    "statusCheck": "Verificación del Estado del Sistema"
+    "statusCheck": "Verificación del estado del sistema"
   },
   "Search": {
-    "zip": "Código Postal",
+    "zip": "Código ZIP",
     "specialty": "Especialidad",
     "insurance": "Seguro",
     "allSpecialties": "Todas las especialidades",
@@ -16,11 +16,11 @@
   },
   "Dashboard": {
     "title": "Panel del Proveedor",
-    "description": "Administre su práctica y realice un seguimiento del compromiso del paciente.",
+    "description": "Administre su práctica y realice un seguimiento de la participación del paciente.",
     "logout": "Cerrar sesión",
-    "engagement": "Resumen de Compromiso",
-    "practiceInfo": "Información de la Práctica",
-    "verStatus": "Estado de Verificación",
+    "engagement": "Resumen de participación",
+    "practiceInfo": "Información de la práctica",
+    "verStatus": "Estado de verificación",
     "upgrade": "Solicitar actualización de nivel",
     "maxVer": "Verificación máxima alcanzada"
   }

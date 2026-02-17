@@ -5,6 +5,7 @@ import SearchForm from "../../components/Search/SearchForm";
 import ResultsList from "../../components/Search/ResultsList";
 import { Button } from "@careequity/ui";
 import { Provider } from "@careequity/core";
+import { useTranslations } from 'next-intl';
 
 // Local ZIP to Coordinate mapping for prototype regions
 const ZIP_MAP: Record<string, { lat: number; lon: number }> = {
@@ -21,6 +22,7 @@ const ZIP_MAP: Record<string, { lat: number; lon: number }> = {
 };
 
 export default function Home() {
+  const t = useTranslations('Home');
   const [providers, setProviders] = useState<Provider[]>([]);
   const [loading, setLoading] = useState(false);
   const [apiUrl, setApiUrl] = useState('http://localhost:3001');
@@ -48,31 +50,26 @@ export default function Home() {
   };
 
   return (
-    <main className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6 text-slate-900">Find a Physician</h1>
+    <main className="container mx-auto p-4 py-8">
+      <div className="mb-8">
+        <h1 className="text-4xl font-extrabold text-slate-900 mb-2">{t('title')}</h1>
+        <p className="text-xl text-slate-500">{t('subtitle')}</p>
+      </div>
       
       <div className="mb-8">
         <Button onClick={() => alert("Checking System status")}>
-          System Status Check
+          {t('statusCheck')}
         </Button>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-1">
           <SearchForm onSearch={handleSearch} />
-          <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-100 text-sm text-blue-800">
-            <p className="font-bold mb-1">Prototype Search Areas:</p>
-            <ul className="list-disc ml-4">
-              <li>Philadelphia: 19132</li>
-              <li>NYC / Brooklyn: 10001, 11213</li>
-              <li>Camden, NJ: 08103</li>
-            </ul>
-          </div>
         </div>
         <div className="md:col-span-2">
           {loading ? (
             <div className="flex justify-center p-12">
-              <p className="animate-pulse text-xl text-slate-400">Searching providers...</p>
+              <p className="animate-pulse text-xl text-slate-400 font-medium">{t('loading')}</p>
             </div>
           ) : (
             <ResultsList providers={providers} />
