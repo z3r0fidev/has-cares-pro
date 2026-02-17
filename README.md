@@ -18,20 +18,24 @@ CareEquity enables users to locate, evaluate, and connect with reputable minorit
    npm install
    ```
 
-2. **Start Infrastructure**
+2. **Start Infrastructure (Databases & Search)**
    ```bash
-   docker-compose up -d
+   docker-compose up -d postgres elasticsearch
    ```
 
-3. **Run API**
+3. **Start Full Stack (API & Web)**
    ```bash
-   npm run start:dev --workspace=apps/api
+   # Build and start all services (API, Web, DB, Search)
+   docker-compose up --build
    ```
 
-4. **Run Web App**
-   ```bash
-   npm run dev --workspace=apps/web
-   ```
+## Development
+
+- **Run API**: `npm run start:dev --workspace=apps/api`
+- **Run Web App**: `npm run dev --workspace=apps/web`
+- **Run Mobile**: `cd apps/mobile && npm run start` (Requires Expo)
+- **Lint**: `npm run lint`
+- **Build**: `npm run build`
 
 ## CLI Tools
 Use the CLI for ingestion and verification:

@@ -149,6 +149,36 @@
 
 ---
 
+## Phase 7: Analytics & Monitoring
+
+**Purpose**: Metrics tracking for performance and adoption
+
+- [x] T051 Implement search performance tracking in apps/api/src/services/search.service.ts
+- [x] x052 Implement provider adoption (claim rate) statistics in apps/api/src/services/analytics.service.ts
+- [x] T053 Build analytics overview dashboard for admins in apps/web/src/app/[locale]/admin/dashboard/page.tsx
+
+---
+
+## Phase 8: Global Support (Multilingual)
+
+**Purpose**: Accessibility for Spanish and Arabic speakers
+
+- [x] T054 Implement LanguagePicker component in apps/web/src/components/Navigation/LanguagePicker.tsx
+- [x] T055 Integrate Header with language switching across all pages
+- [x] T056 Complete Spanish and Arabic translations for core user flows
+
+---
+
+## Phase 9: Deployment Readiness
+
+**Purpose**: Simplified full-stack orchestration
+
+- [x] T057 Dockerize NestJS API in apps/api/Dockerfile
+- [x] T058 Dockerize Next.js Web App in apps/web/Dockerfile
+- [x] T059 Update docker-compose.yml for full-stack orchestration
+
+---
+
 ## Phase N: Polish & Cross-Cutting Concerns
 
 - [x] T042 [P] Finalize WCAG 2.2 AA accessibility audit and fixes
