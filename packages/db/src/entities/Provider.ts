@@ -59,6 +59,17 @@ export class Provider {
   @Column({ nullable: true })
   profile_image_url!: string;
 
+  @Column('jsonb', { nullable: true })
+  availability!: {
+    monday?: string;
+    tuesday?: string;
+    wednesday?: string;
+    thursday?: string;
+    friday?: string;
+    saturday?: string;
+    sunday?: string;
+  };
+
   @CreateDateColumn()
   created_at!: Date;
 

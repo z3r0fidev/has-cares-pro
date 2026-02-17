@@ -53,6 +53,15 @@ export interface Provider {
   telehealth_url?: string;
   website_url?: string;
   profile_image_url?: string;
+  availability?: {
+    monday?: string;
+    tuesday?: string;
+    wednesday?: string;
+    thursday?: string;
+    friday?: string;
+    saturday?: string;
+    sunday?: string;
+  };
   created_at: Date;
   updated_at: Date;
 }

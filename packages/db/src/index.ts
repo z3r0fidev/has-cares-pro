@@ -4,3 +4,5 @@ export * from './entities/User';
 export * from './entities/Review';
 export * from './entities/VerificationRecord';
 export * from './entities/AnalyticsEvent';
+export * from './entities/Appointment';
+export * from './entities/SavedProvider';
