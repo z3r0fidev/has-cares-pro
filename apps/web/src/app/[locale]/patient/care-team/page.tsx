@@ -4,10 +4,23 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Heart, Calendar } from 'lucide-react';
+import { Provider } from '@careequity/core';
+
+export interface SavedProvider {
+  id: string;
+  provider: Provider;
+}
+
+export interface Appointment {
+  id: string;
+  provider: Provider;
+  appointment_date: string;
+  status: string;
+}
 
 export default function CareTeam() {
-  const [saved, setSaved] = useState<any[]>([]);
-  const [appointments, setAppointments] = useState<any[]>([]);
+  const [saved, setSaved] = useState<SavedProvider[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 

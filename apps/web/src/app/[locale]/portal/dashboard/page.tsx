@@ -4,10 +4,11 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import PracticeForm from '../../../../components/Portal/PracticeForm';
 import StatsCard from './StatsCard';
+import { Provider } from '@careequity/core';
 
 export default function Dashboard() {
-  const [provider, setProvider] = useState<any>(null);
-  const [stats, setStats] = useState<any>({});
+  const [provider, setProvider] = useState<Provider | null>(null);
+  const [stats, setStats] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,7 +29,7 @@ export default function Dashboard() {
       if (res.ok) {
         alert("Verification request submitted successfully! An administrator will review your profile.");
       }
-    } catch (err) {
+    } catch {
       alert("Failed to submit request.");
     } finally {
       setSubmitting(false);

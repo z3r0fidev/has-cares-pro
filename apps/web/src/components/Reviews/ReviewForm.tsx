@@ -3,11 +3,10 @@
 import { useState } from 'react';
 
 interface ReviewFormProps {
-  providerId: string;
   onSubmit: (review: { rating_total: number; content: string }) => void;
 }
 
-export default function ReviewForm({ providerId, onSubmit }: ReviewFormProps) {
+export default function ReviewForm({ onSubmit }: ReviewFormProps) {
   const [rating, setRating] = useState(5);
   const [content, setContent] = useState('');
 

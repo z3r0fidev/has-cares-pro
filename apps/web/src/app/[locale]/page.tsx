@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import SearchForm from "../../components/Search/SearchForm";
 import ResultsList from "../../components/Search/ResultsList";
 import { Button } from "@careequity/ui";
+import { Provider } from "@careequity/core";
 
 // Local ZIP to Coordinate mapping for prototype regions
 const ZIP_MAP: Record<string, { lat: number; lon: number }> = {
@@ -20,7 +21,7 @@ const ZIP_MAP: Record<string, { lat: number; lon: number }> = {
 };
 
 export default function Home() {
-  const [providers, setProviders] = useState<any[]>([]);
+  const [providers, setProviders] = useState<Provider[]>([]);
   const [loading, setLoading] = useState(false);
   const [apiUrl, setApiUrl] = useState('http://localhost:3001');
 

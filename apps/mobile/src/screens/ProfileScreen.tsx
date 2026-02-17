@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { Calendar, Heart, MapPin, Phone, Globe } from 'lucide-react-native';
+import { Calendar, Heart, MapPin, Globe } from 'lucide-react-native';
+import { Provider } from '@careequity/core';
 
 const API_URL = 'http://10.0.0.157:3001';
 
-export default function ProfileScreen({ route }: any) {
+export default function ProfileScreen({ route }: { route: { params: { id: string } } }) {
   const { id } = route.params;
-  const [provider, setProvider] = useState<any>(null);
+  const [provider, setProvider] = useState<Provider | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Image, ActivityIndicator } from 'react-native';
-import { Search as SearchIcon, MapPin, Star } from 'lucide-react-native';
+import { Search as SearchIcon, MapPin } from 'lucide-react-native';
+import { Provider } from '@careequity/core';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../types/navigation';
 
 const API_URL = 'http://10.0.0.157:3001'; // Default prototype IP
 
-export default function SearchScreen({ navigation }: any) {
+export default function SearchScreen({ navigation }: { navigation: NativeStackNavigationProp<RootStackParamList, 'Search'> }) {
   const [zip, setZip] = useState('');
-  const [providers, setProviders] = useState([]);
+  const [providers, setProviders] = useState<Provider[]>([]);
   const [loading, setLoading] = useState(false);
 
   const handleSearch = async () => {
@@ -23,7 +26,7 @@ export default function SearchScreen({ navigation }: any) {
     }
   };
 
-  const renderItem = ({ item }: any) => (
+  const renderItem = ({ item }: { item: Provider }) => (
     <TouchableOpacity 
       style={styles.card}
       onPress={() => navigation.navigate('Profile', { id: item.id })}
@@ -74,7 +77,7 @@ export default function SearchScreen({ navigation }: any) {
         <FlatList
           data={providers}
           renderItem={renderItem}
-          keyExtractor={(item: any) => item.id}
+          keyExtractor={(item: Provider) => item.id}
           contentContainerStyle={styles.list}
           ListEmptyComponent={
             <Text style={styles.empty}>Enter a ZIP to find providers nearby.</Text>

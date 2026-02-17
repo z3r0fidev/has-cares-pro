@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Button } from "@careequity/ui";
+import { Provider, Review } from '@careequity/core';
 import AppointmentForm from '../../../../components/Booking/AppointmentForm';
 import ReviewForm from '../../../../components/Reviews/ReviewForm';
 import VerificationBadge from '../../../../components/Provider/Badge';
@@ -10,8 +10,8 @@ import { Heart } from 'lucide-react';
 
 export default function ProviderProfile() {
   const { id } = useParams();
-  const [provider, setProvider] = useState<any>(null);
-  const [reviews, setReviews] = useState<any[]>([]);
+  const [provider, setProvider] = useState<Provider | null>(null);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [isSaved, setIsSaved] = useState(false);
   const router = useRouter();
 
@@ -39,7 +39,7 @@ export default function ProviderProfile() {
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
-          setIsSaved(data.some(s => s.provider.id === id));
+          setIsSaved(data.some((s: { provider: { id: string } }) => s.provider.id === id));
         }
       });
     }
@@ -66,7 +66,7 @@ export default function ProviderProfile() {
     }
   };
 
-  const handleReviewSubmit = async (review: any) => {
+  const handleReviewSubmit = async (review: Pick<Review, 'rating_total' | 'content'>) => {
     const hostname = window.location.hostname;
     const API_URL = `http://${hostname}:3001`;
     const token = localStorage.getItem('token');
@@ -144,7 +144,7 @@ export default function ProviderProfile() {
               )}
             </div>
             <div className="mt-8">
-              <ReviewForm providerId={id as string} onSubmit={handleReviewSubmit} />
+              <ReviewForm onSubmit={handleReviewSubmit} />
             </div>
           </section>
         </div>
@@ -158,7 +158,7 @@ export default function ProviderProfile() {
               {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(day => (
                 <div key={day} className="flex justify-between">
                   <span className="text-slate-500">{day}</span>
-                  <span className="font-medium">{provider.availability?.[day.toLowerCase()] || '9:00 AM - 5:00 PM'}</span>
+                  <span className="font-medium">{provider.availability?.[day.toLowerCase() as keyof typeof provider.availability] || '9:00 AM - 5:00 PM'}</span>
                 </div>
               ))}
             </div>

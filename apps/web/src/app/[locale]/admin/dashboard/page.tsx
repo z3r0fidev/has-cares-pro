@@ -3,10 +3,17 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@careequity/ui";
+import { Provider, Review } from "@careequity/core";
+
+export interface PendingVerification {
+  id: string;
+  provider: Provider;
+  tier: number;
+}
 
 export default function AdminDashboard() {
-  const [verifications, setVerifications] = useState<any[]>([]);
-  const [reviews, setReviews] = useState<any[]>([]);
+  const [verifications, setVerifications] = useState<PendingVerification[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
