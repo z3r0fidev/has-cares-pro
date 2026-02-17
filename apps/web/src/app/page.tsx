@@ -18,14 +18,14 @@ export default function Home() {
     }
   }, []);
 
-  const handleSearch = async (filters: { zip: string; specialty: string }) => {
+  const handleSearch = async (filters: { zip: string; specialty: string; insurance: string }) => {
     setLoading(true);
     try {
       // In real app, convert ZIP to Lat/Lon
       const lat = 40.7128; 
       const lon = -74.0060;
       
-      const res = await fetch(`${apiUrl}/providers?lat=${lat}&lon=${lon}&specialty=${filters.specialty}`);
+      const res = await fetch(`${apiUrl}/providers?lat=${lat}&lon=${lon}&specialty=${filters.specialty}&insurance=${filters.insurance}`);
       const data = await res.json();
       setProviders(data);
     } catch (error) {

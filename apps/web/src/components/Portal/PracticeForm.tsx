@@ -8,11 +8,15 @@ interface PracticeFormProps {
     id: string;
     name: string;
     telehealth_url?: string;
+    website_url?: string;
+    profile_image_url?: string;
   };
 }
 
 export default function PracticeForm({ provider }: PracticeFormProps) {
   const [telehealthUrl, setTelehealthUrl] = useState(provider.telehealth_url || '');
+  const [websiteUrl, setWebsiteUrl] = useState(provider.website_url || '');
+  const [profileImageUrl, setProfileImageUrl] = useState(provider.profile_image_url || '');
   const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -29,11 +33,15 @@ export default function PracticeForm({ provider }: PracticeFormProps) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ telehealth_url: telehealthUrl }),
+        body: JSON.stringify({ 
+          telehealth_url: telehealthUrl,
+          website_url: websiteUrl,
+          profile_image_url: profileImageUrl 
+        }),
       });
 
       if (res.ok) {
-        alert('Practice updated successfully!');
+        alert('Practice updated successfully! If you provided a new website URL, we are searching for an updated profile image.');
       } else {
         const err = await res.json();
         alert(`Update failed: ${err.message}`);
@@ -56,6 +64,18 @@ export default function PracticeForm({ provider }: PracticeFormProps) {
           className="w-full p-2 border rounded bg-slate-50 text-slate-500 cursor-not-allowed"
         />
       </div>
+      
+      <div>
+        <label className="block mb-2 text-sm font-medium">Website URL (triggers automatic photo lookup)</label>
+        <input
+          type="url"
+          value={websiteUrl}
+          onChange={(e) => setWebsiteUrl(e.target.value)}
+          className="w-full p-2 border rounded focus:ring-2 focus:ring-primary"
+          placeholder="https://www.yourpractice.com"
+        />
+      </div>
+
       <div>
         <label className="block mb-2 text-sm font-medium">Telehealth URL</label>
         <input
@@ -66,6 +86,18 @@ export default function PracticeForm({ provider }: PracticeFormProps) {
           placeholder="https://telehealth.provider.com/your-room"
         />
       </div>
+
+      <div>
+        <label className="block mb-2 text-sm font-medium">Profile Image URL (manual override)</label>
+        <input
+          type="url"
+          value={profileImageUrl}
+          onChange={(e) => setProfileImageUrl(e.target.value)}
+          className="w-full p-2 border rounded focus:ring-2 focus:ring-primary"
+          placeholder="https://path-to-your-photo.jpg"
+        />
+      </div>
+
       <Button type="submit" disabled={saving}>
         {saving ? 'Saving...' : 'Save Changes'}
       </Button>
