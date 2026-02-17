@@ -6,6 +6,11 @@ export enum VerificationTier {
   PRACTICE = 3,
 }
 
+export interface Point {
+  type: 'Point';
+  coordinates: [number, number];
+}
+
 @Entity()
 export class Provider {
   @PrimaryGeneratedColumn('uuid')
@@ -27,7 +32,7 @@ export class Provider {
   insurance!: string;
 
   @Column('geometry', { spatialFeatureType: 'Point', srid: 4326 })
-  location!: any; // PostGIS Point
+  location!: Point; // PostGIS Point
 
   @Column('jsonb')
   address!: {

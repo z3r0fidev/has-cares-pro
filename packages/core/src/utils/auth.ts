@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import { AuthPayload } from '../types';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'careequity-dev-secret';
 
@@ -17,10 +18,10 @@ export class AuthUtils {
     return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
   }
 
-  static verifyToken(token: string): any {
+  static verifyToken(token: string): AuthPayload | null {
     try {
-      return jwt.verify(token, JWT_SECRET);
-    } catch (e) {
+      return jwt.verify(token, JWT_SECRET) as AuthPayload;
+    } catch {
       return null;
     }
   }

@@ -69,7 +69,14 @@ export interface Provider {
 export interface User {
   id: string;
   email: string;
-  role: 'patient' | 'admin';
+  role: 'patient' | 'admin' | 'provider';
+}
+
+export interface AuthPayload {
+  sub: string;
+  email: string;
+  role: 'patient' | 'admin' | 'provider';
+  providerId?: string;
 }
 
 export interface Review {
