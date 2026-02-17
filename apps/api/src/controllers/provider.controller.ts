@@ -5,7 +5,7 @@ import { ReviewService } from '../services/review.service';
 import { ClaimService } from '../services/claim.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { AppDataSource, Provider } from '@careequity/db';
-import { esClient, INDEX_NAME } from '@careequity/core';
+import { esClient, INDEX_NAME } from '@careequity/core/src/search/client';
 
 @Controller('providers')
 export class ProviderController {

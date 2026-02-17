@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { esClient, INDEX_NAME } from '@careequity/core';
+import { esClient, INDEX_NAME } from '@careequity/core/src/search/client';
 
 @Injectable()
 export class SearchService {

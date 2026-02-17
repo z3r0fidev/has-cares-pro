@@ -1,6 +1,8 @@
 import { Command } from 'commander';
 import { AppDataSource, Provider, User } from '@careequity/db';
-import { esClient, INDEX_NAME, AuthUtils, SPECIALTIES } from '@careequity/core';
+import { SPECIALTIES } from '@careequity/core';
+import { esClient, INDEX_NAME } from '@careequity/core/src/search/client';
+import { AuthUtils } from '@careequity/core/src/utils/auth';
 
 interface IngestOptions {
   location: string;
