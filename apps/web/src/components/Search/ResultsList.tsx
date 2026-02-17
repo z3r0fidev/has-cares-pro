@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link';
+import { trackEvent, EventType } from '../../lib/analytics';
 
 interface ResultsListProps {
   providers: Array<{
@@ -23,6 +24,10 @@ export default function ResultsList({ providers }: ResultsListProps) {
   if (!providers || providers.length === 0) {
     return <p className="text-muted-foreground italic">No physicians found matching your criteria.</p>;
   }
+
+  const handleLinkClick = (id: string, type: EventType) => {
+    trackEvent(id, type);
+  };
 
   return (
     <div className="grid gap-6">
@@ -49,7 +54,10 @@ export default function ResultsList({ providers }: ResultsListProps) {
 
             <div className="flex-grow flex flex-col md:flex-row gap-6">
               <div className="flex-grow">
-                <Link href={`/providers/${provider.id}`}>
+                <Link 
+                  href={`/providers/${provider.id}`}
+                  onClick={() => handleLinkClick(provider.id, EventType.PROFILE_VIEW)}
+                >
                   <h3 className="text-2xl font-bold hover:text-primary transition-colors cursor-pointer">
                     {provider.name}
                   </h3>
@@ -69,13 +77,18 @@ export default function ResultsList({ providers }: ResultsListProps) {
 
               {/* Clickable Map Placeholder */}
               <div className="w-full md:w-48 h-32 rounded border overflow-hidden relative group cursor-pointer">
-                <a href={mapUrl} target="_blank" rel="noopener noreferrer">
+                <a 
+                  href={mapUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  onClick={() => handleLinkClick(provider.id, EventType.DIRECTION_CLICK)}
+                >
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
                     <span className="bg-white/90 px-3 py-1 rounded text-xs font-bold shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
                       Get Directions
                     </span>
                   </div>
-                  {/* Static Map Placeholder - In production, use Google Static Maps API */}
+                  {/* Static Map Placeholder */}
                   <div className="w-full h-full bg-slate-200 flex flex-col items-center justify-center p-2 text-center">
                     <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Map View</p>
                     <p className="text-[9px] text-slate-400 mt-1 line-clamp-2">{fullAddress}</p>
