@@ -11,9 +11,23 @@ export interface PendingVerification {
   tier: number;
 }
 
+export interface PerformanceStats {
+  avg_response_time: string;
+  max_response_time: string;
+  search_count: string;
+}
+
+export interface ClaimStats {
+  total_providers: number;
+  claimed_providers: number;
+  claim_rate: number;
+}
+
 export default function AdminDashboard() {
   const [verifications, setVerifications] = useState<PendingVerification[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [performance, setPerformance] = useState<PerformanceStats | null>(null);
+  const [claims, setClaims] = useState<ClaimStats | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -29,13 +43,17 @@ export default function AdminDashboard() {
 
     const fetchData = async () => {
       try {
-        const [verRes, revRes] = await Promise.all([
+        const [verRes, revRes, perfRes, claimRes] = await Promise.all([
           fetch(`${API_URL}/admin/verifications/pending`, { headers: { 'Authorization': `Bearer ${token}` } }),
-          fetch(`${API_URL}/admin/reviews/flagged`, { headers: { 'Authorization': `Bearer ${token}` } })
+          fetch(`${API_URL}/admin/reviews/flagged`, { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch(`${API_URL}/analytics/admin/performance`, { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch(`${API_URL}/analytics/admin/claims`, { headers: { 'Authorization': `Bearer ${token}` } })
         ]);
 
         if (verRes.ok) setVerifications(await verRes.json());
         if (revRes.ok) setReviews(await revRes.json());
+        if (perfRes.ok) setPerformance(await perfRes.json());
+        if (claimRes.ok) setClaims(await claimRes.json());
       } catch (err) {
         console.error("Admin load failed", err);
       } finally {
@@ -66,6 +84,24 @@ export default function AdminDashboard() {
     <div className="container mx-auto p-8">
       <h1 className="text-3xl font-bold mb-8 text-slate-900">Admin Moderation Console</h1>
       
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="p-6 bg-blue-50 rounded-lg border border-blue-100">
+          <p className="text-xs font-bold text-blue-600 uppercase mb-2">Search Performance (Avg)</p>
+          <p className="text-2xl font-bold text-blue-900">{performance?.avg_response_time ? Math.round(parseFloat(performance.avg_response_time)) : 0}ms</p>
+          <p className="text-xs text-blue-500 mt-1">Goal: &lt; 1500ms</p>
+        </div>
+        <div className="p-6 bg-green-50 rounded-lg border border-green-100">
+          <p className="text-xs font-bold text-green-600 uppercase mb-2">Provider Adoption (Claimed)</p>
+          <p className="text-2xl font-bold text-green-900">{claims?.claim_rate ? Math.round(claims.claim_rate) : 0}%</p>
+          <p className="text-xs text-green-500 mt-1">{claims?.claimed_providers || 0} of {claims?.total_providers || 0} profiles</p>
+        </div>
+        <div className="p-6 bg-purple-50 rounded-lg border border-purple-100">
+          <p className="text-xs font-bold text-purple-600 uppercase mb-2">Total Queries</p>
+          <p className="text-2xl font-bold text-purple-900">{performance?.search_count ? parseInt(performance.search_count) : 0}</p>
+          <p className="text-xs text-purple-500 mt-1">Across all users</p>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <section className="bg-white p-6 rounded-lg shadow-sm border">
           <h2 className="text-xl font-bold mb-4 text-orange-600">Pending Verifications</h2>

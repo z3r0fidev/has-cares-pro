@@ -24,4 +24,18 @@ export class AnalyticsController {
     }
     return this.analyticsService.getStats(providerId);
   }
+
+  @Get('admin/performance')
+  @UseGuards(JwtAuthGuard)
+  async getPerformance(@Request() req: AuthenticatedRequest) {
+    if (req.user.role !== 'admin') throw new ForbiddenException();
+    return this.analyticsService.getGlobalPerformanceStats();
+  }
+
+  @Get('admin/claims')
+  @UseGuards(JwtAuthGuard)
+  async getClaims(@Request() req: AuthenticatedRequest) {
+    if (req.user.role !== 'admin') throw new ForbiddenException();
+    return this.analyticsService.getClaimRateStats();
+  }
 }

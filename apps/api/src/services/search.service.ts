@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { esClient, INDEX_NAME } from '@careequity/core/src/search/client';
 import NodeCache from 'node-cache';
+import { AnalyticsService } from './analytics.service';
 
 export interface SearchFilters {
   specialty?: string;
@@ -10,6 +11,7 @@ export interface SearchFilters {
 
 @Injectable()
 export class SearchService {
+  constructor(private readonly analyticsService: AnalyticsService) {}
   private cache = new NodeCache({ stdTTL: 300 }); // Cache for 5 minutes
 
   /**
@@ -17,9 +19,15 @@ export class SearchService {
    * Priority: Distance -> Specialty Match -> Insurance Match -> Language Match
    */
   async searchProviders(lat: number, lon: number, radius: number, filters: SearchFilters) {
+    const startTime = Date.now();
     const cacheKey = JSON.stringify({ lat, lon, radius, filters });
     const cachedResult = this.cache.get(cacheKey);
-    if (cachedResult) return cachedResult;
+    
+    if (cachedResult) {
+      const responseTime = Date.now() - startTime;
+      this.analyticsService.recordSearchEvent(responseTime, { ...filters, cached: true }).catch(() => {});
+      return cachedResult;
+    }
 
     const query: Record<string, unknown> = {
       bool: {
@@ -103,6 +111,9 @@ export class SearchService {
       score: hit._score,
       ...hit._source,
     }));
+
+    const responseTime = Date.now() - startTime;
+    this.analyticsService.recordSearchEvent(responseTime, { ...filters, cached: false }).catch(() => {});
 
     this.cache.set(cacheKey, result);
     return result;
