@@ -51,6 +51,9 @@ export class Provider {
   telehealth_url!: string;
 
   @Column({ nullable: true })
+  website_url!: string;
+
+  @Column({ nullable: true })
   profile_image_url!: string;
 
   @CreateDateColumn()
