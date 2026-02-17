@@ -39,6 +39,7 @@ export interface Provider {
   credentials: string[];
   specialties: string[];
   languages: string[];
+  insurance?: string;
   location: { lat: number; lon: number };
   address: {
     street: string;

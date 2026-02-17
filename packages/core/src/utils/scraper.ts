@@ -31,7 +31,11 @@ export class ScraperUtils {
 
       return null;
     } catch (error) {
-      console.error(`Scraping failed for ${url}:`, error.message);
+      if (error instanceof Error) {
+        console.error(`Scraping failed for ${url}:`, error.message);
+      } else {
+        console.error(`Scraping failed for ${url}:`, String(error));
+      }
       return null;
     }
   }

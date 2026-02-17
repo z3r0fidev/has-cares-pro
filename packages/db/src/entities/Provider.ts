@@ -23,6 +23,9 @@ export class Provider {
   @Column('simple-array')
   languages!: string[];
 
+  @Column({ nullable: true })
+  insurance!: string;
+
   @Column('geometry', { spatialFeatureType: 'Point', srid: 4326 })
   location!: any; // PostGIS Point
 
