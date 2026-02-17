@@ -6,7 +6,7 @@ import { ClaimService } from '../services/claim.service';
 import { ImageScraperService } from '../services/image-scraper.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { AppDataSource, Provider } from '@careequity/db';
-import { esClient, INDEX_NAME } from '@careequity/core/src/search/client';
+import { esClient, INDEX_NAME } from '@careequity/core';
 
 @Controller('providers')
 export class ProviderController {
