@@ -24,6 +24,14 @@ export class SearchService {
       });
     }
 
+    if (filters.insurance) {
+      must.push({
+        match: {
+          insurance: filters.insurance,
+        },
+      });
+    }
+
     const response = await esClient.search({
       index: INDEX_NAME,
       query: {

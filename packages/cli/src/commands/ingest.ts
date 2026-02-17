@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 import { AppDataSource, Provider, User } from '@careequity/db';
-import { esClient, INDEX_NAME, AuthUtils, SPECIALTIES } from '@careequity/core';
+import { esClient, INDEX_NAME, AuthUtils, SPECIALTIES, INSURANCE_PROVIDERS } from '@careequity/core';
 
 interface IngestOptions {
   location: string;
@@ -101,18 +101,18 @@ export function ingestCommand(program: Command) {
           await userRepo.save(user);
         }
 
-        await esClient.index({
-          index: INDEX_NAME,
-          id: provider.id,
-          document: { 
-            id: provider.id,
-            ...p, 
-            location: p.location,
-            address: p.address,
-            profile_image_url: p.profile_image_url
-          },
-        });
-        console.log(`✓ Ingested: ${p.name}`);
+                await esClient.index({
+                  index: INDEX_NAME,
+                  id: provider.id,
+                  document: { 
+                    id: provider.id,
+                    ...p, 
+                    location: p.location,
+                    address: p.address,
+                    insurance: INSURANCE_PROVIDERS[Math.floor(Math.random() * INSURANCE_PROVIDERS.length)],
+                    profile_image_url: p.profile_image_url
+                  },
+                });        console.log(`✓ Ingested: ${p.name}`);
       }
 
       console.log(`Ingesting additional random providers...`);
@@ -134,6 +134,7 @@ export function ingestCommand(program: Command) {
         const address = { street: 'Main St', city: isNY ? 'New York' : 'Philadelphia', state: isNY ? 'NY' : 'PA', zip: '10001' };
         provider.address = address;
         provider.verification_tier = Math.floor(Math.random() * 3) + 1;
+        const insurance = INSURANCE_PROVIDERS[Math.floor(Math.random() * INSURANCE_PROVIDERS.length)];
         
         await providerRepo.save(provider);
 
@@ -156,6 +157,7 @@ export function ingestCommand(program: Command) {
             languages: provider.languages,
             location: { lat, lon },
             address: address,
+            insurance: insurance,
             verification_tier: provider.verification_tier,
             profile_image_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`
           },
