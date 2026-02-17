@@ -6,3 +6,4 @@ export * from './entities/VerificationRecord';
 export * from './entities/AnalyticsEvent';
 export * from './entities/Appointment';
 export * from './entities/SavedProvider';
+export * from './entities/CareHistory';

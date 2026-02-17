@@ -1,16 +1,16 @@
 import React from 'react';
-import { SafeAreaView, Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
+import AppNavigator from './src/navigation/AppNavigator';
 
-const App = () => {
+export default function App() {
   return (
-    <SafeAreaView>
-      <View style={{ padding: 20 }}>
-        <Text style={{ fontSize: 24, fontWeight: 'bold' }}>CareEquity Mobile</Text>
-        <Text style={{ marginTop: 10 }}>Search for minority providers near you.</Text>
-        {/* Search UI Placeholder */}
-      </View>
-    </SafeAreaView>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <AppNavigator />
+        <StatusBar style="auto" />
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
-};
-
-export default App;
+}

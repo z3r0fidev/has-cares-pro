@@ -1,13 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { esClient, INDEX_NAME } from '@careequity/core/src/search/client';
+import NodeCache from 'node-cache';
 
 @Injectable()
 export class SearchService {
+  private cache = new NodeCache({ stdTTL: 300 }); // Cache for 5 minutes
+
   /**
    * Searches for providers with a "Best Match" AI-driven scoring model.
    * Priority: Distance -> Specialty Match -> Insurance Match -> Language Match
    */
   async searchProviders(lat: number, lon: number, radius: number, filters: any) {
+    const cacheKey = JSON.stringify({ lat, lon, radius, filters });
+    const cachedResult = this.cache.get(cacheKey);
+    if (cachedResult) return cachedResult;
+
     const query: any = {
       bool: {
         must: [
@@ -67,9 +74,8 @@ export class SearchService {
       index: INDEX_NAME,
       body: {
         query,
-        // Sort by Score (Best Match) primarily, then by distance
         sort: [
-          { _score: "desc" },
+          "_score",
           {
             _geo_distance: {
               location: { lat, lon },
@@ -84,10 +90,13 @@ export class SearchService {
       },
     });
 
-    return response.hits.hits.map((hit: any) => ({
+    const result = response.hits.hits.map((hit: any) => ({
       id: hit._id,
       score: hit._score,
       ...hit._source,
     }));
+
+    this.cache.set(cacheKey, result);
+    return result;
   }
 }
