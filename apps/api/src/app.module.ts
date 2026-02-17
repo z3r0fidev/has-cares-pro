@@ -3,6 +3,7 @@ import { ProviderController } from './controllers/provider.controller';
 import { AdminController } from './controllers/admin.controller';
 import { AuthController } from './controllers/auth.controller';
 import { AnalyticsController } from './controllers/analytics.controller';
+import { BookingController } from './controllers/booking.controller';
 import { SearchService } from './services/search.service';
 import { ProviderService } from './services/provider.service';
 import { ReviewService } from './services/review.service';
@@ -10,12 +11,13 @@ import { ClaimService } from './services/claim.service';
 import { AuthService } from './services/auth.service';
 import { ImageScraperService } from './services/image-scraper.service';
 import { AnalyticsService } from './services/analytics.service';
+import { BookingService } from './services/booking.service';
 import { AppDataSource } from '@careequity/db';
 
 @Global()
 @Module({
   imports: [],
-  controllers: [ProviderController, AdminController, AuthController, AnalyticsController],
+  controllers: [ProviderController, AdminController, AuthController, AnalyticsController, BookingController],
   providers: [
     SearchService,
     ProviderService,
@@ -23,7 +25,8 @@ import { AppDataSource } from '@careequity/db';
     ClaimService,
     AuthService,
     ImageScraperService,
-    AnalyticsService,    {
+    AnalyticsService,
+    BookingService,    {
       provide: 'DATA_SOURCE',
       useFactory: async () => {
         if (!AppDataSource.isInitialized) {
