@@ -18,23 +18,33 @@ export default function SearchForm({ onSearch }: SearchFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 bg-gray-100 rounded">
-      <div className="mb-4">
-        <label className="block mb-2">ZIP Code</label>
+    <form onSubmit={handleSubmit} className="p-6 bg-slate-50 rounded-xl border border-slate-200 shadow-sm space-y-6" aria-label="Physician search form">
+      <div>
+        <label htmlFor="zip-code" className="block mb-2 text-sm font-bold text-slate-700">
+          ZIP Code
+        </label>
         <input
+          id="zip-code"
           type="text"
           value={zip}
           onChange={(e) => setZip(e.target.value)}
-          className="w-full p-2 border rounded"
+          className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-white text-slate-900"
           placeholder="e.g. 19143"
+          aria-required="false"
+          lang="en"
         />
       </div>
-      <div className="mb-4">
-        <label className="block mb-2">Specialty</label>
+
+      <div>
+        <label htmlFor="specialty-select" className="block mb-2 text-sm font-bold text-slate-700">
+          Specialty
+        </label>
         <select
+          id="specialty-select"
           value={specialty}
           onChange={(e) => setSpecialty(e.target.value)}
-          className="w-full p-2 border rounded bg-white"
+          className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-white text-slate-900"
+          aria-label="Filter by medical specialty"
         >
           <option value="">All Specialties</option>
           {SPECIALTIES.sort().map((s) => (
@@ -42,12 +52,17 @@ export default function SearchForm({ onSearch }: SearchFormProps) {
           ))}
         </select>
       </div>
-      <div className="mb-4">
-        <label className="block mb-2">Insurance</label>
+
+      <div>
+        <label htmlFor="insurance-select" className="block mb-2 text-sm font-bold text-slate-700">
+          Insurance
+        </label>
         <select
+          id="insurance-select"
           value={insurance}
           onChange={(e) => setInsurance(e.target.value)}
-          className="w-full p-2 border rounded bg-white"
+          className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-white text-slate-900"
+          aria-label="Filter by accepted insurance"
         >
           <option value="">All Insurance</option>
           {INSURANCE_PROVIDERS.sort().map((i) => (
@@ -55,7 +70,11 @@ export default function SearchForm({ onSearch }: SearchFormProps) {
           ))}
         </select>
       </div>
-      <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded w-full font-bold hover:bg-blue-700 transition-colors">
+
+      <button 
+        type="submit" 
+        className="w-full py-3 bg-blue-700 text-white rounded-lg font-bold text-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-200 transition-all shadow-sm"
+      >
         Search Providers
       </button>
     </form>

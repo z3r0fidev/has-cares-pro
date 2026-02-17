@@ -1,14 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { Review, AppDataSource } from '@careequity/db';
-import { Redactor } from '@careequity/core';
+import { Redactor, AIModerator } from '@careequity/core';
 
 @Injectable()
 export class ReviewService {
   async create(providerId: string, reviewData: Partial<Review>) {
     const repo = AppDataSource.getRepository(Review);
     
-    // Check for PHI presence before redaction to decide on flagging
+    // 1. Basic keyword/PHI check
     const containsPHI = reviewData.content ? Redactor.hasPHI(reviewData.content) : false;
+
+    // 2. Sophisticated AI Toxicity check
+    let isToxic = false;
+    if (reviewData.content) {
+      isToxic = await AIModerator.shouldFlag(reviewData.content);
+    }
 
     // Redact PHI for display
     if (reviewData.content) {
@@ -18,7 +24,7 @@ export class ReviewService {
     const review = repo.create({
       ...reviewData,
       provider: { id: providerId } as any,
-      status: containsPHI ? 'flagged' : 'pending' // Auto-flag if PHI detected
+      status: (containsPHI || isToxic) ? 'flagged' : 'pending' 
     });
     
     return repo.save(review);

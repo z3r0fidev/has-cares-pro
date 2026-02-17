@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from "@careequity/ui";
-import AppointmentForm from '../../../components/Booking/AppointmentForm';
-import ReviewForm from '../../../components/Reviews/ReviewForm';
-import VerificationBadge from '../../../components/Provider/Badge';
+import AppointmentForm from '../../../../components/Booking/AppointmentForm';
+import ReviewForm from '../../../../components/Reviews/ReviewForm';
+import VerificationBadge from '../../../../components/Provider/Badge';
 import { Heart } from 'lucide-react';
 
 export default function ProviderProfile() {

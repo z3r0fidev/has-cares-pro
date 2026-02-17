@@ -1,0 +1,27 @@
+{
+  "Home": {
+    "title": "Find a Physician",
+    "subtitle": "Connecting you with culturally competent care.",
+    "search": "Search Providers",
+    "loading": "Searching providers...",
+    "noResults": "No physicians found matching your criteria.",
+    "statusCheck": "System Status Check"
+  },
+  "Search": {
+    "zip": "ZIP Code",
+    "specialty": "Specialty",
+    "insurance": "Insurance",
+    "allSpecialties": "All Specialties",
+    "allInsurance": "All Insurance"
+  },
+  "Dashboard": {
+    "title": "Provider Dashboard",
+    "description": "Manage your practice and track patient engagement.",
+    "logout": "Logout",
+    "engagement": "Engagement Overview",
+    "practiceInfo": "Practice Information",
+    "verStatus": "Verification Status",
+    "upgrade": "Request Tier Upgrade",
+    "maxVer": "Maximum Verification Reached"
+  }
+}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import PracticeForm from '../../../components/Portal/PracticeForm';
+import PracticeForm from '../../../../components/Portal/PracticeForm';
 import StatsCard from './StatsCard';
 
 export default function Dashboard() {
@@ -52,7 +52,6 @@ export default function Dashboard() {
     const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
     const API_URL = `http://${hostname}:3001`;
     
-    // Fetch Profile and Stats
     const fetchData = async () => {
       try {
         const profileRes = await fetch(`${API_URL}/providers/profile`, {
@@ -69,7 +68,6 @@ export default function Dashboard() {
         const profileData = await profileRes.json();
         setProvider(profileData);
 
-        // Fetch Stats
         const statsRes = await fetch(`${API_URL}/analytics/stats/${profileData.id}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -88,32 +86,33 @@ export default function Dashboard() {
     fetchData();
   }, [router]);
 
-  if (loading) return <div className="p-8 text-center"><p className="animate-pulse">Loading Dashboard...</p></div>;
+  if (loading) return <div className="p-8 text-center" role="status"><p className="animate-pulse">Loading Dashboard...</p></div>;
 
   if (error) return (
-    <div className="p-8 text-center space-y-4">
+    <div className="p-8 text-center space-y-4" role="alert">
       <p className="text-red-600 font-medium">{error}</p>
       <button 
         onClick={() => { localStorage.removeItem('token'); router.push('/login'); }}
-        className="text-blue-600 underline"
+        className="text-blue-600 underline focus:ring-2 focus:ring-blue-500 rounded"
       >
         Go back to Login
       </button>
     </div>
   );
 
-  if (!provider) return <p className="p-8 text-center">No provider data available.</p>;
+  if (!provider) return <p className="p-8 text-center" role="status">No provider data available.</p>;
 
   return (
-    <div className="container mx-auto p-8" suppressHydrationWarning>
-      <header className="flex justify-between items-center mb-8">
+    <main className="container mx-auto p-8" suppressHydrationWarning>
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
           <h1 className="text-3xl font-bold text-slate-900">Provider Dashboard</h1>
           <p className="text-slate-500">Manage your practice and track patient engagement.</p>
         </div>
         <button 
           onClick={() => { localStorage.removeItem('token'); router.push('/login'); }}
-          className="text-sm text-red-600 font-medium hover:underline px-4 py-2 border border-red-100 rounded-md bg-red-50 hover:bg-red-100 transition-colors"
+          className="text-sm text-red-700 font-bold hover:underline px-4 py-2 border border-red-200 rounded-md bg-red-50 hover:bg-red-100 transition-colors focus:ring-2 focus:ring-red-500"
+          aria-label="Log out of provider portal"
         >
           Logout
         </button>
@@ -121,56 +120,59 @@ export default function Dashboard() {
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
-          <section className="bg-white p-6 rounded-lg shadow-sm border">
-            <h2 className="text-xl font-bold mb-6 text-slate-800 border-b pb-2">Engagement Overview</h2>
+          <section className="bg-white p-6 rounded-lg shadow-sm border" aria-labelledby="engagement-title">
+            <h2 id="engagement-title" className="text-xl font-bold mb-6 text-slate-800 border-b pb-2">Engagement Overview</h2>
             <StatsCard stats={stats} />
           </section>
 
-          <section className="bg-white p-6 rounded-lg shadow-sm border">
-            <h2 className="text-xl font-bold mb-4 text-slate-800 border-b pb-2">Practice Information</h2>
+          <section className="bg-white p-6 rounded-lg shadow-sm border" aria-labelledby="practice-title">
+            <h2 id="practice-title" className="text-xl font-bold mb-4 text-slate-800 border-b pb-2">Practice Information</h2>
             <PracticeForm provider={provider} />
           </section>
         </div>
         
-        <div className="space-y-8">
-          <section className="bg-white p-6 rounded-lg shadow-sm border text-center">
+        <aside className="space-y-8">
+          <section className="bg-white p-6 rounded-lg shadow-sm border text-center" aria-label="Physician Profile Summary">
             <div className="w-24 h-24 rounded-full bg-slate-100 mx-auto mb-4 border overflow-hidden">
               {provider.profile_image_url ? (
-                <img src={provider.profile_image_url} alt={provider.name} className="w-full h-full object-cover" />
+                <img src={provider.profile_image_url} alt={`Headshot of ${provider.name}`} className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-slate-400 text-2xl font-bold">
-                  {provider.name?.charAt(4)}
+                <div className="w-full h-full flex items-center justify-center text-slate-400 text-2xl font-bold" aria-hidden="true">
+                  {provider.name?.charAt(0)}
                 </div>
               )}
             </div>
             <h3 className="font-bold text-lg text-slate-900">{provider.name}</h3>
             <p className="text-sm text-slate-500">{provider.specialties?.join(', ')}</p>
-            <div className="mt-4 text-left space-y-2 border-t pt-4">
+            
+            <div className="mt-6 text-left space-y-3 border-t pt-4">
               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Verification Status</p>
-              <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${
-                provider.verification_tier === 3 ? 'bg-green-100 text-green-800' :
-                provider.verification_tier === 2 ? 'bg-blue-100 text-blue-800' :
-                'bg-slate-100 text-slate-800'
+              <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold border ${
+                provider.verification_tier === 3 ? 'bg-green-100 text-green-900 border-green-200' :
+                provider.verification_tier === 2 ? 'bg-blue-100 text-blue-900 border-blue-200' :
+                'bg-slate-100 text-slate-900 border-slate-200'
               }`}>
                 Tier {provider.verification_tier} Verified
               </span>
+              
               {provider.verification_tier < 3 ? (
                 <button 
                   onClick={handleRequestVerification}
                   disabled={submitting}
-                  className="block w-full mt-4 text-xs font-bold text-primary hover:text-primary/80 disabled:text-slate-400 underline underline-offset-4"
+                  className="block w-full mt-4 text-xs font-bold text-blue-700 hover:text-blue-900 disabled:text-slate-400 underline underline-offset-4 focus:ring-2 focus:ring-blue-500 rounded"
+                  aria-label={`Submit request to upgrade from Tier ${provider.verification_tier} verification`}
                 >
                   {submitting ? 'Submitting...' : 'Request Tier Upgrade'}
                 </button>
               ) : (
-                <p className="mt-4 text-[10px] text-green-600 font-bold uppercase tracking-tight text-center">
+                <p className="mt-4 text-[10px] text-green-700 font-bold uppercase tracking-tight text-center bg-green-50 py-1 rounded">
                   Maximum Verification Reached
                 </p>
               )}
             </div>
           </section>
-        </div>
+        </aside>
       </div>
-    </div>
+    </main>
   );
 }

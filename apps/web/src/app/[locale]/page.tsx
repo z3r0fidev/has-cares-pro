@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import SearchForm from "../components/Search/SearchForm";
-import ResultsList from "../components/Search/ResultsList";
+import SearchForm from "../../components/Search/SearchForm";
+import ResultsList from "../../components/Search/ResultsList";
 import { Button } from "@careequity/ui";
 
 // Local ZIP to Coordinate mapping for prototype regions
@@ -34,16 +34,13 @@ export default function Home() {
   const handleSearch = async (filters: { zip: string; specialty: string; insurance: string }) => {
     setLoading(true);
     try {
-      // Lookup coordinates based on ZIP or default to NYC
       const coords = ZIP_MAP[filters.zip] || { lat: 40.7128, lon: -74.0060 };
       
-      // We increase radius to 50 for the prototype to catch more results if needed
       const res = await fetch(`${apiUrl}/providers?lat=${coords.lat}&lon=${coords.lon}&radius=50&specialty=${filters.specialty}&insurance=${filters.insurance}`);
       const data = await res.json();
       setProviders(data);
     } catch (error) {
       console.error("Failed to fetch providers", error);
-      alert("Failed to connect to the API. Please ensure the backend is running on port 3001.");
     } finally {
       setLoading(false);
     }
@@ -54,7 +51,7 @@ export default function Home() {
       <h1 className="text-3xl font-bold mb-6 text-slate-900">Find a Physician</h1>
       
       <div className="mb-8">
-        <Button onClick={() => alert("Shared UI Library is integrated and functional.")}>
+        <Button onClick={() => alert("Checking System status")}>
           System Status Check
         </Button>
       </div>

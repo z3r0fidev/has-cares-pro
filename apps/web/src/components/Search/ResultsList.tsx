@@ -22,7 +22,7 @@ interface ResultsListProps {
 
 export default function ResultsList({ providers }: ResultsListProps) {
   if (!providers || providers.length === 0) {
-    return <p className="text-muted-foreground italic">No physicians found matching your criteria.</p>;
+    return <p className="text-muted-foreground italic" role="status">No physicians found matching your criteria.</p>;
   }
 
   const handleLinkClick = (id: string, type: EventType) => {
@@ -30,23 +30,23 @@ export default function ResultsList({ providers }: ResultsListProps) {
   };
 
   return (
-    <div className="grid gap-6">
+    <ul className="grid gap-6" role="list">
       {providers.map((provider, index) => {
         const fullAddress = `${provider.address.street}, ${provider.address.city}, ${provider.address.state} ${provider.address.zip}`;
         const mapUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(fullAddress)}`;
         
         return (
-          <div key={`${provider.id}-${index}`} className="p-6 border rounded-lg shadow-sm bg-card hover:shadow-md transition-shadow flex gap-6">
-            {/* Profile Picture Placeholder */}
+          <li key={`${provider.id}-${index}`} className="p-6 border rounded-lg shadow-sm bg-card hover:shadow-md transition-shadow flex gap-6">
+            {/* Profile Picture */}
             <div className="w-20 h-20 rounded-full bg-muted flex-shrink-0 overflow-hidden border">
               {provider.profile_image_url ? (
                 <img 
                   src={provider.profile_image_url} 
-                  alt={provider.name} 
+                  alt={`Professional headshot of ${provider.name}`} 
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-muted-foreground font-bold text-xl">
+                <div className="w-full h-full flex items-center justify-center text-muted-foreground font-bold text-xl" aria-hidden="true">
                   {provider.name.charAt(4)}
                 </div>
               )}
@@ -57,6 +57,7 @@ export default function ResultsList({ providers }: ResultsListProps) {
                 <Link 
                   href={`/providers/${provider.id}`}
                   onClick={() => handleLinkClick(provider.id, EventType.PROFILE_VIEW)}
+                  aria-label={`View full profile for ${provider.name}`}
                 >
                   <h3 className="text-2xl font-bold hover:text-primary transition-colors cursor-pointer">
                     {provider.name}
@@ -65,40 +66,41 @@ export default function ResultsList({ providers }: ResultsListProps) {
                 <p className="text-lg font-medium text-muted-foreground">{provider.specialties.join(', ')}</p>
                 
                 <div className="mt-3">
-                  <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                    provider.verification_tier === 3 ? 'bg-green-100 text-green-800' :
-                    provider.verification_tier === 2 ? 'bg-blue-100 text-blue-800' :
-                    'bg-gray-100 text-gray-800'
+                  <span className={`px-2 py-1 rounded text-xs font-bold uppercase tracking-wide ${
+                    provider.verification_tier === 3 ? 'bg-green-100 text-green-900 border border-green-200' :
+                    provider.verification_tier === 2 ? 'bg-blue-100 text-blue-900 border border-blue-200' :
+                    'bg-slate-100 text-slate-900 border border-slate-200'
                   }`}>
                     Tier {provider.verification_tier} Verified
                   </span>
                 </div>
               </div>
 
-              {/* Clickable Map Placeholder */}
-              <div className="w-full md:w-48 h-32 rounded border overflow-hidden relative group cursor-pointer">
+              {/* Clickable Map Link */}
+              <div className="w-full md:w-48 h-32 rounded border overflow-hidden relative group cursor-pointer bg-slate-100">
                 <a 
                   href={mapUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   onClick={() => handleLinkClick(provider.id, EventType.DIRECTION_CLICK)}
+                  aria-label={`Get directions to ${provider.name}'s office at ${fullAddress}`}
+                  title="Open directions in Google Maps"
                 >
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
                     <span className="bg-white/90 px-3 py-1 rounded text-xs font-bold shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
                       Get Directions
                     </span>
                   </div>
-                  {/* Static Map Placeholder */}
-                  <div className="w-full h-full bg-slate-200 flex flex-col items-center justify-center p-2 text-center">
+                  <div className="w-full h-full flex flex-col items-center justify-center p-2 text-center" aria-hidden="true">
                     <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Map View</p>
                     <p className="text-[9px] text-slate-400 mt-1 line-clamp-2">{fullAddress}</p>
                   </div>
                 </a>
               </div>
             </div>
-          </div>
+          </li>
         );
       })}
-    </div>
+    </ul>
   );
 }

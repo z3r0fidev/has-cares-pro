@@ -1,0 +1,27 @@
+{
+  "Home": {
+    "title": "Encuentra un Médico",
+    "subtitle": "Conectándote con atención culturalmente competente.",
+    "search": "Buscar Proveedores",
+    "loading": "Buscando proveedores...",
+    "noResults": "No se encontraron médicos que coincidan con sus criterios.",
+    "statusCheck": "Verificación del Estado del Sistema"
+  },
+  "Search": {
+    "zip": "Código Postal",
+    "specialty": "Especialidad",
+    "insurance": "Seguro",
+    "allSpecialties": "Todas las especialidades",
+    "allInsurance": "Todos los seguros"
+  },
+  "Dashboard": {
+    "title": "Panel del Proveedor",
+    "description": "Administre su práctica y realice un seguimiento del compromiso del paciente.",
+    "logout": "Cerrar sesión",
+    "engagement": "Resumen de Compromiso",
+    "practiceInfo": "Información de la Práctica",
+    "verStatus": "Estado de Verificación",
+    "upgrade": "Solicitar actualización de nivel",
+    "maxVer": "Verificación máxima alcanzada"
+  }
+}
