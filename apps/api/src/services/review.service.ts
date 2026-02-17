@@ -7,7 +7,10 @@ export class ReviewService {
   async create(providerId: string, reviewData: Partial<Review>) {
     const repo = AppDataSource.getRepository(Review);
     
-    // Redact PHI
+    // Check for PHI presence before redaction to decide on flagging
+    const containsPHI = reviewData.content ? Redactor.hasPHI(reviewData.content) : false;
+
+    // Redact PHI for display
     if (reviewData.content) {
       reviewData.content = Redactor.redact(reviewData.content);
     }
@@ -15,7 +18,7 @@ export class ReviewService {
     const review = repo.create({
       ...reviewData,
       provider: { id: providerId } as any,
-      status: 'pending' // Default to pending moderation
+      status: containsPHI ? 'flagged' : 'pending' // Auto-flag if PHI detected
     });
     
     return repo.save(review);

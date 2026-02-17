@@ -17,7 +17,8 @@ const SAMPLE_PROVIDERS = [
     address: { street: "2558 N. 22nd St", city: "Philadelphia", state: "PA", zip: "19132" },
     verification_tier: 3,
     identity_tags: ["Black", "African American"],
-    profile_image_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Stanford"
+    profile_image_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Stanford",
+    insurance: "Blue Cross Blue Shield"
   },
   {
     name: "Dr. Nada Al-Hashimi",
@@ -28,7 +29,8 @@ const SAMPLE_PROVIDERS = [
     address: { street: "123 Brooklyn Ave", city: "Brooklyn", state: "NY", zip: "11213" },
     verification_tier: 2,
     identity_tags: ["Middle Eastern", "Arab"],
-    profile_image_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Hashimi"
+    profile_image_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Hashimi",
+    insurance: "Aetna"
   },
   {
     name: "Dr. Jose Rodriguez",
@@ -39,7 +41,8 @@ const SAMPLE_PROVIDERS = [
     address: { street: "45 Broadway", city: "New York", state: "NY", zip: "10006" },
     verification_tier: 3,
     identity_tags: ["Latino", "Hispanic"],
-    profile_image_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rodriguez"
+    profile_image_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rodriguez",
+    insurance: "UnitedHealthcare"
   },
   {
     name: "Dr. Mei Chen",
@@ -50,7 +53,8 @@ const SAMPLE_PROVIDERS = [
     address: { street: "128 Mott St", city: "New York", state: "NY", zip: "10013" },
     verification_tier: 2,
     identity_tags: ["Asian", "Chinese"],
-    profile_image_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Chen"
+    profile_image_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Chen",
+    insurance: "Cigna"
   },
   {
     name: "Dr. Sarah Miller",
@@ -61,7 +65,8 @@ const SAMPLE_PROVIDERS = [
     address: { street: "1 Cooper Plaza", city: "Camden", state: "NJ", zip: "08103" },
     verification_tier: 3,
     identity_tags: ["Black"],
-    profile_image_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Miller"
+    profile_image_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Miller",
+    insurance: "Medicare"
   }
 ];
 
@@ -77,10 +82,28 @@ export function ingestCommand(program: Command) {
     .action(async (options: IngestOptions) => {
       console.log(`Ingesting real sample providers...`);
       
-      if (!AppDataSource.isInitialized) {
-        await AppDataSource.initialize();
+            if (!AppDataSource.isInitialized) {
+      
+              await AppDataSource.initialize();
+      
+            }
+      
+            const providerRepo = AppDataSource.getRepository(Provider);
+      
+            const userRepo = AppDataSource.getRepository(User);
+      
+      
+      
+            // Create Admin User
+      const adminEmail = 'admin@careequity.com';
+      if (!await userRepo.findOneBy({ email: adminEmail })) {
+        const admin = new User();
+        admin.email = adminEmail;
+        admin.password_hash = await AuthUtils.hashPassword('admin123');
+        admin.role = 'admin';
+        await userRepo.save(admin);
+        console.log(`✓ Created Admin Account: ${adminEmail} / admin123`);
       }
-      const providerRepo = AppDataSource.getRepository(Provider);
 
       for (const p of SAMPLE_PROVIDERS) {
         let provider = await providerRepo.findOneBy({ name: p.name });
@@ -92,33 +115,49 @@ export function ingestCommand(program: Command) {
           await providerRepo.save(provider);
 
           // Create default user for testing
-          const userRepo = AppDataSource.getRepository(User);
-          const user = new User();
-          user.email = `${p.name.toLowerCase().replace(/[^a-z0-9]/g, '')}@example.com`;
-          user.password_hash = await AuthUtils.hashPassword('password123');
-          user.role = 'provider';
-          user.provider = provider;
-          await userRepo.save(user);
+          const email = `${p.name.toLowerCase().replace(/[^a-z0-9]/g, '')}@example.com`;
+          const userExists = await userRepo.findOneBy({ email });
+          if (!userExists) {
+            const user = new User();
+            user.email = email;
+            user.password_hash = await AuthUtils.hashPassword('password123');
+            user.role = 'provider';
+            user.provider = provider;
+            await userRepo.save(user);
+            console.log(`✓ Created test account for: ${p.name} (${email})`);
+          }
+        } else {
+          // If already exists, ensure insurance is set if it was null
+          if (!provider.insurance) {
+            provider.insurance = p.insurance;
+            await providerRepo.save(provider);
+          }
         }
 
-                await esClient.index({
-                  index: INDEX_NAME,
-                  id: provider.id,
-                  document: { 
-                    id: provider.id,
-                    ...p, 
-                    location: p.location,
-                    address: p.address,
-                    insurance: INSURANCE_PROVIDERS[Math.floor(Math.random() * INSURANCE_PROVIDERS.length)],
-                    profile_image_url: p.profile_image_url
-                  },
-                });        console.log(`✓ Ingested: ${p.name}`);
+        // ES document MUST use {lat, lon} for geo_point
+        await esClient.index({
+          index: INDEX_NAME,
+          id: provider.id,
+          document: { 
+            id: provider.id,
+            name: provider.name,
+            specialties: provider.specialties,
+            languages: provider.languages,
+            location: p.location, // This is {lat, lon} from the array
+            address: provider.address,
+            insurance: provider.insurance,
+            verification_tier: provider.verification_tier,
+            profile_image_url: provider.profile_image_url,
+            website_url: provider.website_url
+          },
+        });
+        console.log(`✓ Ingested/Synced: ${p.name}`);
       }
 
       console.log(`Ingesting additional random providers...`);
       const limitNum = parseInt(options.limit, 10);
       for (let i = 0; i < limitNum; i++) {
-        const name = `Dr. ${RANDOM_NAMES[Math.floor(Math.random() * RANDOM_NAMES.length)]} ${RANDOM_SURNAMES[Math.floor(Math.random() * RANDOM_SURNAMES.length)]} ${i}`;
+        const name = `Dr. ${RANDOM_NAMES[Math.floor(Math.random() * RANDOM_NAMES.length)]} ${RANDOM_SURNAMES[Math.floor(Math.random() * RANDOM_SURNAMES.length)]} ${Date.now()}_${i}`;
         const spec = SPECIALTIES[Math.floor(Math.random() * SPECIALTIES.length)];
         
         const isNY = Math.random() > 0.5;
@@ -135,13 +174,14 @@ export function ingestCommand(program: Command) {
         provider.address = address;
         provider.verification_tier = Math.floor(Math.random() * 3) + 1;
         const insurance = INSURANCE_PROVIDERS[Math.floor(Math.random() * INSURANCE_PROVIDERS.length)];
+        provider.insurance = insurance;
         
         await providerRepo.save(provider);
 
-        // Create default user for testing: login with email, password 'password123'
-        const userRepo = AppDataSource.getRepository(User);
+        // Create default user for testing
+        const email = `${name.toLowerCase().replace(/[^a-z0-9]/g, '')}@example.com`;
         const user = new User();
-        user.email = `${name.toLowerCase().replace(/[^a-z0-9]/g, '')}@example.com`;
+        user.email = email;
         user.password_hash = await AuthUtils.hashPassword('password123');
         user.role = 'provider';
         user.provider = provider;

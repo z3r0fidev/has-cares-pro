@@ -5,7 +5,7 @@ import { ReviewService } from '../services/review.service';
 import { ClaimService } from '../services/claim.service';
 import { ImageScraperService } from '../services/image-scraper.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import { AppDataSource, Provider } from '@careequity/db';
+import { AppDataSource, Provider, VerificationRecord, VerificationStatus } from '@careequity/db';
 import { esClient, INDEX_NAME } from '@careequity/core';
 
 @Controller('providers')
@@ -123,5 +123,26 @@ export class ProviderController {
   @UseGuards(JwtAuthGuard)
   async claimProfile(@Param('id') id: string, @Request() req: any) {
     return this.claimService.claim(req.user.sub, id);
+  }
+
+  @Post('verify-request')
+  @UseGuards(JwtAuthGuard)
+  async requestVerification(@Request() req: any) {
+    if (!req.user.providerId) throw new NotFoundException('No provider profile found');
+    
+    const recordRepo = AppDataSource.getRepository(VerificationRecord);
+    const providerRepo = AppDataSource.getRepository(Provider);
+    const provider = await providerRepo.findOneBy({ id: req.user.providerId });
+
+    if (!provider) throw new NotFoundException();
+
+    const record = new VerificationRecord();
+    record.provider = provider;
+    record.tier = provider.verification_tier < 3 ? provider.verification_tier + 1 : 3;
+    record.status = VerificationStatus.SUBMITTED;
+    record.notes = "Self-submitted verification request";
+    
+    await recordRepo.save(record);
+    return { success: true, requestedTier: record.tier };
   }
 }
