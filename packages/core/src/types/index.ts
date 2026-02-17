@@ -16,6 +16,17 @@ export const SPECIALTIES = [
   "Pediatric Surgery",
 ];
 
+export const INSURANCE_PROVIDERS = [
+  "Aetna",
+  "Blue Cross Blue Shield",
+  "Cigna",
+  "Humana",
+  "Medicare",
+  "Medicaid",
+  "UnitedHealthcare",
+  "Kaiser Permanente",
+];
+
 export enum VerificationTier {
   PROFESSIONAL = 1,
   IDENTITY = 2,
@@ -39,6 +50,7 @@ export interface Provider {
   is_claimed: boolean;
   identity_tags: string[];
   telehealth_url?: string;
+  website_url?: string;
   profile_image_url?: string;
   created_at: Date;
   updated_at: Date;

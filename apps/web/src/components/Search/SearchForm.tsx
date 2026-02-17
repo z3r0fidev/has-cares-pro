@@ -1,19 +1,20 @@
 "use client";
 
 import { useState } from 'react';
-import { SPECIALTIES } from '@careequity/core/src/types/index';
+import { SPECIALTIES, INSURANCE_PROVIDERS } from '@careequity/core/src/types/index';
 
 interface SearchFormProps {
-  onSearch: (filters: { zip: string; specialty: string }) => void;
+  onSearch: (filters: { zip: string; specialty: string; insurance: string }) => void;
 }
 
 export default function SearchForm({ onSearch }: SearchFormProps) {
   const [zip, setZip] = useState('');
   const [specialty, setSpecialty] = useState('');
+  const [insurance, setInsurance] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSearch({ zip, specialty });
+    onSearch({ zip, specialty, insurance });
   };
 
   return (
@@ -38,6 +39,19 @@ export default function SearchForm({ onSearch }: SearchFormProps) {
           <option value="">All Specialties</option>
           {SPECIALTIES.sort().map((s) => (
             <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
+      </div>
+      <div className="mb-4">
+        <label className="block mb-2">Insurance</label>
+        <select
+          value={insurance}
+          onChange={(e) => setInsurance(e.target.value)}
+          className="w-full p-2 border rounded bg-white"
+        >
+          <option value="">All Insurance</option>
+          {INSURANCE_PROVIDERS.sort().map((i) => (
+            <option key={i} value={i}>{i}</option>
           ))}
         </select>
       </div>
