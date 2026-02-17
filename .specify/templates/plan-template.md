@@ -31,7 +31,11 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- [ ] **Library-First**: Is this feature being built as a standalone library/package?
+- [ ] **CLI-First**: Does the library expose its core functionality via a CLI?
+- [ ] **Spec-Driven**: Are the `spec.md` and `plan.md` finalized and aligned?
+- [ ] **Test-First**: Are tests (if required) planned to be written BEFORE implementation?
+- [ ] **Independent stories**: Is the feature broken into prioritized, testable user stories?
 
 ## Project Structure
 

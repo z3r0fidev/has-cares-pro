@@ -1,0 +1,31 @@
+# Node
+node_modules/
+dist/
+build/
+*.log
+.env*
+.npmrc
+
+# TypeScript
+*.tsbuildinfo
+
+# Next.js
+.next/
+out/
+
+# React Native
+android/app/build/
+ios/Pods/
+ios/build/
+*.lock
+*.xcworkspace
+*.podspec
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
