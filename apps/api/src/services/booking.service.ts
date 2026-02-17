@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { AppDataSource, Appointment, AppointmentStatus, SavedProvider } from '@careequity/db';
+import { AppDataSource, Appointment, AppointmentStatus, SavedProvider, User, Provider } from '@careequity/db';
 
 @Injectable()
 export class BookingService {
   async createAppointment(userId: string, providerId: string, date: Date, reason: string) {
     const repo = AppDataSource.getRepository(Appointment);
     const appointment = repo.create({
-      patient: { id: userId } as any,
-      provider: { id: providerId } as any,
+      patient: { id: userId } as User,
+      provider: { id: providerId } as Provider,
       appointment_date: date,
       reason,
       status: AppointmentStatus.PENDING
@@ -41,7 +41,7 @@ export class BookingService {
       await repo.remove(existing);
       return { saved: false };
     } else {
-      const saved = repo.create({ user: { id: userId } as any, provider: { id: providerId } as any });
+      const saved = repo.create({ user: { id: userId } as User, provider: { id: providerId } as Provider });
       await repo.save(saved);
       return { saved: true };
     }

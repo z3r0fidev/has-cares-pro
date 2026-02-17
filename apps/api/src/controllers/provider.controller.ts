@@ -5,8 +5,9 @@ import { ReviewService } from '../services/review.service';
 import { ClaimService } from '../services/claim.service';
 import { ImageScraperService } from '../services/image-scraper.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import { AppDataSource, Provider, VerificationRecord, VerificationStatus } from '@careequity/db';
+import { AppDataSource, Provider, VerificationRecord, VerificationStatus, Point } from '@careequity/db';
 import { esClient, INDEX_NAME } from '@careequity/core';
+import { AuthenticatedRequest } from '../types/request.interface';
 
 @Controller('providers')
 export class ProviderController {
@@ -26,7 +27,7 @@ export class ProviderController {
     @Query('specialty') specialty: string,
     @Query('insurance') insurance: string,
   ) {
-    const filters: Record<string, any> = {};
+    const filters: Record<string, string> = {};
     if (specialty) filters['specialty'] = specialty;
     if (insurance) filters['insurance'] = insurance;
 
@@ -40,7 +41,7 @@ export class ProviderController {
 
   @Get('profile')
   @UseGuards(JwtAuthGuard)
-  async getProfile(@Request() req: any) {
+  async getProfile(@Request() req: AuthenticatedRequest) {
     if (!req.user.providerId) {
       throw new NotFoundException('No provider profile associated with this user');
     }
@@ -58,7 +59,7 @@ export class ProviderController {
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  async update(@Param('id') id: string, @Body() updateData: any, @Request() req: any) {
+  async update(@Param('id') id: string, @Body() updateData: Partial<Provider>, @Request() req: AuthenticatedRequest) {
     if (req.user.providerId !== id && req.user.role !== 'admin') {
       throw new ForbiddenException('You can only update your own profile');
     }
@@ -74,17 +75,17 @@ export class ProviderController {
     await repo.save(provider);
 
     if (shouldScrape) {
-      this.scraperService.scrapeAndStore(id, updateData.website_url).catch(err => 
+      this.scraperService.scrapeAndStore(id, updateData.website_url!).catch(err => 
         console.error(`Automated scraping failed for ${id}:`, err.message)
       );
     }
 
     // Extract lat/lon from the GeoJSON object for ES
     let esLocation = null;
-    if (provider.location && provider.location.coordinates) {
+    if (provider.location && (provider.location as Point).coordinates) {
       esLocation = {
-        lon: provider.location.coordinates[0],
-        lat: provider.location.coordinates[1]
+        lon: (provider.location as Point).coordinates[0],
+        lat: (provider.location as Point).coordinates[1]
       };
     }
 
@@ -115,19 +116,19 @@ export class ProviderController {
   }
 
   @Post(':id/reviews')
-  async createReview(@Param('id') id: string, @Body() reviewData: any) {
+  async createReview(@Param('id') id: string, @Body() reviewData: { rating_total: number; content: string }) {
     return this.reviewService.create(id, reviewData);
   }
 
   @Post(':id/claim')
   @UseGuards(JwtAuthGuard)
-  async claimProfile(@Param('id') id: string, @Request() req: any) {
+  async claimProfile(@Param('id') id: string, @Request() req: AuthenticatedRequest) {
     return this.claimService.claim(req.user.sub, id);
   }
 
   @Post('verify-request')
   @UseGuards(JwtAuthGuard)
-  async requestVerification(@Request() req: any) {
+  async requestVerification(@Request() req: AuthenticatedRequest) {
     if (!req.user.providerId) throw new NotFoundException('No provider profile found');
     
     const recordRepo = AppDataSource.getRepository(VerificationRecord);

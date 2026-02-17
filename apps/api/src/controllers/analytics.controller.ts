@@ -2,13 +2,14 @@ import { Controller, Post, Get, Body, Param, UseGuards, Request, ForbiddenExcept
 import { AnalyticsService } from '../services/analytics.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { EventType } from '@careequity/db';
+import { AuthenticatedRequest } from '../types/request.interface';
 
 @Controller('analytics')
 export class AnalyticsController {
   constructor(private readonly analyticsService: AnalyticsService) {}
 
   @Post('record')
-  async record(@Body() body: { providerId: string, type: EventType }, @Request() req: any) {
+  async record(@Body() body: { providerId: string, type: EventType }, @Request() req: AuthenticatedRequest) {
     // We allow unauthenticated recording (public search users)
     const userAgent = req.headers['user-agent'];
     return this.analyticsService.recordEvent(body.providerId, body.type, userAgent);
@@ -16,7 +17,7 @@ export class AnalyticsController {
 
   @Get('stats/:providerId')
   @UseGuards(JwtAuthGuard)
-  async getStats(@Param('providerId') providerId: string, @Request() req: any) {
+  async getStats(@Param('providerId') providerId: string, @Request() req: AuthenticatedRequest) {
     // Only allow provider to see their own stats or admin
     if (req.user.providerId !== providerId && req.user.role !== 'admin') {
       throw new ForbiddenException('You can only view your own analytics');

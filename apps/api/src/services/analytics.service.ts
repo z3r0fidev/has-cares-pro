@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { AppDataSource, AnalyticsEvent, EventType } from '@careequity/db';
+import { AppDataSource, AnalyticsEvent, EventType, Provider } from '@careequity/db';
 
 @Injectable()
 export class AnalyticsService {
   async recordEvent(providerId: string, type: EventType, userAgent?: string) {
     const repo = AppDataSource.getRepository(AnalyticsEvent);
     const event = repo.create({
-      provider: { id: providerId } as any,
+      provider: { id: providerId } as Provider,
       type,
       user_agent: userAgent
     });

@@ -2,6 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { esClient, INDEX_NAME } from '@careequity/core/src/search/client';
 import NodeCache from 'node-cache';
 
+export interface SearchFilters {
+  specialty?: string;
+  insurance?: string;
+  preferredLanguage?: string;
+}
+
 @Injectable()
 export class SearchService {
   private cache = new NodeCache({ stdTTL: 300 }); // Cache for 5 minutes
@@ -10,12 +16,12 @@ export class SearchService {
    * Searches for providers with a "Best Match" AI-driven scoring model.
    * Priority: Distance -> Specialty Match -> Insurance Match -> Language Match
    */
-  async searchProviders(lat: number, lon: number, radius: number, filters: any) {
+  async searchProviders(lat: number, lon: number, radius: number, filters: SearchFilters) {
     const cacheKey = JSON.stringify({ lat, lon, radius, filters });
     const cachedResult = this.cache.get(cacheKey);
     if (cachedResult) return cachedResult;
 
-    const query: any = {
+    const query: Record<string, unknown> = {
       bool: {
         must: [
           {
@@ -25,20 +31,22 @@ export class SearchService {
             },
           },
         ],
-        should: [], // Boosting filters
-      },
+        should: [] as unknown[], // Boosting filters
+      } as Record<string, unknown>,
     };
+
+    const boolQuery = query.bool as Record<string, unknown[]>;
 
     // 1. Specialty Boost (High Priority)
     if (filters.specialty) {
-      query.bool.must.push({
+      boolQuery.must.push({
         match: { specialties: filters.specialty }
       });
     }
 
     // 2. Insurance Boost (Medium Priority)
     if (filters.insurance) {
-      query.bool.should.push({
+      boolQuery.should.push({
         match: {
           insurance: {
             query: filters.insurance,
@@ -50,7 +58,7 @@ export class SearchService {
 
     // 3. Language Boost (Lower Priority)
     if (filters.preferredLanguage) {
-      query.bool.should.push({
+      boolQuery.should.push({
         match: {
           languages: {
             query: filters.preferredLanguage,
@@ -61,7 +69,7 @@ export class SearchService {
     }
 
     // 4. Verification Tier Boost (Trust Signal)
-    query.bool.should.push({
+    boolQuery.should.push({
       range: {
         verification_tier: {
           gte: 2,
@@ -90,7 +98,7 @@ export class SearchService {
       },
     });
 
-    const result = response.hits.hits.map((hit: any) => ({
+    const result = (response.hits.hits as { _id: string; _score: number; _source: Record<string, unknown> }[]).map((hit) => ({
       id: hit._id,
       score: hit._score,
       ...hit._source,

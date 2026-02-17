@@ -1,13 +1,14 @@
 import { Controller, Get, Patch, Param, Body, NotFoundException, UseGuards, Request, ForbiddenException } from '@nestjs/common';
 import { AppDataSource, Provider, VerificationRecord, VerificationStatus, Review } from '@careequity/db';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { AuthenticatedRequest } from '../types/request.interface';
 
 @Controller('admin')
 export class AdminController {
   
   @Get('verifications/pending')
   @UseGuards(JwtAuthGuard)
-  async getPendingVerifications(@Request() req: any) {
+  async getPendingVerifications(@Request() req: AuthenticatedRequest) {
     if (req.user.role !== 'admin') throw new ForbiddenException('Admin access required');
     
     const repo = AppDataSource.getRepository(VerificationRecord);
@@ -19,7 +20,7 @@ export class AdminController {
 
   @Get('reviews/flagged')
   @UseGuards(JwtAuthGuard)
-  async getFlaggedReviews(@Request() req: any) {
+  async getFlaggedReviews(@Request() req: AuthenticatedRequest) {
     if (req.user.role !== 'admin') throw new ForbiddenException('Admin access required');
 
     const repo = AppDataSource.getRepository(Review);
@@ -31,7 +32,7 @@ export class AdminController {
   async moderateReview(
     @Param('id') id: string,
     @Body() body: { action: 'publish' | 'delete' },
-    @Request() req: any
+    @Request() req: AuthenticatedRequest
   ) {
     if (req.user.role !== 'admin') throw new ForbiddenException('Admin access required');
 
@@ -54,7 +55,7 @@ export class AdminController {
   async verifyProvider(
     @Param('id') id: string,
     @Body() body: { tier: number; status: string; notes: string },
-    @Request() req: any
+    @Request() req: AuthenticatedRequest
   ) {
     if (req.user.role !== 'admin') {
       throw new ForbiddenException('Admin access required');

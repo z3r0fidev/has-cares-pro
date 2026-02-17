@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Review, AppDataSource } from '@careequity/db';
+import { Review, AppDataSource, Provider } from '@careequity/db';
 import { Redactor, AIModerator } from '@careequity/core';
 
 @Injectable()
@@ -23,7 +23,7 @@ export class ReviewService {
 
     const review = repo.create({
       ...reviewData,
-      provider: { id: providerId } as any,
+      provider: { id: providerId } as Provider,
       status: (containsPHI || isToxic) ? 'flagged' : 'pending' 
     });
     
