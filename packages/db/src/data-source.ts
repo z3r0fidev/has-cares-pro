@@ -5,6 +5,7 @@ import { Provider } from './entities/Provider';
 import { User } from './entities/User';
 import { Review } from './entities/Review';
 import { VerificationRecord } from './entities/VerificationRecord';
+import { AnalyticsEvent } from './entities/AnalyticsEvent';
 
 dotenv.config();
 
@@ -17,7 +18,7 @@ export const AppDataSource = new DataSource({
   database: process.env.POSTGRES_DB || 'careequity',
   synchronize: false,
   logging: process.env.NODE_ENV === 'development',
-  entities: [Provider, User, Review, VerificationRecord],
+  entities: [Provider, User, Review, VerificationRecord, AnalyticsEvent],
   migrations: [__dirname + '/migrations/*.ts'],
   subscribers: [],
 });

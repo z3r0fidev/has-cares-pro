@@ -13,7 +13,7 @@ export class VerificationRecord {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @ManyToOne(() => Provider, provider => provider.id)
+  @ManyToOne(() => Provider, provider => provider.id, { eager: true })
   provider!: Provider;
 
   @Column({
