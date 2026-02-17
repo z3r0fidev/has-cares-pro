@@ -6,7 +6,7 @@ import { ClaimService } from '../services/claim.service';
 import { ImageScraperService } from '../services/image-scraper.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { AppDataSource, Provider } from '@careequity/db';
-import { esClient, INDEX_NAME } from '@careequity/core';
+import { esClient, INDEX_NAME } from '@careequity/core/src/search/client';
 
 @Controller('providers')
 export class ProviderController {
@@ -38,6 +38,17 @@ export class ProviderController {
     );
   }
 
+  @Get('profile')
+  @UseGuards(JwtAuthGuard)
+  async getProfile(@Request() req: any) {
+    if (!req.user.providerId) {
+      throw new NotFoundException('No provider profile associated with this user');
+    }
+    const provider = await this.providerService.findOne(req.user.providerId);
+    if (!provider) throw new NotFoundException();
+    return provider;
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const provider = await this.providerService.findOne(id);
@@ -63,10 +74,18 @@ export class ProviderController {
     await repo.save(provider);
 
     if (shouldScrape) {
-      // Fire and forget scrape to not block the response
       this.scraperService.scrapeAndStore(id, updateData.website_url).catch(err => 
         console.error(`Automated scraping failed for ${id}:`, err.message)
       );
+    }
+
+    // Extract lat/lon from the GeoJSON object for ES
+    let esLocation = null;
+    if (provider.location && provider.location.coordinates) {
+      esLocation = {
+        lon: provider.location.coordinates[0],
+        lat: provider.location.coordinates[1]
+      };
     }
 
     // Sync to ES
@@ -78,7 +97,7 @@ export class ProviderController {
         name: provider.name,
         specialties: provider.specialties,
         languages: provider.languages,
-        location: provider.location, // Keep existing location
+        location: esLocation, // Correctly formatted for ES geo_point
         address: provider.address,
         insurance: provider.insurance,
         verification_tier: provider.verification_tier,
