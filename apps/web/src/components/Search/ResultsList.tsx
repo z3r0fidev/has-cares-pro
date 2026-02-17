@@ -26,12 +26,12 @@ export default function ResultsList({ providers }: ResultsListProps) {
 
   return (
     <div className="grid gap-6">
-      {providers.map((provider) => {
+      {providers.map((provider, index) => {
         const fullAddress = `${provider.address.street}, ${provider.address.city}, ${provider.address.state} ${provider.address.zip}`;
         const mapUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(fullAddress)}`;
         
         return (
-          <div key={provider.id} className="p-6 border rounded-lg shadow-sm bg-card hover:shadow-md transition-shadow flex gap-6">
+          <div key={`${provider.id}-${index}`} className="p-6 border rounded-lg shadow-sm bg-card hover:shadow-md transition-shadow flex gap-6">
             {/* Profile Picture Placeholder */}
             <div className="w-20 h-20 rounded-full bg-muted flex-shrink-0 overflow-hidden border">
               {provider.profile_image_url ? (
