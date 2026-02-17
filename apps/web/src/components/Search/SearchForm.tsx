@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { SPECIALTIES } from '@careequity/core';
+import { SPECIALTIES } from '@careequity/core/src/types/index';
 
 interface SearchFormProps {
   onSearch: (filters: { zip: string; specialty: string }) => void;

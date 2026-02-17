@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { esClient, INDEX_NAME, providerMapping } from '@careequity/core/src/search/client';
+import { esClient, INDEX_NAME, providerMapping } from '@careequity/core';
 
 export function searchCommand(program: Command) {
   const search = program.command('search').description('Search related commands');

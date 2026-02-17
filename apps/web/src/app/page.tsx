@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SearchForm from "../components/Search/SearchForm";
 import ResultsList from "../components/Search/ResultsList";
 import { Button } from "@careequity/ui";
@@ -8,6 +8,15 @@ import { Button } from "@careequity/ui";
 export default function Home() {
   const [providers, setProviders] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [apiUrl, setApiUrl] = useState('http://localhost:3001');
+
+  useEffect(() => {
+    // Set API URL based on current hostname to prevent "Failed to fetch" on different networks
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname;
+      setApiUrl(`http://${hostname}:3001`);
+    }
+  }, []);
 
   const handleSearch = async (filters: { zip: string; specialty: string }) => {
     setLoading(true);
@@ -16,12 +25,12 @@ export default function Home() {
       const lat = 40.7128; 
       const lon = -74.0060;
       
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-      const res = await fetch(`${API_URL}/providers?lat=${lat}&lon=${lon}&specialty=${filters.specialty}`);
+      const res = await fetch(`${apiUrl}/providers?lat=${lat}&lon=${lon}&specialty=${filters.specialty}`);
       const data = await res.json();
       setProviders(data);
     } catch (error) {
       console.error("Failed to fetch providers", error);
+      alert("Failed to connect to the API. Please ensure the backend is running on port 3001.");
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
 import { AppDataSource, User } from '@careequity/db';
-import { AuthUtils } from '@careequity/core/src/utils/auth';
+import { AuthUtils } from '@careequity/core';
 
 @Injectable()
 export class AuthService {

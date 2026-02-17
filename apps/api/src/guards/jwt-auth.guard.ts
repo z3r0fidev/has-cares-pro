@@ -1,5 +1,5 @@
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
-import { AuthUtils } from '@careequity/core/src/utils/auth';
+import { AuthUtils } from '@careequity/core';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
