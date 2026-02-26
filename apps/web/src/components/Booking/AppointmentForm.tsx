@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from "@careequity/ui";
+import { toast } from "sonner";
 
 interface AppointmentFormProps {
   providerId: string;
@@ -32,10 +33,10 @@ export default function AppointmentForm({ providerId, onSuccess }: AppointmentFo
       });
 
       if (res.ok) {
-        alert("Appointment request sent! The physician will confirm shortly.");
+        toast.success("Appointment request sent! The physician will confirm shortly.");
         onSuccess();
       } else {
-        alert("Booking failed. Please ensure you are logged in.");
+        toast.error("Booking failed. Please ensure you are logged in.");
       }
     } catch (error) {
       console.error("Booking error", error);

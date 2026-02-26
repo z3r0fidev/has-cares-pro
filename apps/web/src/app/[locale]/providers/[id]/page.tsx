@@ -7,6 +7,7 @@ import AppointmentForm from '../../../../components/Booking/AppointmentForm';
 import ReviewForm from '../../../../components/Reviews/ReviewForm';
 import VerificationBadge from '../../../../components/Provider/Badge';
 import { Heart } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function ProviderProfile() {
   const { id } = useParams();
@@ -79,7 +80,7 @@ export default function ProviderProfile() {
       },
       body: JSON.stringify(review),
     });
-    alert("Review submitted for moderation.");
+    toast.info("Review submitted for moderation. Thank you!");
   };
 
   if (!provider) return <p className="p-8">Loading profile...</p>;
