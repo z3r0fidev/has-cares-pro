@@ -1,18 +1,34 @@
 {
   "Home": {
     "title": "ابحث عن طبيب",
+    "heroTitle": "ابحث عن طبيب يفهمك",
+    "heroSubtitle": "ابحث حسب الموقع أو التخصص أو التأمين",
     "subtitle": "نقوم بتوصيلك بالرعاية المختصة ثقافياً.",
-    "search": "البحث عن مزودي الخدمة",
+    "search": "بحث",
     "loading": "جارٍ البحث عن مزودي الخدمة...",
     "noResults": "لم يتم العثور على أطباء يطابقون معاييرك.",
-    "statusCheck": "التحقق من حالة النظام"
+    "statusCheck": "التحقق من حالة النظام",
+    "addInsurance": "أضف تأمينك",
+    "resultsCount": "{count} طبيب متاح",
+    "sortLabel": "ترتيب حسب",
+    "sortBestMatch": "الأنسب",
+    "sortDistance": "المسافة",
+    "sortRating": "التقييم",
+    "sortNextAvailable": "الأقرب موعداً"
   },
   "Search": {
     "zip": "الرمز البريدي",
     "specialty": "التخصص",
     "insurance": "التأمين",
     "allSpecialties": "جميع التخصصات",
-    "allInsurance": "جميع أنواع التأمين"
+    "allInsurance": "جميع أنواع التأمين",
+    "locationPlaceholder": "المدينة أو الولاية أو الرمز البريدي",
+    "searchButton": "بحث"
+  },
+  "Booking": {
+    "appointmentSuccess": "تم إرسال طلب الموعد! سنؤكد قريباً.",
+    "appointmentError": "فشل الحجز. يرجى المحاولة مرة أخرى.",
+    "reviewSuccess": "تم إرسال المراجعة للمراجعة. شكراً!"
   },
   "Dashboard": {
     "title": "لوحة تحكم مزود الخدمة",

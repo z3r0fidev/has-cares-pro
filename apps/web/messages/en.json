@@ -1,18 +1,34 @@
 {
   "Home": {
     "title": "Find a Physician",
+    "heroTitle": "Find a doctor who gets you",
+    "heroSubtitle": "Search by location, specialty, or insurance",
     "subtitle": "Connecting you with culturally competent care.",
-    "search": "Search Providers",
+    "search": "Search",
     "loading": "Searching providers...",
     "noResults": "No physicians found matching your criteria.",
-    "statusCheck": "System Status Check"
+    "statusCheck": "System Status Check",
+    "addInsurance": "Add your insurance",
+    "resultsCount": "{count} doctors available",
+    "sortLabel": "Sort by",
+    "sortBestMatch": "Best Match",
+    "sortDistance": "Distance",
+    "sortRating": "Rating",
+    "sortNextAvailable": "Next Available"
   },
   "Search": {
     "zip": "ZIP Code",
     "specialty": "Specialty",
     "insurance": "Insurance",
     "allSpecialties": "All Specialties",
-    "allInsurance": "All Insurance"
+    "allInsurance": "All Insurance",
+    "locationPlaceholder": "City, state or zip code",
+    "searchButton": "Search"
+  },
+  "Booking": {
+    "appointmentSuccess": "Appointment request sent! We'll confirm shortly.",
+    "appointmentError": "Booking failed. Please try again.",
+    "reviewSuccess": "Review submitted for moderation. Thank you!"
   },
   "Dashboard": {
     "title": "Provider Dashboard",

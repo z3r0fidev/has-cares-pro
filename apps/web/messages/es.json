@@ -1,18 +1,34 @@
 {
   "Home": {
     "title": "Buscar un Médico",
+    "heroTitle": "Encuentra un médico que te entienda",
+    "heroSubtitle": "Busca por ubicación, especialidad o seguro médico",
     "subtitle": "Conectándote con atención culturalmente competente.",
-    "search": "Buscar Proveedores",
+    "search": "Buscar",
     "loading": "Buscando proveedores...",
     "noResults": "No se encontraron médicos que coincidan con sus criterios.",
-    "statusCheck": "Verificación del estado del sistema"
+    "statusCheck": "Verificación del estado del sistema",
+    "addInsurance": "Agrega tu seguro",
+    "resultsCount": "{count} médicos disponibles",
+    "sortLabel": "Ordenar por",
+    "sortBestMatch": "Mejor coincidencia",
+    "sortDistance": "Distancia",
+    "sortRating": "Calificación",
+    "sortNextAvailable": "Próxima disponibilidad"
   },
   "Search": {
     "zip": "Código ZIP",
     "specialty": "Especialidad",
     "insurance": "Seguro",
     "allSpecialties": "Todas las especialidades",
-    "allInsurance": "Todos los seguros"
+    "allInsurance": "Todos los seguros",
+    "locationPlaceholder": "Ciudad, estado o código postal",
+    "searchButton": "Buscar"
+  },
+  "Booking": {
+    "appointmentSuccess": "¡Solicitud de cita enviada! Lo confirmaremos pronto.",
+    "appointmentError": "Error al reservar. Por favor, inténtalo de nuevo.",
+    "reviewSuccess": "Reseña enviada para moderación. ¡Gracias!"
   },
   "Dashboard": {
     "title": "Panel del Proveedor",
