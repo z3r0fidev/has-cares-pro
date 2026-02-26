@@ -1,45 +1,118 @@
 # CareEquity - Minority Physician Locator
 
 ## Project Overview
-CareEquity enables users to locate, evaluate, and connect with reputable minority physicians and healthcare practices.
+CareEquity enables users to locate, evaluate, and connect with reputable minority physicians and healthcare practices. It features a ZocDoc-inspired design system with gold branding, provider search cards, real-time availability, and multi-language support (EN / ES / AR).
 
 ## Tech Stack
-- **API**: NestJS (Node.js)
-- **Web**: Next.js (React)
-- **Mobile**: React Native
-- **Database**: PostgreSQL
-- **Search**: Elasticsearch
-- **Monorepo**: npm workspaces
+| Layer | Technology |
+|---|---|
+| **API** | NestJS (Node.js 20+) — port 3001 |
+| **Web** | Next.js 16 + Turbopack + next-intl — port 3000 |
+| **Mobile** | React Native / Expo |
+| **Database** | PostgreSQL + PostGIS |
+| **Search** | Elasticsearch |
+| **UI** | shadcn/ui + Tailwind CSS |
+| **Monorepo** | npm workspaces |
 
 ## Getting Started
 
-1. **Install Dependencies**
-   ```bash
-   npm install
-   ```
+### 1. Install Dependencies
+```bash
+npm install
+```
 
-2. **Start Infrastructure (Databases & Search)**
-   ```bash
-   docker-compose up -d postgres elasticsearch
-   ```
+### 2. Start Infrastructure
+```bash
+docker-compose up -d postgres elasticsearch
+```
 
-3. **Start Full Stack (API & Web)**
-   ```bash
-   # Build and start all services (API, Web, DB, Search)
-   docker-compose up --build
-   ```
+### 3. Run Database Migrations
+```bash
+npm run migration:run --workspace=packages/db
+```
 
-## Development
+### 4. Start Development Servers
+```bash
+# API (port 3001)
+npm run start:dev --workspace=apps/api
 
-- **Run API**: `npm run start:dev --workspace=apps/api`
-- **Run Web App**: `npm run dev --workspace=apps/web`
-- **Run Mobile**: `cd apps/mobile && npm run start` (Requires Expo)
-- **Lint**: `npm run lint`
-- **Build**: `npm run build`
+# Web (port 3000)
+npm run dev --workspace=apps/web
+
+# Mobile (Expo)
+cd apps/mobile && npm run start
+```
+
+### 5. Full Stack (Docker)
+```bash
+docker-compose up --build
+```
+
+## Development Commands
+
+| Command | Description |
+|---|---|
+| `npm run build` | Build all packages (TypeScript project references) |
+| `npm run lint` | ESLint across entire monorepo |
+| `npm run format` | Prettier format |
+| `npm test` | Jest unit + integration tests |
+| `npm run db:migrate` | Run TypeORM migrations |
 
 ## CLI Tools
-Use the CLI for ingestion and verification:
+
 ```bash
-npx careequity ingest --location "New York, NY"
-npx careequity verify --provider-id <ID> --tier 2 --status approved
+# Ingest providers from NPI registry
+node packages/cli/dist/index.js ingest --location "New York, NY" --limit 1000
+
+# Verify a provider
+node packages/cli/dist/index.js verify --provider-id <UUID> --tier 2 --status approved
+
+# Search providers
+node packages/cli/dist/index.js search --location "New York, NY"
 ```
+
+## Project Structure
+
+```
+apps/
+  api/       NestJS REST API (port 3001)
+  web/       Next.js frontend (port 3000)
+  mobile/    React Native / Expo
+packages/
+  core/      Shared business logic, types, ES client
+  db/        TypeORM entities + migrations
+  cli/       Commander CLI for ingestion & admin
+  ui/        Shared React components (shadcn-style)
+specs/       Feature specs, data model, API contracts
+tests/
+  contract/  Contract tests for all API endpoints
+```
+
+## UI Design System
+
+The web app uses a ZocDoc-inspired design system:
+
+- **Brand gold**: `#F5BE00` (`--primary` CSS token)
+- **Components**: shadcn/ui (Button, Card, Badge, Dialog, Select, Skeleton, Toaster)
+- **Custom components**: `ProviderSearchCard`, `HeroBanner`, `HorizontalSearchBar`, `StarRating`, `ProviderCardSkeleton`
+
+## Verification Tiers
+
+| Tier | Name | Description |
+|---|---|---|
+| 1 | Professional | NPI license check |
+| 2 | Identity | Identity verification |
+| 3 | Practice | Practice verification |
+
+## Internationalization
+
+Routes are locale-prefixed: `/en/`, `/es/`, `/ar/`. Message files live in `apps/web/messages/`.
+
+## Environment Variables
+
+| Variable | Default | Description |
+|---|---|---|
+| `POSTGRES_HOST` | `localhost` | PostgreSQL host |
+| `ELASTICSEARCH_NODE` | `http://localhost:9200` | Elasticsearch URL |
+| `JWT_SECRET` | `careequity-dev-secret` | JWT signing secret |
+| `PORT` | `3001` | API port |
