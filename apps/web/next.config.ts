@@ -6,6 +6,13 @@ const withNextIntl = createNextIntlPlugin(
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // next-intl plugin uses the old experimental.turbo.resolveAlias API;
+  // Next.js 16 renamed this to turbopack.resolveAlias.
+  turbopack: {
+    resolveAlias: {
+      'next-intl/config': './src/i18n/request.ts',
+    },
+  },
 };
 
 export default withNextIntl(nextConfig);
