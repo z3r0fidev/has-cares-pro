@@ -29,3 +29,11 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+
+# Design reference screenshots (local only)
+*.jpeg
+*.jpg
+*.png
+careequity-*.png
+ce-*.png
+Screenshot_*.jpeg
