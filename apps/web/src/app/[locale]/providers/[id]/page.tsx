@@ -4,45 +4,56 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Provider, Review } from '@careequity/core';
 import AppointmentForm from '../../../../components/Booking/AppointmentForm';
+import InlineAvailabilityGrid from '../../../../components/Booking/InlineAvailabilityGrid';
 import ReviewForm from '../../../../components/Reviews/ReviewForm';
 import VerificationBadge from '../../../../components/Provider/Badge';
-import { Heart } from 'lucide-react';
+import StarRating from '../../../../components/Provider/StarRating';
+import { Heart, MapPin, Globe, Phone, ExternalLink, Video } from 'lucide-react';
 import { toast } from 'sonner';
+
+function avgRating(reviews: Review[]): number {
+  if (!reviews.length) return 0;
+  return reviews.reduce((sum, r) => sum + r.rating_total, 0) / reviews.length;
+}
+
+const DAY_ORDER = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+const DAY_LABEL: Record<string, string> = {
+  monday: 'Mon', tuesday: 'Tue', wednesday: 'Wed',
+  thursday: 'Thu', friday: 'Fri', saturday: 'Sat', sunday: 'Sun',
+};
 
 export default function ProviderProfile() {
   const { id } = useParams();
+  const router = useRouter();
   const [provider, setProvider] = useState<Provider | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [isSaved, setIsSaved] = useState(false);
-  const router = useRouter();
+  const [selectedSlot, setSelectedSlot] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     if (!id) return;
     const hostname = window.location.hostname;
     const API_URL = `http://${hostname}:3001`;
 
-    // Fetch Provider
     fetch(`${API_URL}/providers/${id}`)
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(setProvider);
 
-    // Fetch Reviews
     fetch(`${API_URL}/providers/${id}/reviews`)
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(setReviews);
 
-    // Check if saved
     const token = localStorage.getItem('token');
     if (token) {
       fetch(`${API_URL}/booking/saved`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       })
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) {
-          setIsSaved(data.some((s: { provider: { id: string } }) => s.provider.id === id));
-        }
-      });
+        .then((res) => res.json())
+        .then((data) => {
+          if (Array.isArray(data)) {
+            setIsSaved(data.some((s: { provider: { id: string } }) => s.provider.id === id));
+          }
+        });
     }
   }, [id]);
 
@@ -52,18 +63,16 @@ export default function ProviderProfile() {
       router.push('/login');
       return;
     }
-
     const hostname = window.location.hostname;
     const API_URL = `http://${hostname}:3001`;
-
     const res = await fetch(`${API_URL}/booking/save/${id}`, {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` },
     });
-
     if (res.ok) {
       const data = await res.json();
       setIsSaved(data.saved);
+      toast.success(data.saved ? 'Provider saved to your care team.' : 'Removed from care team.');
     }
   };
 
@@ -71,99 +80,295 @@ export default function ProviderProfile() {
     const hostname = window.location.hostname;
     const API_URL = `http://${hostname}:3001`;
     const token = localStorage.getItem('token');
-
     await fetch(`${API_URL}/providers/${id}/reviews`, {
       method: 'POST',
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: JSON.stringify(review),
     });
-    toast.info("Review submitted for moderation. Thank you!");
+    toast.info('Review submitted for moderation. Thank you!');
   };
 
-  if (!provider) return <p className="p-8">Loading profile...</p>;
+  if (!provider) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="animate-pulse text-slate-400">Loading profile…</div>
+      </div>
+    );
+  }
+
+  const rating = avgRating(reviews);
+  const insuranceList = provider.insurance
+    ? provider.insurance.split(',').map((s) => s.trim()).filter(Boolean)
+    : [];
 
   return (
-    <div className="container mx-auto p-8 max-w-5xl">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="md:col-span-2 space-y-8">
-          <section className="flex gap-6 items-start">
-            <div className="w-32 h-32 rounded-full overflow-hidden border bg-slate-100 flex-shrink-0">
-              <img src={provider.profile_image_url} alt={provider.name} className="w-full h-full object-cover" />
-            </div>
-            <div className="flex-grow">
-              <div className="flex justify-between items-start">
-                <h1 className="text-4xl font-bold text-slate-900">{provider.name}</h1>
-                <button 
-                  onClick={handleToggleSave}
-                  className={`p-2 rounded-full border transition-colors ${isSaved ? 'bg-red-50 border-red-200 text-red-500' : 'bg-white text-slate-400 hover:bg-slate-50'}`}
-                >
-                  <Heart className={`w-6 h-6 ${isSaved ? 'fill-current' : ''}`} />
-                </button>
-              </div>
-              <p className="text-xl text-slate-500 font-medium mt-1">{provider.specialties?.join(', ')}</p>
-              <div className="mt-4">
-                <VerificationBadge tier={provider.verification_tier} />
-              </div>
-            </div>
-          </section>
-
-          <section className="border-t pt-8">
-            <h2 className="text-2xl font-bold mb-4">About the Practice</h2>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="p-4 bg-slate-50 rounded-lg">
-                <p className="font-bold text-slate-400 uppercase text-xs mb-1">Location</p>
-                <p>{provider.address?.street}</p>
-                <p>{provider.address?.city}, {provider.address?.state} {provider.address?.zip}</p>
-              </div>
-              <div className="p-4 bg-slate-50 rounded-lg">
-                <p className="font-bold text-slate-400 uppercase text-xs mb-1">Languages</p>
-                <p>{provider.languages?.join(', ')}</p>
-              </div>
-            </div>
-          </section>
-
-          <section className="border-t pt-8">
-            <h2 className="text-2xl font-bold mb-6">Patient Reviews</h2>
-            <div className="space-y-6">
-              {reviews.length === 0 ? <p className="text-slate-400 italic">No reviews yet. Be the first to share your experience!</p> : (
-                reviews.map(r => (
-                  <div key={r.id} className="p-4 border rounded-lg">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="flex text-yellow-400">
-                        {Array.from({length: 5}).map((_, i) => (
-                          <span key={i}>{i < r.rating_total ? '★' : '☆'}</span>
-                        ))}
-                      </div>
-                      <span className="text-sm text-slate-400 font-medium">Verified Patient</span>
-                    </div>
-                    <p className="text-slate-700">{r.content}</p>
-                  </div>
-                ))
+    <div className="min-h-screen bg-slate-50">
+      {/* ── Hero Header ── */}
+      <div className="bg-white border-b">
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <div className="flex gap-6 items-start">
+            {/* Avatar */}
+            <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-slate-100 bg-slate-100 flex-shrink-0 shadow-sm">
+              {provider.profile_image_url ? (
+                <img
+                  src={provider.profile_image_url}
+                  alt={provider.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-slate-400">
+                  {provider.name.charAt(0)}
+                </div>
               )}
             </div>
-            <div className="mt-8">
-              <ReviewForm onSubmit={handleReviewSubmit} />
-            </div>
-          </section>
-        </div>
 
-        <div className="space-y-8">
-          <AppointmentForm providerId={id as string} onSuccess={() => {}} />
-          
-          <section className="p-4 border rounded-lg bg-white shadow-sm">
-            <h3 className="font-bold mb-3">Practice Hours</h3>
-            <div className="space-y-2 text-sm">
-              {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(day => (
-                <div key={day} className="flex justify-between">
-                  <span className="text-slate-500">{day}</span>
-                  <span className="font-medium">{provider.availability?.[day.toLowerCase() as keyof typeof provider.availability] || '9:00 AM - 5:00 PM'}</span>
+            {/* Name / meta */}
+            <div className="flex-grow min-w-0">
+              <div className="flex justify-between items-start gap-4">
+                <div>
+                  <h1 className="text-3xl font-bold text-slate-900 leading-tight">
+                    {provider.name}
+                  </h1>
+                  <p className="text-base text-slate-500 mt-0.5">
+                    {provider.credentials?.join(', ')}
+                  </p>
+                  <p className="text-sm text-slate-600 mt-1">
+                    {provider.specialties?.join(' · ')}
+                  </p>
                 </div>
-              ))}
+
+                <button
+                  onClick={handleToggleSave}
+                  aria-label={isSaved ? 'Remove from care team' : 'Save to care team'}
+                  className={`flex-shrink-0 p-2.5 rounded-full border-2 transition-colors ${
+                    isSaved
+                      ? 'bg-red-50 border-red-200 text-red-500'
+                      : 'bg-white border-slate-200 text-slate-400 hover:border-red-200 hover:text-red-400'
+                  }`}
+                >
+                  <Heart className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`} />
+                </button>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 mt-3">
+                <VerificationBadge tier={provider.verification_tier} />
+
+                {reviews.length > 0 && (
+                  <StarRating rating={rating} count={reviews.length} size="sm" />
+                )}
+
+                {provider.address && (
+                  <span className="flex items-center gap-1 text-xs text-slate-500">
+                    <MapPin className="w-3 h-3" />
+                    {provider.address.city}, {provider.address.state}
+                  </span>
+                )}
+
+                {provider.telehealth_url && (
+                  <span className="flex items-center gap-1 text-xs text-[#1A73E8] font-medium">
+                    <Video className="w-3 h-3" />
+                    Telehealth Available
+                  </span>
+                )}
+              </div>
             </div>
-          </section>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Body ── */}
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+          {/* ── Left / Main Column ── */}
+          <div className="lg:col-span-2 space-y-8">
+
+            {/* About */}
+            <section className="bg-white rounded-xl border p-6">
+              <h2 className="text-lg font-semibold text-slate-800 mb-4">About the Practice</h2>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="space-y-1">
+                  <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
+                    Address
+                  </p>
+                  <p className="text-slate-700">{provider.address?.street}</p>
+                  <p className="text-slate-700">
+                    {provider.address?.city}, {provider.address?.state}{' '}
+                    {provider.address?.zip}
+                  </p>
+                </div>
+
+                <div className="space-y-1">
+                  <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
+                    Languages
+                  </p>
+                  <p className="text-slate-700">{provider.languages?.join(', ')}</p>
+                </div>
+
+                {provider.identity_tags?.length > 0 && (
+                  <div className="space-y-1 col-span-2">
+                    <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
+                      Identity
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {provider.identity_tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="text-xs px-2 py-0.5 bg-primary/10 text-slate-700 rounded-full border border-primary/20"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {(provider.website_url || provider.telehealth_url) && (
+                  <div className="space-y-2 col-span-2">
+                    <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
+                      Links
+                    </p>
+                    <div className="flex flex-wrap gap-4">
+                      {provider.website_url && (
+                        <a
+                          href={provider.website_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-sm text-[#1A73E8] hover:underline"
+                        >
+                          <Globe className="w-3.5 h-3.5" />
+                          Practice Website
+                          <ExternalLink className="w-3 h-3 opacity-60" />
+                        </a>
+                      )}
+                      {provider.telehealth_url && (
+                        <a
+                          href={provider.telehealth_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-sm text-[#1A73E8] hover:underline"
+                        >
+                          <Video className="w-3.5 h-3.5" />
+                          Telehealth Portal
+                          <ExternalLink className="w-3 h-3 opacity-60" />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </section>
+
+            {/* Insurance */}
+            {insuranceList.length > 0 && (
+              <section className="bg-white rounded-xl border p-6">
+                <h2 className="text-lg font-semibold text-slate-800 mb-3">
+                  Insurance Accepted
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {insuranceList.map((ins) => (
+                    <span
+                      key={ins}
+                      className="text-xs px-2.5 py-1 rounded-full border border-[#16A34A]/30 bg-[#16A34A]/5 text-[#16A34A] font-medium"
+                    >
+                      {ins}
+                    </span>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Reviews */}
+            <section className="bg-white rounded-xl border p-6">
+              <h2 className="text-lg font-semibold text-slate-800 mb-1">
+                Patient Reviews
+                {reviews.length > 0 && (
+                  <span className="ml-2 text-sm font-normal text-slate-400">
+                    ({reviews.length})
+                  </span>
+                )}
+              </h2>
+
+              {reviews.length > 0 && (
+                <div className="mb-4">
+                  <StarRating rating={rating} count={reviews.length} />
+                </div>
+              )}
+
+              <div className="space-y-4">
+                {reviews.length === 0 ? (
+                  <p className="text-sm text-slate-400 italic">
+                    No reviews yet — be the first to share your experience.
+                  </p>
+                ) : (
+                  reviews.map((r) => (
+                    <div key={r.id} className="p-4 border border-slate-100 rounded-lg bg-slate-50">
+                      <div className="flex items-center gap-2 mb-2">
+                        <StarRating rating={r.rating_total} size="sm" />
+                        <span className="text-xs text-slate-400 font-medium">Verified Patient</span>
+                      </div>
+                      <p className="text-sm text-slate-700 leading-relaxed">{r.content}</p>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-slate-100">
+                <ReviewForm onSubmit={handleReviewSubmit} />
+              </div>
+            </section>
+          </div>
+
+          {/* ── Right / Booking Sidebar ── */}
+          <div className="space-y-4">
+            <div className="bg-white rounded-xl border p-5 shadow-sm sticky top-4 space-y-5">
+              {/* Availability grid */}
+              <InlineAvailabilityGrid
+                availability={provider.availability}
+                onSlotSelect={setSelectedSlot}
+              />
+
+              <div className="border-t border-slate-100 pt-4">
+                <AppointmentForm
+                  providerId={id as string}
+                  onSuccess={() => setSelectedSlot(undefined)}
+                  defaultDateTime={selectedSlot}
+                />
+              </div>
+            </div>
+
+            {/* Practice hours */}
+            <div className="bg-white rounded-xl border p-5">
+              <h3 className="text-sm font-semibold text-slate-700 mb-3">Office Hours</h3>
+              <div className="space-y-2 text-sm">
+                {DAY_ORDER.map((day) => {
+                  const hours = provider.availability?.[day as keyof typeof provider.availability];
+                  return (
+                    <div key={day} className="flex justify-between items-center">
+                      <span className="text-slate-500 w-8">{DAY_LABEL[day]}</span>
+                      <span className={`font-medium ${hours ? 'text-slate-800' : 'text-slate-300'}`}>
+                        {hours ?? 'Closed'}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Phone */}
+            <div className="bg-white rounded-xl border p-5">
+              <button
+                onClick={() => toast.info('Contact information shown after login.')}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border-2 border-primary text-primary font-semibold text-sm hover:bg-primary/5 transition-colors"
+              >
+                <Phone className="w-4 h-4" />
+                Show Phone Number
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -1,17 +1,22 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@careequity/ui";
 import { toast } from "sonner";
 
 interface AppointmentFormProps {
   providerId: string;
   onSuccess: () => void;
+  defaultDateTime?: string;
 }
 
-export default function AppointmentForm({ providerId, onSuccess }: AppointmentFormProps) {
-  const [date, setDate] = useState('');
+export default function AppointmentForm({ providerId, onSuccess, defaultDateTime }: AppointmentFormProps) {
+  const [date, setDate] = useState(defaultDateTime ? defaultDateTime.slice(0, 16) : '');
   const [reason, setReason] = useState('');
+
+  useEffect(() => {
+    if (defaultDateTime) setDate(defaultDateTime.slice(0, 16));
+  }, [defaultDateTime]);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
