@@ -1,106 +1,66 @@
 "use client";
 
-import Link from 'next/link';
-import { trackEvent, EventType } from '../../lib/analytics';
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import ProviderSearchCard, { ProviderCardData } from "../Provider/ProviderSearchCard";
+import { ProviderListSkeleton } from "../Provider/ProviderCardSkeleton";
+import ResultsHeader from "./ResultsHeader";
 
 interface ResultsListProps {
-  providers: Array<{
-    id: string;
-    name: string;
-    specialties: string[];
-    location: { lat: number; lon: number };
-    address: {
-      street: string;
-      city: string;
-      state: string;
-      zip: string;
-    };
-    verification_tier: number;
-    profile_image_url?: string;
-  }>;
+  providers: ProviderCardData[];
+  loading?: boolean;
+  location?: string;
 }
 
-export default function ResultsList({ providers }: ResultsListProps) {
-  if (!providers || providers.length === 0) {
-    return <p className="text-muted-foreground italic" role="status">No physicians found matching your criteria.</p>;
+function sortProviders(providers: ProviderCardData[], sort: string): ProviderCardData[] {
+  const sorted = [...providers];
+  switch (sort) {
+    case "rating":
+      return sorted.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+    case "distance":
+      return sorted.sort((a, b) => (a.distance ?? 999) - (b.distance ?? 999));
+    case "nextAvailable":
+      return sorted.sort((a, b) => {
+        if (!a.nextAvailable) return 1;
+        if (!b.nextAvailable) return -1;
+        return new Date(a.nextAvailable).getTime() - new Date(b.nextAvailable).getTime();
+      });
+    default:
+      return sorted;
+  }
+}
+
+export default function ResultsList({ providers, loading, location }: ResultsListProps) {
+  const t = useTranslations("Home");
+  const [sort, setSort] = useState("bestMatch");
+
+  if (loading) {
+    return <ProviderListSkeleton />;
   }
 
-  const handleLinkClick = (id: string, type: EventType) => {
-    trackEvent(id, type);
-  };
+  if (!providers || providers.length === 0) {
+    return (
+      <p className="text-muted-foreground italic py-8 text-center" role="status">
+        {t("noResults")}
+      </p>
+    );
+  }
+
+  const sorted = sortProviders(providers, sort);
 
   return (
-    <ul className="grid gap-6" role="list">
-      {providers.map((provider, index) => {
-        const fullAddress = `${provider.address.street}, ${provider.address.city}, ${provider.address.state} ${provider.address.zip}`;
-        const mapUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(fullAddress)}`;
-        
-        return (
-          <li key={`${provider.id}-${index}`} className="p-6 border rounded-lg shadow-sm bg-card hover:shadow-md transition-shadow flex gap-6">
-            {/* Profile Picture */}
-            <div className="w-20 h-20 rounded-full bg-muted flex-shrink-0 overflow-hidden border">
-              {provider.profile_image_url ? (
-                <img 
-                  src={provider.profile_image_url} 
-                  alt={`Professional headshot of ${provider.name}`} 
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-muted-foreground font-bold text-xl" aria-hidden="true">
-                  {provider.name.charAt(4)}
-                </div>
-              )}
-            </div>
-
-            <div className="flex-grow flex flex-col md:flex-row gap-6">
-              <div className="flex-grow">
-                <Link 
-                  href={`/providers/${provider.id}`}
-                  onClick={() => handleLinkClick(provider.id, EventType.PROFILE_VIEW)}
-                  aria-label={`View full profile for ${provider.name}`}
-                >
-                  <h3 className="text-2xl font-bold hover:text-primary transition-colors cursor-pointer">
-                    {provider.name}
-                  </h3>
-                </Link>
-                <p className="text-lg font-medium text-muted-foreground">{provider.specialties.join(', ')}</p>
-                
-                <div className="mt-3">
-                  <span className={`px-2 py-1 rounded text-xs font-bold uppercase tracking-wide ${
-                    provider.verification_tier === 3 ? 'bg-green-100 text-green-900 border border-green-200' :
-                    provider.verification_tier === 2 ? 'bg-blue-100 text-blue-900 border border-blue-200' :
-                    'bg-slate-100 text-slate-900 border border-slate-200'
-                  }`}>
-                    Tier {provider.verification_tier} Verified
-                  </span>
-                </div>
-              </div>
-
-              {/* Clickable Map Link */}
-              <div className="w-full md:w-48 h-32 rounded border overflow-hidden relative group cursor-pointer bg-slate-100">
-                <a 
-                  href={mapUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  onClick={() => handleLinkClick(provider.id, EventType.DIRECTION_CLICK)}
-                  aria-label={`Get directions to ${provider.name}'s office at ${fullAddress}`}
-                  title="Open directions in Google Maps"
-                >
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                    <span className="bg-white/90 px-3 py-1 rounded text-xs font-bold shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
-                      Get Directions
-                    </span>
-                  </div>
-                  <div className="w-full h-full flex flex-col items-center justify-center p-2 text-center" aria-hidden="true">
-                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Map View</p>
-                    <p className="text-[9px] text-slate-400 mt-1 line-clamp-2">{fullAddress}</p>
-                  </div>
-                </a>
-              </div>
-            </div>
-          </li>
-        );
-      })}
-    </ul>
+    <div>
+      <ResultsHeader
+        count={providers.length}
+        location={location}
+        onSortChange={setSort}
+        currentSort={sort}
+      />
+      <ul className="space-y-4" role="list" aria-label="Search results">
+        {sorted.map((provider, index) => (
+          <ProviderSearchCard key={`${provider.id}-${index}`} provider={provider} />
+        ))}
+      </ul>
+    </div>
   );
 }
