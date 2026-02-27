@@ -13,6 +13,16 @@ const nextConfig = {
       'next-intl/config': './src/i18n/request.ts',
     },
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https' as const,
+        hostname: 'logo.clearbit.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
 };
 
 export default withNextIntl(nextConfig);

@@ -8,6 +8,7 @@ import InlineAvailabilityGrid from '../../../../components/Booking/InlineAvailab
 import ReviewForm from '../../../../components/Reviews/ReviewForm';
 import VerificationBadge from '../../../../components/Provider/Badge';
 import StarRating from '../../../../components/Provider/StarRating';
+import InsuranceLogo from '../../../../components/Insurance/InsuranceLogo';
 import { Heart, MapPin, Globe, Phone, ExternalLink, Video } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -272,8 +273,9 @@ export default function ProviderProfile() {
                   {insuranceList.map((ins) => (
                     <span
                       key={ins}
-                      className="text-xs px-2.5 py-1 rounded-full border border-[#16A34A]/30 bg-[#16A34A]/5 text-[#16A34A] font-medium"
+                      className="text-xs px-3 py-1.5 inline-flex items-center gap-1.5 rounded-full border border-[#16A34A]/30 bg-[#16A34A]/5 text-[#16A34A] font-medium"
                     >
+                      <InsuranceLogo name={ins} size={14} />
                       {ins}
                     </span>
                   ))}
