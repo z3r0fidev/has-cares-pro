@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { SearchX } from "lucide-react";
 import ProviderSearchCard, { ProviderCardData } from "../Provider/ProviderSearchCard";
 import { ProviderListSkeleton } from "../Provider/ProviderCardSkeleton";
 import ResultsHeader from "./ResultsHeader";
@@ -40,9 +41,15 @@ export default function ResultsList({ providers, loading, location }: ResultsLis
 
   if (!providers || providers.length === 0) {
     return (
-      <p className="text-muted-foreground italic py-8 text-center" role="status">
-        {t("noResults")}
-      </p>
+      <div className="flex flex-col items-center justify-center py-16 px-4 text-center" role="status">
+        <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mb-4">
+          <SearchX className="text-slate-400" size={28} aria-hidden="true" />
+        </div>
+        <h3 className="text-lg font-semibold text-slate-800 mb-1">{t("noResults")}</h3>
+        <p className="text-sm text-slate-500 max-w-sm">
+          Try expanding your search radius, removing a filter, or searching in a nearby city.
+        </p>
+      </div>
     );
   }
 

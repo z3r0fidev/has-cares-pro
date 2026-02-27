@@ -26,6 +26,7 @@ export default function Home() {
   const [hasSearched, setHasSearched] = useState(false);
   const [searchLocation, setSearchLocation] = useState('');
   const [selectedInsurance, setSelectedInsurance] = useState('');
+  const [lastSearchParams, setLastSearchParams] = useState<{ zip: string; specialty: string; insurance: string } | null>(null);
   const [apiUrl, setApiUrl] = useState('http://localhost:3001');
 
   useEffect(() => {
@@ -38,6 +39,7 @@ export default function Home() {
   const handleSearch = async (filters: { zip: string; specialty: string; insurance: string }) => {
     setLoading(true);
     setHasSearched(true);
+    setLastSearchParams(filters);
     if (filters.zip) setSearchLocation(filters.zip);
 
     try {
@@ -55,13 +57,18 @@ export default function Home() {
   };
 
   const handleInsuranceSelect = (insurance: string) => {
-    setSelectedInsurance(insurance);
+    const next = selectedInsurance === insurance ? '' : insurance;
+    setSelectedInsurance(next);
+    // Re-run the last search with the new insurance filter if results are already shown
+    if (lastSearchParams) {
+      handleSearch({ ...lastSearchParams, insurance: next });
+    }
   };
 
   return (
     <main>
       {/* Hero banner with insurance pills */}
-      <HeroBanner onInsuranceSelect={handleInsuranceSelect} />
+      <HeroBanner onInsuranceSelect={handleInsuranceSelect} selectedInsurance={selectedInsurance} />
 
       {/* Search bar */}
       <div className="container mx-auto max-w-4xl px-4 py-5">
