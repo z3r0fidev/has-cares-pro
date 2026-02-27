@@ -1,7 +1,18 @@
-# CareEquity - Minority Physician Locator
+# CareEquity — Minority Physician Locator
+
+> Connecting patients with minority and culturally competent physicians.
 
 ## Project Overview
+
 CareEquity enables users to locate, evaluate, and connect with reputable minority physicians and healthcare practices. It features a ZocDoc-inspired design system with gold branding, provider search cards, real-time availability, and multi-language support (EN / ES / AR).
+
+| Document | Description |
+|---|---|
+| [TODO.md](./TODO.md) | Open tasks, pre-merge checklist, and tech debt |
+| [ROADMAP.md](./ROADMAP.md) | Milestone plan and future feature development |
+| [specs/001-physician-locator/](./specs/001-physician-locator/) | Full feature spec, tasks, data model, API contracts |
+| [.env.example](./.env.example) | All required environment variables |
+| [specs/001-physician-locator/quickstart.md](./specs/001-physician-locator/quickstart.md) | Step-by-step local setup guide |
 
 ## Tech Stack
 | Layer | Technology |
@@ -110,9 +121,34 @@ Routes are locale-prefixed: `/en/`, `/es/`, `/ar/`. Message files live in `apps/
 
 ## Environment Variables
 
+Copy `.env.example` to `.env` and fill in your values:
+
+```bash
+cp .env.example .env
+```
+
 | Variable | Default | Description |
 |---|---|---|
 | `POSTGRES_HOST` | `localhost` | PostgreSQL host |
+| `POSTGRES_PORT` | `5432` | PostgreSQL port |
+| `POSTGRES_USER` | `admin` | PostgreSQL user |
+| `POSTGRES_PASSWORD` | `password` | PostgreSQL password |
+| `POSTGRES_DB` | `careequity` | PostgreSQL database name |
 | `ELASTICSEARCH_NODE` | `http://localhost:9200` | Elasticsearch URL |
+| `ELASTICSEARCH_USERNAME` | `elastic` | Elasticsearch user |
+| `ELASTICSEARCH_PASSWORD` | `changeme` | Elasticsearch password |
 | `JWT_SECRET` | `careequity-dev-secret` | JWT signing secret |
-| `PORT` | `3001` | API port |
+| `PORT` | `3001` | API server port |
+| `NODE_ENV` | `development` | Runtime environment |
+| `NEXT_PUBLIC_API_URL` | `http://localhost:3001` | API base URL for web app |
+| `SMTP_HOST` | — | SMTP host for email notifications (FR-009) |
+| `SMTP_PORT` | `587` | SMTP port |
+| `SMTP_USER` | — | SMTP auth username |
+| `SMTP_PASSWORD` | — | SMTP auth password |
+| `SMTP_FROM` | — | From address for notification emails |
+
+> SMTP variables are optional in development. The `NotificationService` skips email dispatch and logs a warning when they are absent.
+
+## Contributing
+
+See [TODO.md](./TODO.md) for the current task list and [ROADMAP.md](./ROADMAP.md) for the strategic development plan. All new features must follow the TDD approach defined in the project constitution — tests are written before implementation.
