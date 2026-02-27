@@ -1,4 +1,5 @@
 import { Module, OnModuleInit, Global } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 import { ProviderController } from './controllers/provider.controller';
 import { AdminController } from './controllers/admin.controller';
 import { AuthController } from './controllers/auth.controller';
@@ -12,11 +13,12 @@ import { AuthService } from './services/auth.service';
 import { ImageScraperService } from './services/image-scraper.service';
 import { AnalyticsService } from './services/analytics.service';
 import { BookingService } from './services/booking.service';
+import { NotificationService } from './services/notification.service';
 import { AppDataSource } from '@careequity/db';
 
 @Global()
 @Module({
-  imports: [],
+  imports: [ScheduleModule.forRoot()],
   controllers: [ProviderController, AdminController, AuthController, AnalyticsController, BookingController],
   providers: [
     SearchService,
@@ -26,7 +28,9 @@ import { AppDataSource } from '@careequity/db';
     AuthService,
     ImageScraperService,
     AnalyticsService,
-    BookingService,    {
+    BookingService,
+    NotificationService,
+    {
       provide: 'DATA_SOURCE',
       useFactory: async () => {
         if (!AppDataSource.isInitialized) {

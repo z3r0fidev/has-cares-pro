@@ -44,10 +44,10 @@ Use the CLI tool to ingest initial provider data from the NPI registry.
 npx our-care-cli ingest --location "New York, NY" --limit 1000
 ```
 
-### 3. Sync Search Index
-Synchronize the PostgreSQL data with the Elasticsearch index.
+### 3. Ingest Provider Data
+Use the CLI to ingest providers and automatically populate the Elasticsearch index.
 ```bash
-npm run search:sync
+node packages/cli/dist/index.js ingest --location "New York, NY" --limit 100
 ```
 
 ### 4. Start API (NestJS)
