@@ -1,0 +1,25 @@
+{
+  "name": "@careequity/cli",
+  "version": "0.0.1",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "careequity": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "inquirer": "^12.1.0",
+    "chalk": "^4.1.2",
+    "@careequity/core": "*",
+    "@careequity/db": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "@types/node": "^20.17.9"
+  }
+}

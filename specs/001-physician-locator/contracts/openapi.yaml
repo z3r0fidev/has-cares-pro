@@ -1,0 +1,183 @@
+openapi: 3.0.3
+info:
+  title: CareEquity API
+  description: API for the Minority Physician Locator Platform
+  version: 1.0.0
+servers:
+  - url: https://api.careequity.org/v1
+paths:
+  /providers:
+    get:
+      summary: Search for minority healthcare providers
+      parameters:
+        - name: lat
+          in: query
+          required: true
+          schema: { type: number }
+        - name: lon
+          in: query
+          required: true
+          schema: { type: number }
+        - name: radius
+          in: query
+          description: Search radius in miles
+          schema: { type: integer, default: 25 }
+        - name: specialty
+          in: query
+          schema: { type: string }
+        - name: language
+          in: query
+          schema: { type: string }
+        - name: insurance
+          in: query
+          schema: { type: string }
+        - name: telehealth
+          in: query
+          schema: { type: boolean }
+      responses:
+        '200':
+          description: List of matching providers
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Provider' }
+
+  /providers/{id}:
+    get:
+      summary: Get detailed provider profile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Provider profile
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Provider' }
+
+  /providers/{id}/claim:
+    post:
+      summary: Claim a provider profile
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                credentials_token: { type: string }
+      responses:
+        '202': { description: Claim request submitted for review }
+
+  /providers/{id}/reviews:
+    get:
+      summary: Get reviews for a provider
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: List of reviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Review' }
+    post:
+      summary: Submit a review for a provider
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ReviewInput' }
+      responses:
+        '201': { description: Review submitted for moderation }
+
+  /admin/verify/{id}:
+    patch:
+      summary: Update provider verification status
+      security:
+        - AdminAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tier: { type: integer, enum: [1, 2, 3] }
+                status: { type: string, enum: [approved, rejected] }
+                notes: { type: string }
+      responses:
+        '200': { description: Verification status updated }
+
+components:
+  schemas:
+    Provider:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        credentials: { type: array, items: { type: string } }
+        location:
+          type: object
+          properties:
+            lat: { type: number }
+            lon: { type: number }
+        address: { type: object }
+        verification_level: { type: integer }
+        is_claimed: { type: boolean }
+        identity_tags: { type: array, items: { type: string } }
+        telehealth_url: { type: string }
+        rating_avg: { type: number }
+
+    Review:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        patient_name: { type: string }
+        rating_total: { type: number }
+        content: { type: string }
+        created_at: { type: string, format: date-time }
+
+    ReviewInput:
+      type: object
+      required: [rating_total, content]
+      properties:
+        rating_total: { type: number, minimum: 1, maximum: 5 }
+        rating_wait_time: { type: integer, minimum: 1, maximum: 5 }
+        rating_bedside_manner: { type: integer, minimum: 1, maximum: 5 }
+        rating_cultural_sensitivity: { type: integer, minimum: 1, maximum: 5 }
+        content: { type: string }
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+    AdminAuth:
+      type: http
+      scheme: bearer

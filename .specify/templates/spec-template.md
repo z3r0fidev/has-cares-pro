@@ -5,6 +5,8 @@
 **Status**: Draft  
 **Input**: User description: "$ARGUMENTS"
 
+> **Note**: This specification is the single source of truth for the feature, as mandated by the project constitution (Principle III: SDD). No implementation should begin without a finalized version of this document.
+
 ## User Scenarios & Testing *(mandatory)*
 
 <!--

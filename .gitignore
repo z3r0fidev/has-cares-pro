@@ -1,0 +1,40 @@
+# Node
+node_modules/
+dist/
+build/
+*.log
+.env*
+!.env.example
+.npmrc
+
+# TypeScript
+*.tsbuildinfo
+
+# Next.js
+.next/
+out/
+
+# React Native
+android/app/build/
+ios/Pods/
+ios/build/
+*.lock
+*.xcworkspace
+*.podspec
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Design reference screenshots (local only)
+*.jpeg
+*.jpg
+*.png
+careequity-*.png
+ce-*.png
+Screenshot_*.jpeg

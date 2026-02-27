@@ -1,0 +1,43 @@
+{
+  "Home": {
+    "title": "Buscar un Médico",
+    "heroTitle": "Encuentra un médico que te entienda",
+    "heroSubtitle": "Busca por ubicación, especialidad o seguro médico",
+    "subtitle": "Conectándote con atención culturalmente competente.",
+    "search": "Buscar",
+    "loading": "Buscando proveedores...",
+    "noResults": "No se encontraron médicos que coincidan con sus criterios.",
+    "statusCheck": "Verificación del estado del sistema",
+    "addInsurance": "Agrega tu seguro",
+    "resultsCount": "{count} médicos disponibles",
+    "sortLabel": "Ordenar por",
+    "sortBestMatch": "Mejor coincidencia",
+    "sortDistance": "Distancia",
+    "sortRating": "Calificación",
+    "sortNextAvailable": "Próxima disponibilidad"
+  },
+  "Search": {
+    "zip": "Código ZIP",
+    "specialty": "Especialidad",
+    "insurance": "Seguro",
+    "allSpecialties": "Todas las especialidades",
+    "allInsurance": "Todos los seguros",
+    "locationPlaceholder": "Ciudad, estado o código postal",
+    "searchButton": "Buscar"
+  },
+  "Booking": {
+    "appointmentSuccess": "¡Solicitud de cita enviada! Lo confirmaremos pronto.",
+    "appointmentError": "Error al reservar. Por favor, inténtalo de nuevo.",
+    "reviewSuccess": "Reseña enviada para moderación. ¡Gracias!"
+  },
+  "Dashboard": {
+    "title": "Panel del Proveedor",
+    "description": "Administre su práctica y realice un seguimiento de la participación del paciente.",
+    "logout": "Cerrar sesión",
+    "engagement": "Resumen de participación",
+    "practiceInfo": "Información de la práctica",
+    "verStatus": "Estado de verificación",
+    "upgrade": "Solicitar actualización de nivel",
+    "maxVer": "Verificación máxima alcanzada"
+  }
+}

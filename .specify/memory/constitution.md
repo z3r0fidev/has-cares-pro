@@ -1,50 +1,55 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report:
+- Version change: none → 1.0.0
+- List of modified principles:
+  - PRINCIPLE_1: Library-First Architecture (Created)
+  - PRINCIPLE_2: CLI-First Interface (Created)
+  - PRINCIPLE_3: Spec-Driven Development (SDD) (Created)
+  - PRINCIPLE_4: Test-First Discipline (Created)
+  - PRINCIPLE_5: Independent User Stories (Created)
+- Added sections: Core Principles, Additional Constraints, Development Workflow, Governance
+- Removed sections: none
+- Templates requiring updates:
+  - .specify/templates/plan-template.md (✅ updated)
+  - .specify/templates/spec-template.md (✅ updated)
+  - .specify/templates/tasks-template.md (✅ updated)
+- Follow-up TODOs: none
+-->
+
+# our-care Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Library-First Architecture
+Every feature starts as a standalone library or package. Libraries must be self-contained, independently testable, and documented. Clear purpose is required for every library—organizational-only libraries are discouraged.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. CLI-First Interface
+Every library exposes its core functionality via a Command Line Interface (CLI). We follow a text-in/out protocol: stdin and arguments for input, stdout for results, and stderr for errors. This ensures maximum composability and ease of automation.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Spec-Driven Development (SDD)
+No feature implementation starts without a finalized `spec.md` and `plan.md`. The specification is the single source of truth for feature requirements and success criteria. Planning must precede execution to ensure architectural alignment.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Test-First Discipline
+Test-Driven Development (TDD) is mandatory when tests are required by the specification. Tests must be written and fail before any implementation begins. The Red-Green-Refactor cycle is strictly enforced to ensure code quality and requirement coverage.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Independent User Stories
+Features must be broken down into prioritized (P1, P2, P3), independently testable user stories. This enables incremental delivery, parallel development, and a focus on delivering a Minimum Viable Product (MVP) first.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+## Additional Constraints
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+- **Technology Stack**: We prioritize modern, type-safe languages (e.g., TypeScript/Node.js, Rust, Go) and established frameworks that support our CLI-first and library-first goals.
+- **Documentation**: All APIs and CLI tools must be accompanied by clear documentation, including OpenAPI specs where applicable.
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+## Development Workflow
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+- **Feature Branching**: All work must occur on feature branches named `[###]-feature-name`.
+- **Quality Gates**: Every implementation plan must pass a "Constitution Check" before research or design begins.
+- **Review Process**: Code reviews must verify adherence to the principles outlined in this constitution.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+- **Authority**: This constitution is the ultimate authority for development practices within the our-care project.
+- **Amendments**: Changes to this constitution require documentation of the rationale, a version bump, and an update to all dependent templates.
+- **Versioning**: We follow Semantic Versioning (SemVer) for this document. MAJOR for principle removals/redefinitions, MINOR for additions, PATCH for clarifications.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-02-16 | **Last Amended**: 2026-02-16
