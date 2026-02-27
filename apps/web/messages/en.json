@@ -28,7 +28,14 @@
   "Booking": {
     "appointmentSuccess": "Appointment request sent! We'll confirm shortly.",
     "appointmentError": "Booking failed. Please try again.",
-    "reviewSuccess": "Review submitted for moderation. Thank you!"
+    "reviewSuccess": "Review submitted for moderation. Thank you!",
+    "confirmationTitle": "Appointment Request Sent",
+    "confirmationSubtitle": "Your request has been received. The physician's office will contact you to confirm.",
+    "confirmationWith": "With",
+    "confirmationDate": "Requested date & time",
+    "confirmationReason": "Reason for visit",
+    "confirmationBackSearch": "Back to search",
+    "confirmationBackProfile": "Back to provider profile"
   },
   "Dashboard": {
     "title": "Provider Dashboard",

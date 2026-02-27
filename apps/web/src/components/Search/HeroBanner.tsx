@@ -10,6 +10,7 @@ interface InsurancePill {
 
 interface HeroBannerProps {
   onInsuranceSelect: (insurance: string) => void;
+  selectedInsurance?: string;
 }
 
 const INSURANCE_PILLS: InsurancePill[] = [
@@ -20,7 +21,7 @@ const INSURANCE_PILLS: InsurancePill[] = [
   { label: "BlueCross BlueShield", value: "BlueCross BlueShield" },
 ];
 
-export default function HeroBanner({ onInsuranceSelect }: HeroBannerProps) {
+export default function HeroBanner({ onInsuranceSelect, selectedInsurance = '' }: HeroBannerProps) {
   const t = useTranslations("Home");
 
   return (
@@ -40,7 +41,12 @@ export default function HeroBanner({ onInsuranceSelect }: HeroBannerProps) {
             <button
               key={pill.value}
               onClick={() => onInsuranceSelect(pill.value)}
-              className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-700 hover:border-primary hover:shadow-sm transition-all whitespace-nowrap"
+              className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all whitespace-nowrap border ${
+                selectedInsurance === pill.value
+                  ? 'bg-primary/10 border-primary text-slate-900 font-semibold ring-2 ring-primary/30'
+                  : 'bg-white border-slate-200 text-slate-700 hover:border-primary hover:shadow-sm'
+              }`}
+              aria-pressed={selectedInsurance === pill.value}
               aria-label={`Filter by ${pill.label} insurance`}
             >
               <InsuranceLogo name={pill.value} size={16} />

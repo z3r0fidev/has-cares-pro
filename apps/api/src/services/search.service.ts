@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { esClient, INDEX_NAME } from '@careequity/core/src/search/client';
+import { Injectable, OnApplicationBootstrap, Logger } from '@nestjs/common';
+import { esClient, INDEX_NAME, providerMapping } from '@careequity/core/src/search/client';
 import NodeCache from 'node-cache';
 import { AnalyticsService } from './analytics.service';
 
@@ -10,9 +10,22 @@ export interface SearchFilters {
 }
 
 @Injectable()
-export class SearchService {
+export class SearchService implements OnApplicationBootstrap {
+  private readonly logger = new Logger(SearchService.name);
   constructor(private readonly analyticsService: AnalyticsService) {}
   private cache = new NodeCache({ stdTTL: 300 }); // Cache for 5 minutes
+
+  async onApplicationBootstrap() {
+    try {
+      const exists = await esClient.indices.exists({ index: INDEX_NAME });
+      if (!exists) {
+        await esClient.indices.create({ index: INDEX_NAME, mappings: providerMapping });
+        this.logger.log(`Created Elasticsearch index: ${INDEX_NAME}`);
+      }
+    } catch (err) {
+      this.logger.warn(`Could not verify/create ES index "${INDEX_NAME}": ${(err as Error).message}`);
+    }
+  }
 
   /**
    * Searches for providers with a "Best Match" AI-driven scoring model.

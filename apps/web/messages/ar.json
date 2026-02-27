@@ -28,7 +28,14 @@
   "Booking": {
     "appointmentSuccess": "تم إرسال طلب الموعد! سنؤكد قريباً.",
     "appointmentError": "فشل الحجز. يرجى المحاولة مرة أخرى.",
-    "reviewSuccess": "تم إرسال المراجعة للمراجعة. شكراً!"
+    "reviewSuccess": "تم إرسال المراجعة للمراجعة. شكراً!",
+    "confirmationTitle": "تم إرسال طلب الموعد",
+    "confirmationSubtitle": "تم استلام طلبك. سيتصل بك مكتب الطبيب لتأكيد الموعد.",
+    "confirmationWith": "مع",
+    "confirmationDate": "التاريخ والوقت المطلوبان",
+    "confirmationReason": "سبب الزيارة",
+    "confirmationBackSearch": "العودة إلى البحث",
+    "confirmationBackProfile": "العودة إلى ملف مزود الخدمة"
   },
   "Dashboard": {
     "title": "لوحة تحكم مزود الخدمة",

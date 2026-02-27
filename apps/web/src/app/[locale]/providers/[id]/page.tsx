@@ -336,6 +336,7 @@ export default function ProviderProfile() {
               <div className="border-t border-slate-100 pt-4">
                 <AppointmentForm
                   providerId={id as string}
+                  providerName={provider.name}
                   onSuccess={() => setSelectedSlot(undefined)}
                   defaultDateTime={selectedSlot}
                 />

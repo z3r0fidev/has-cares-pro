@@ -3,14 +3,17 @@
 import { useState, useEffect } from 'react';
 import { Button } from "@careequity/ui";
 import { toast } from "sonner";
+import { useRouter } from '../../i18n/routing';
 
 interface AppointmentFormProps {
   providerId: string;
+  providerName?: string;
   onSuccess: () => void;
   defaultDateTime?: string;
 }
 
-export default function AppointmentForm({ providerId, onSuccess, defaultDateTime }: AppointmentFormProps) {
+export default function AppointmentForm({ providerId, providerName, onSuccess, defaultDateTime }: AppointmentFormProps) {
+  const router = useRouter();
   const [date, setDate] = useState(defaultDateTime ? defaultDateTime.slice(0, 16) : '');
   const [reason, setReason] = useState('');
 
@@ -38,8 +41,14 @@ export default function AppointmentForm({ providerId, onSuccess, defaultDateTime
       });
 
       if (res.ok) {
-        toast.success("Appointment request sent! The physician will confirm shortly.");
         onSuccess();
+        const params = new URLSearchParams({
+          providerId,
+          ...(providerName ? { providerName } : {}),
+          date,
+          reason,
+        });
+        router.push(`/booking/confirmation?${params.toString()}`);
       } else {
         toast.error("Booking failed. Please ensure you are logged in.");
       }

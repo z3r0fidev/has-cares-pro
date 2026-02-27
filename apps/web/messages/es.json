@@ -28,7 +28,14 @@
   "Booking": {
     "appointmentSuccess": "¡Solicitud de cita enviada! Lo confirmaremos pronto.",
     "appointmentError": "Error al reservar. Por favor, inténtalo de nuevo.",
-    "reviewSuccess": "Reseña enviada para moderación. ¡Gracias!"
+    "reviewSuccess": "Reseña enviada para moderación. ¡Gracias!",
+    "confirmationTitle": "Solicitud de cita enviada",
+    "confirmationSubtitle": "Su solicitud ha sido recibida. El consultorio del médico se comunicará con usted para confirmar.",
+    "confirmationWith": "Con",
+    "confirmationDate": "Fecha y hora solicitadas",
+    "confirmationReason": "Motivo de la visita",
+    "confirmationBackSearch": "Volver a la búsqueda",
+    "confirmationBackProfile": "Volver al perfil del proveedor"
   },
   "Dashboard": {
     "title": "Panel del Proveedor",
