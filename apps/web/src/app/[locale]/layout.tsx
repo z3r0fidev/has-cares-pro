@@ -31,6 +31,9 @@ export default async function RootLayout({
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Header />
           {children}
+          <footer className="border-t border-slate-200 bg-white mt-auto py-4 px-4 text-center text-xs text-slate-400">
+            Insurance plan logos are registered trademarks of their respective owners. CareEquity is not affiliated with any insurance provider.
+          </footer>
           <Toaster richColors position="bottom-right" />
         </NextIntlClientProvider>
       </body>

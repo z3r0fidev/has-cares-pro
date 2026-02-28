@@ -5,6 +5,7 @@ import { AdminController } from './controllers/admin.controller';
 import { AuthController } from './controllers/auth.controller';
 import { AnalyticsController } from './controllers/analytics.controller';
 import { BookingController } from './controllers/booking.controller';
+import { HealthController } from './controllers/health.controller';
 import { SearchService } from './services/search.service';
 import { ProviderService } from './services/provider.service';
 import { ReviewService } from './services/review.service';
@@ -19,7 +20,7 @@ import { AppDataSource } from '@careequity/db';
 @Global()
 @Module({
   imports: [ScheduleModule.forRoot()],
-  controllers: [ProviderController, AdminController, AuthController, AnalyticsController, BookingController],
+  controllers: [ProviderController, AdminController, AuthController, AnalyticsController, BookingController, HealthController],
   providers: [
     SearchService,
     ProviderService,

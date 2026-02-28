@@ -6,32 +6,19 @@
 
 ---
 
-## Branch: `001-physician-locator` — Pre-Merge Checklist
+## Ship Readiness
 
-All 59 spec tasks are complete. The following items remain before merging to `main`.
+### Blocking launch — must fix before production traffic
 
-### High Priority (must-do before merge)
+- [ ] **`docker-compose up --build` browser smoke test** — full stack build + NYC provider ingest via CLI + visual confirmation that search and profile pages render. Needs a human in a browser; infra confirmed healthy locally.
+- [ ] **SMTP tested end-to-end** — `NotificationService` cron fires in production but has never sent a real email. Point `SMTP_*` env vars at Resend / Mailgun / SMTP4Dev and trigger a test send before launch.
 
-- [x] **Push branch to remote** — pushed `91ad9f9` via HTTPS on 2026-02-27
-- [x] **Run database migrations on staging** — all 9 migrations ran successfully against local Postgres + PostGIS (docker-compose)
-- [ ] **End-to-end smoke test** — `docker-compose up --build` full stack (api + web + infra); ingest NYC providers via CLI; confirm search + profile pages render in browser _(infra healthy locally; full build smoke test requires manual browser verification)_
-- [x] **Contract tests green** — `npm run test:e2e --workspace=apps/api` passes (1/1) against live Docker environment
+### Should-fix before launch — won't crash the app but will hurt users
 
-### Medium Priority (should-do before merge)
-
-- [ ] **InsuranceLogo: Tooltip on filter pills** — wrap HeroBanner pill buttons in shadcn `<Tooltip>` to surface full insurer name on hover/focus
-  - Install: `cd apps/web && npx shadcn@latest add tooltip`
-  - Target: `apps/web/src/components/Search/HeroBanner.tsx`
-- [ ] **InsuranceLogo: Active/selected pill state** — HeroBanner pills have no visual toggled state after click; add `ring-2 ring-primary bg-primary/10 font-semibold` when a pill is selected
-  - Target: `apps/web/src/components/Search/HeroBanner.tsx`
-- [ ] **SMTP configuration tested** — verify `NotificationService` sends emails end-to-end with a real SMTP provider (e.g. Resend, Mailgun, or SMTP4Dev locally)
-- [ ] **Legal disclaimer** — add "All insurance logos are registered trademarks of their respective owners" to footer or `terms-of-service.md` before production launch
-
-### Low Priority (nice-to-have before merge)
-
-- [ ] **Self-hosted insurance logos** — Clearbit has no production SLA; download logos to `apps/web/public/logos/insurance/` and update `INSURER_DOMAIN_MAP` to use local paths
-- [ ] **WCAG audit on InsuranceLogo** — run axe-core against HeroBanner and provider profile insurance section to confirm no new a11y regressions
-- [ ] **`npm run search:sync` alias** — add a root-level `package.json` convenience script that wraps the CLI ingest command for discoverability
+- [ ] **JWT expiry not enforced on frontend** — expired tokens live in `localStorage` indefinitely; the API returns 401 with no UX recovery (no re-login redirect, no toast). Add a `fetch` wrapper that catches 401 and redirects to `/login`.
+- [ ] **`PATCH /providers/:id` dual-write to Elasticsearch** — profile edits persist to PostgreSQL but the ES index is never updated. Providers who edit their name, specialty, or insurance appear stale in search results until a full re-index.
+- [ ] **Error boundary on provider profile page** — `apps/web/src/app/[locale]/providers/[id]/page.tsx` has no error handling; a 404/500 from the API renders a blank page with no message or redirect.
+- [ ] **Env var validation on API startup** — missing `POSTGRES_HOST`, `JWT_SECRET`, etc. cause runtime failures deep inside requests rather than a clear boot-time error. Add a `zod` or `envalid` check in `apps/api/src/main.ts`.
 
 ---
 
@@ -39,44 +26,55 @@ All 59 spec tasks are complete. The following items remain before merging to `ma
 
 ### API (`apps/api`)
 
-- [ ] **`NotificationService` unit test** — no test exists for `notifyOverdueProviders()`; mock `AppDataSource` and `nodemailer` and assert query behavior + email dispatch
-- [ ] **Error boundary on provider profile API fetch** — `page.tsx` has no error state if `fetch /providers/:id` returns 4xx/5xx; add loading skeleton or redirect
-- [ ] **`PATCH /providers/:id` dual-write to Elasticsearch** — profile updates persist to PostgreSQL but the Elasticsearch index is not re-indexed on update; stale search results will appear after a provider edits their profile
-- [ ] **JWT expiry not enforced on frontend** — expired tokens are stored in `localStorage` and sent to the API which rejects them, but the web app has no token refresh or re-login redirect
+- [ ] **`NotificationService` unit test** — no test for `notifyOverdueProviders()`; mock `AppDataSource` and `nodemailer`, assert query + email dispatch behavior.
+- [ ] **`notification.service.ts` TypeScript error** — `last_insurance_notified_at` is not typed on `_QueryDeepPartialEntity<Provider>`; pre-existing, does not block build but should be fixed.
 
 ### Web (`apps/web`)
 
-- [ ] **`HeroBanner` `+ Add Insurance` button is a no-op** — `onClick={() => {}}` placeholder; should open a modal or route to the insurance filter dropdown
-- [ ] **`ProviderSearchCard` missing `insurance` prop** — the card does not display accepted insurance; adding a compact `InsuranceLogo` row to Zone 2 would improve patient matching at a glance
-- [ ] **Booking confirmation page missing** — `AppointmentForm` submits to the API but routes nowhere; patients have no confirmation screen
-- [ ] **`ResultsList` has no empty-state UI** — when search returns zero results there is no visual feedback beyond an empty list
-- [ ] **`HeroBanner` insurance pills not wired to search** — `onInsuranceSelect` fires but the ResultsList is not filtered; the wiring between HeroBanner and ResultsList needs a shared filter state
+- [ ] **`HeroBanner` `+ Add Insurance` button is a no-op** — `onClick={() => {}}` placeholder at line 58 of `HeroBanner.tsx`; should open a modal or scroll to the insurance dropdown in the search bar.
+- [ ] **`ProviderSearchCard` missing insurance display** — card shows name, specialty, distance, and rating but no accepted insurance; adding a compact 2–3 logo row in Zone 2 would improve patient matching at a glance.
+- [ ] **InsuranceLogo: Tooltip on filter pills** — HeroBanner pills have no tooltip; wrap in shadcn `<Tooltip>` to surface full plan name on hover/focus (`cd apps/web && npx shadcn@latest add tooltip`).
 
 ### Database / Migrations
 
-- [ ] **`provider.insurance` is a plain `VARCHAR`** — accepts any string; should be validated against `INSURANCE_PROVIDERS` from `@careequity/core` or migrated to a `simple-array` / JSONB column with enum validation
-- [ ] **No soft-delete on `Provider`** — deactivated providers are hard-deleted, which breaks referential integrity in `Review`, `Appointment`, and `SavedProvider` tables
+- [ ] **`provider.insurance` is a plain `VARCHAR`** — accepts any string with no validation against `INSURANCE_PROVIDERS` from `@careequity/core`; should be a `simple-array` or JSONB column with enum enforcement.
+- [ ] **No soft-delete on `Provider`** — hard deletes break referential integrity in `Review`, `Appointment`, and `SavedProvider` tables. Add a `deleted_at` column and TypeORM `@DeleteDateColumn`.
 
 ### Mobile (`apps/mobile`)
 
-- [ ] **Authentication not implemented** — mobile app has no login or JWT flow; cannot access protected API endpoints
-- [ ] **Push notifications for booking** — `Appointment` entity exists but no mobile push notification is sent on booking confirmation or cancellation
+- [ ] **Authentication not implemented** — `SearchScreen.tsx` and `ProfileScreen.tsx` exist but there is no login flow, JWT storage, or token attachment to API requests; all protected endpoints are unreachable from mobile.
+- [ ] **Push notifications for booking** — `Appointment` entity exists but no Expo push notification is sent on booking confirmation or cancellation.
 
 ---
 
 ## Infrastructure / DevOps
 
-- [x] **CI pipeline** — `.github/workflows/ci.yml` created with 3 jobs: lint/type-check, unit tests (packages/core), e2e tests (API against Postgres+ES services)
-- [ ] **`.env.example` has no validation** — consider adding a startup check (e.g. `envalid` or `zod`) to `apps/api/src/main.ts` that throws if required env vars are absent
-- [ ] **No health check endpoint** — add `GET /health` returning `{ status: 'ok', db: bool, es: bool }` to `apps/api` for uptime monitoring
-- [ ] **Elasticsearch index auto-creation** — `SearchService` assumes the index exists; add an `onApplicationBootstrap` hook that creates the index with mappings if absent
-- [ ] **Docker image sizes** — no multi-stage builds; API and web Dockerfiles produce large images; add multi-stage builds and `.dockerignore` files
+- [x] **CI pipeline** — `.github/workflows/ci.yml`: lint/type-check, unit tests (packages/core), e2e tests (API + Postgres + ES).
+- [x] **Elasticsearch index auto-creation** — `SearchService.onApplicationBootstrap` creates the `providers` index with `providerMapping` if absent.
+- [x] **Health check endpoint** — `GET /health` returns `{ status, db, es }` via `HealthController`.
+- [ ] **Docker image sizes** — Dockerfiles have no `.dockerignore` and copy full `node_modules` into the final image; add multi-stage builds and `.dockerignore` to reduce image size.
+- [ ] **Rate limiting on search** — no per-IP throttling on `GET /providers`; add `@nestjs/throttler` before exposing to the public internet.
 
 ---
 
 ## Documentation
 
-- [ ] **`CONTRIBUTING.md`** — document branch naming, PR process, commit conventions, and TDD requirement for new contributors
-- [ ] **`CHANGELOG.md`** — retroactively document all changes from initial commit through `001-physician-locator`
-- [ ] **API docs** — OpenAPI spec exists in `specs/001-physician-locator/contracts/` but is not served at runtime; add Swagger UI at `/api/docs` via `@nestjs/swagger`
-- [ ] **Environment variable validation docs** — document each `SMTP_*` variable purpose and accepted values in README and `.env.example` comments
+- [ ] **`CONTRIBUTING.md`** — branch naming, PR process, commit conventions, TDD requirement.
+- [ ] **`CHANGELOG.md`** — retroactive log from initial commit through current main.
+- [ ] **Swagger UI** — OpenAPI spec exists in `specs/001-physician-locator/contracts/` but is not served at runtime; add `@nestjs/swagger` and expose at `/api/docs`.
+- [ ] **`.env.example` comments** — document each `SMTP_*` variable and its accepted values inline.
+
+---
+
+## Completed (reference)
+
+- [x] All 59 `specs/001-physician-locator` feature tasks
+- [x] Push to remote, DB migrations (9), contract tests (1/1)
+- [x] CI pipeline with GitHub Actions
+- [x] ES index auto-creation on bootstrap
+- [x] `GET /health` endpoint (`{ status, db, es }`)
+- [x] Insurance filter pills wired to search (active state + auto-re-run)
+- [x] Booking confirmation page (`/[locale]/booking/confirmation`)
+- [x] Empty search state (SearchX icon + suggestions)
+- [x] Legal disclaimer for insurance logos (footer in `layout.tsx`)
+- [x] `@nestjs/schedule` bumped ^4 → ^6 for NestJS 11 compatibility
