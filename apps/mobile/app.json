@@ -1,0 +1,52 @@
+{
+  "expo": {
+    "name": "CareEquity",
+    "slug": "careequity",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "org.careequity.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "CareEquity uses your location to find nearby physicians.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "CareEquity uses your location to find nearby physicians."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#F5BE00"
+      },
+      "package": "org.careequity.app",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE"
+      ]
+    },
+    "plugins": [
+      "expo-secure-store",
+      ["expo-notifications", {
+        "icon": "./assets/notification-icon.png",
+        "color": "#F5BE00"
+      }],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "CareEquity uses your location to find nearby physicians."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "careequity-app"
+      }
+    }
+  }
+}
