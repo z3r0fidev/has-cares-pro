@@ -2,9 +2,28 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import PracticeForm from '../../../../components/Portal/PracticeForm';
 import StatsCard from './StatsCard';
 import { Provider } from '@careequity/core';
+
+function computeCompleteness(p: Provider): { score: number; missing: string[] } {
+  const checks: Array<[boolean, string]> = [
+    [!!p.name, 'Name'],
+    [p.credentials?.length > 0, 'Credentials'],
+    [p.specialties?.length > 0, 'Specialties'],
+    [p.languages?.length > 0, 'Languages'],
+    [!!p.insurance, 'Insurance'],
+    [!!(p.address?.street), 'Address'],
+    [!!p.bio, 'Bio'],
+    [!!p.profile_image_url, 'Profile photo'],
+    [p.identity_tags?.length > 0, 'Cultural competency tags'],
+    [!!p.availability && Object.keys(p.availability).length > 0, 'Availability hours'],
+  ];
+  const missing = checks.filter(([ok]) => !ok).map(([, label]) => label);
+  const score = Math.round(((checks.length - missing.length) / checks.length) * 100);
+  return { score, missing };
+}
 
 export default function Dashboard() {
   const [provider, setProvider] = useState<Provider | null>(null);
@@ -133,6 +152,46 @@ export default function Dashboard() {
         </div>
         
         <aside className="space-y-8">
+          {/* Profile completeness */}
+          {(() => {
+            const { score, missing } = computeCompleteness(provider);
+            return (
+              <section className="bg-white p-6 rounded-lg shadow-sm border" aria-label="Profile Completeness">
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="text-sm font-bold text-slate-700">Profile {score}% complete</h3>
+                  {score < 100 && (
+                    <Link href="/portal/onboarding" className="text-xs font-semibold text-primary hover:underline">
+                      Complete profile
+                    </Link>
+                  )}
+                </div>
+                <div className="w-full bg-slate-100 rounded-full h-2 mb-3">
+                  <div
+                    className="bg-primary h-2 rounded-full transition-all"
+                    style={{ width: `${score}%` }}
+                    role="progressbar"
+                    aria-valuenow={score}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                  />
+                </div>
+                {missing.length > 0 && (
+                  <div>
+                    <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-1">Missing</p>
+                    <ul className="space-y-0.5">
+                      {missing.map((field) => (
+                        <li key={field} className="text-xs text-slate-500 flex items-center gap-1">
+                          <span className="w-1 h-1 rounded-full bg-slate-400 flex-shrink-0" />
+                          {field}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </section>
+            );
+          })()}
+
           <section className="bg-white p-6 rounded-lg shadow-sm border text-center" aria-label="Physician Profile Summary">
             <div className="w-24 h-24 rounded-full bg-slate-100 mx-auto mb-4 border overflow-hidden">
               {provider.profile_image_url ? (

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MapPin, Clock } from "lucide-react";
+import { MapPin, Clock, Video } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import VerificationBadge from "./Badge";
 import StarRating from "./StarRating";
@@ -24,6 +24,7 @@ export interface ProviderCardData {
   reviewCount?: number;
   distance?: number;
   identity_tags?: string[];
+  telehealth_url?: string;
   nextAvailable?: string;
   availableSlots?: Array<{ date: string; times: string[] }>;
 }
@@ -143,6 +144,13 @@ export default function ProviderSearchCard({ provider }: ProviderSearchCardProps
               <Clock size={11} aria-hidden="true" />
               Next: {provider.nextAvailable}
             </div>
+          )}
+
+          {provider.telehealth_url && (
+            <span className="flex items-center gap-1 text-[10px] font-medium text-[#1A73E8] bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100 w-fit">
+              <Video className="w-3 h-3" aria-hidden="true" />
+              Telehealth
+            </span>
           )}
 
           {slots.length > 0 ? (

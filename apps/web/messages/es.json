@@ -46,5 +46,31 @@
     "verStatus": "Estado de verificación",
     "upgrade": "Solicitar actualización de nivel",
     "maxVer": "Verificación máxima alcanzada"
+  },
+  "Portal": {
+    "completeness": "Perfil {score}% completo",
+    "completeProfile": "Completa tu perfil",
+    "missingFields": "Falta: {fields}",
+    "bio": "Sobre ti",
+    "bioPlaceholder": "Cuéntale a los pacientes sobre tu trayectoria y enfoque de atención",
+    "identityTags": "Competencia Cultural",
+    "telehealthBadge": "Telesalud"
+  },
+  "Onboarding": {
+    "title": "Completa tu perfil",
+    "step1": "Foto de perfil",
+    "step2": "Tu historia",
+    "step3": "Disponibilidad",
+    "step4": "Seguro y especialidades",
+    "saveAndContinue": "Guardar y continuar",
+    "skip": "Omitir por ahora",
+    "finish": "Finalizar"
+  },
+  "Claim": {
+    "title": "Reclamar tu perfil",
+    "cta": "Reclamar este perfil",
+    "loginPrompt": "Inicia sesión para reclamar este perfil",
+    "expired": "Este enlace de invitación ha caducado o ya fue utilizado.",
+    "success": "¡Perfil reclamado! Vamos a configurarlo."
   }
 }

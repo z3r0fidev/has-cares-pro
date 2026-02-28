@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Param, Body, NotFoundException, UseGuards, Request, ForbiddenException } from '@nestjs/common';
+import { Controller, Get, Patch, Param, Body, NotFoundException, UseGuards, Request, ForbiddenException, Query } from '@nestjs/common';
 import { AppDataSource, Provider, VerificationRecord, VerificationStatus, Review } from '@careequity/db';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { AuthenticatedRequest } from '../types/request.interface';
@@ -6,6 +6,29 @@ import { AuthenticatedRequest } from '../types/request.interface';
 @Controller('admin')
 export class AdminController {
   
+  @Get('providers/unclaimed')
+  @UseGuards(JwtAuthGuard)
+  async getUnclaimedProviders(
+    @Request() req: AuthenticatedRequest,
+    @Query('page') page = '1',
+  ) {
+    if (req.user.role !== 'admin') throw new ForbiddenException('Admin access required');
+
+    const repo = AppDataSource.getRepository(Provider);
+    const limit = 20;
+    const offset = (parseInt(page, 10) - 1) * limit;
+
+    const [providers, total] = await repo.findAndCount({
+      where: { is_claimed: false },
+      select: ['id', 'name', 'specialties', 'address', 'verification_tier'],
+      take: limit,
+      skip: offset,
+      order: { created_at: 'DESC' },
+    });
+
+    return { providers, total, page: parseInt(page, 10), limit };
+  }
+
   @Get('verifications/pending')
   @UseGuards(JwtAuthGuard)
   async getPendingVerifications(@Request() req: AuthenticatedRequest) {

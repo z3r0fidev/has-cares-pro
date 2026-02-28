@@ -219,6 +219,9 @@ export default function ProviderProfile() {
             {/* About */}
             <section className="bg-white rounded-xl border p-6">
               <h2 className="text-lg font-semibold text-slate-800 mb-4">About the Practice</h2>
+              {provider.bio && (
+                <p className="text-sm text-slate-700 leading-relaxed mb-4">{provider.bio}</p>
+              )}
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div className="space-y-1">
                   <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">

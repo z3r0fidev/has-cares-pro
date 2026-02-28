@@ -23,13 +23,25 @@ export interface ClaimStats {
   claim_rate: number;
 }
 
+interface UnclaimedProvider {
+  id: string;
+  name: string;
+  specialties: string[];
+  address: { city: string; state: string };
+}
+
 export default function AdminDashboard() {
   const [verifications, setVerifications] = useState<PendingVerification[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [performance, setPerformance] = useState<PerformanceStats | null>(null);
   const [claims, setClaims] = useState<ClaimStats | null>(null);
+  const [unclaimed, setUnclaimed] = useState<UnclaimedProvider[]>([]);
+  const [unclaimedExpanded, setUnclaimedExpanded] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState<Record<string, string>>({});
+  const [inviteSending, setInviteSending] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -39,21 +51,24 @@ export default function AdminDashboard() {
       return;
     }
 
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-
     const fetchData = async () => {
       try {
-        const [verRes, revRes, perfRes, claimRes] = await Promise.all([
+        const [verRes, revRes, perfRes, claimRes, unclaimedRes] = await Promise.all([
           fetch(`${API_URL}/admin/verifications/pending`, { headers: { 'Authorization': `Bearer ${token}` } }),
           fetch(`${API_URL}/admin/reviews/flagged`, { headers: { 'Authorization': `Bearer ${token}` } }),
           fetch(`${API_URL}/analytics/admin/performance`, { headers: { 'Authorization': `Bearer ${token}` } }),
-          fetch(`${API_URL}/analytics/admin/claims`, { headers: { 'Authorization': `Bearer ${token}` } })
+          fetch(`${API_URL}/analytics/admin/claims`, { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch(`${API_URL}/admin/providers/unclaimed`, { headers: { 'Authorization': `Bearer ${token}` } }),
         ]);
 
         if (verRes.ok) setVerifications(await verRes.json());
         if (revRes.ok) setReviews(await revRes.json());
         if (perfRes.ok) setPerformance(await perfRes.json());
         if (claimRes.ok) setClaims(await claimRes.json());
+        if (unclaimedRes.ok) {
+          const data = await unclaimedRes.json();
+          setUnclaimed(data.providers || []);
+        }
       } catch (err) {
         console.error("Admin load failed", err);
       } finally {
@@ -64,9 +79,33 @@ export default function AdminDashboard() {
     fetchData();
   }, [router]);
 
+  const handleSendInvite = async (providerId: string) => {
+    const email = inviteEmail[providerId];
+    if (!email) return;
+    setInviteSending(providerId);
+    const token = localStorage.getItem('token');
+    try {
+      const res = await fetch(`${API_URL}/invitations/send/${providerId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ email }),
+      });
+      if (res.ok) {
+        alert(`Invitation sent to ${email}`);
+        setInviteEmail((prev) => ({ ...prev, [providerId]: '' }));
+      } else {
+        const err = await res.json();
+        alert(`Failed: ${err.message}`);
+      }
+    } catch {
+      alert('Failed to send invitation');
+    } finally {
+      setInviteSending(null);
+    }
+  };
+
   const handleVerify = async (id: string, status: 'approved' | 'rejected', tier: number) => {
     const token = localStorage.getItem('token');
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
     
     await fetch(`${API_URL}/admin/verify/${id}`, {
       method: 'PATCH',
@@ -101,6 +140,56 @@ export default function AdminDashboard() {
           <p className="text-xs text-purple-500 mt-1">Across all users</p>
         </div>
       </div>
+
+      {/* Unclaimed Providers */}
+      <section className="bg-white p-6 rounded-lg shadow-sm border mb-8">
+        <button
+          onClick={() => setUnclaimedExpanded((v) => !v)}
+          className="flex w-full justify-between items-center text-left"
+          aria-expanded={unclaimedExpanded}
+        >
+          <h2 className="text-xl font-bold text-slate-800">
+            Unclaimed Providers
+            <span className="ml-2 text-sm font-normal text-slate-400">({unclaimed.length})</span>
+          </h2>
+          <span className="text-slate-400 text-lg">{unclaimedExpanded ? '▲' : '▼'}</span>
+        </button>
+
+        {unclaimedExpanded && (
+          <ul className="mt-4 divide-y divide-slate-100">
+            {unclaimed.length === 0 ? (
+              <li className="py-3 text-sm text-slate-400">All providers have been claimed.</li>
+            ) : (
+              unclaimed.map((p) => (
+                <li key={p.id} className="py-3 flex flex-col sm:flex-row sm:items-center gap-3">
+                  <div className="flex-grow">
+                    <p className="font-semibold text-slate-800">{p.name}</p>
+                    <p className="text-xs text-slate-500">
+                      {p.specialties?.[0] || 'General'} · {p.address?.city}, {p.address?.state}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <input
+                      type="email"
+                      placeholder="provider@email.com"
+                      value={inviteEmail[p.id] || ''}
+                      onChange={(e) => setInviteEmail((prev) => ({ ...prev, [p.id]: e.target.value }))}
+                      className="text-sm p-1.5 border rounded-lg focus:ring-2 focus:ring-primary w-48"
+                    />
+                    <Button
+                      size="sm"
+                      onClick={() => handleSendInvite(p.id)}
+                      disabled={inviteSending === p.id || !inviteEmail[p.id]}
+                    >
+                      {inviteSending === p.id ? 'Sending…' : 'Send Invite'}
+                    </Button>
+                  </div>
+                </li>
+              ))
+            )}
+          </ul>
+        )}
+      </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <section className="bg-white p-6 rounded-lg shadow-sm border">
