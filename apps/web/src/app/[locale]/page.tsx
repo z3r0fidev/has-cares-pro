@@ -37,7 +37,6 @@ function HomeContent() {
   // Initial URL param values for pre-populating the search bar
   const [initZip, setInitZip] = useState('');
   const [initSpecialty, setInitSpecialty] = useState('');
-  const [initInsurance, setInitInsurance] = useState('');
   const [initRadius, setInitRadius] = useState(50);
 
   useEffect(() => {
@@ -56,7 +55,6 @@ function HomeContent() {
 
     setInitZip(zip);
     setInitSpecialty(specialty);
-    setInitInsurance(insurance);
     setInitRadius(rad);
     setSelectedInsurance(insurance);
     setRadius(rad);
@@ -64,8 +62,7 @@ function HomeContent() {
     if (zip || specialty || insurance) {
       handleSearch({ zip, specialty, insurance, radius: rad });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // run once on mount
+  }, []); // run once on mount — intentional, handleSearch captured at mount
 
   const handleSearch = async (filters: { zip: string; specialty: string; insurance: string; radius: number }) => {
     setLoading(true);
