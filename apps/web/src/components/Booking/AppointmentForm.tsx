@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Button } from "@careequity/ui";
 import { toast } from "sonner";
 import { useRouter } from '../../i18n/routing';
+import { apiFetch } from '../../lib/apiFetch';
 
 interface AppointmentFormProps {
   providerId: string;
@@ -31,7 +32,7 @@ export default function AppointmentForm({ providerId, providerName, onSuccess, d
       const hostname = window.location.hostname;
       const API_URL = `http://${hostname}:3001`;
       
-      const res = await fetch(`${API_URL}/booking/appointment`, {
+      const res = await apiFetch(`${API_URL}/booking/appointment`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

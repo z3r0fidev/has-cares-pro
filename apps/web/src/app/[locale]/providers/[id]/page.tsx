@@ -11,6 +11,7 @@ import StarRating from '../../../../components/Provider/StarRating';
 import InsuranceLogo from '../../../../components/Insurance/InsuranceLogo';
 import { Heart, MapPin, Globe, Phone, ExternalLink, Video } from 'lucide-react';
 import { toast } from 'sonner';
+import { apiFetch } from '../../../../lib/apiFetch';
 
 function avgRating(reviews: Review[]): number {
   if (!reviews.length) return 0;
@@ -30,6 +31,7 @@ export default function ProviderProfile() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [isSaved, setIsSaved] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<string | undefined>(undefined);
+  const [fetchError, setFetchError] = useState<'not_found' | 'server_error' | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -37,16 +39,22 @@ export default function ProviderProfile() {
     const API_URL = `http://${hostname}:3001`;
 
     fetch(`${API_URL}/providers/${id}`)
-      .then((res) => res.json())
-      .then(setProvider);
+      .then((res) => {
+        if (res.status === 404) { setFetchError('not_found'); return null; }
+        if (!res.ok) { setFetchError('server_error'); return null; }
+        return res.json();
+      })
+      .then((data) => { if (data) setProvider(data); })
+      .catch(() => setFetchError('server_error'));
 
     fetch(`${API_URL}/providers/${id}/reviews`)
-      .then((res) => res.json())
-      .then(setReviews);
+      .then((res) => (res.ok ? res.json() : []))
+      .then(setReviews)
+      .catch(() => {});
 
     const token = localStorage.getItem('token');
     if (token) {
-      fetch(`${API_URL}/booking/saved`, {
+      apiFetch(`${API_URL}/booking/saved`, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => res.json())
@@ -66,7 +74,7 @@ export default function ProviderProfile() {
     }
     const hostname = window.location.hostname;
     const API_URL = `http://${hostname}:3001`;
-    const res = await fetch(`${API_URL}/booking/save/${id}`, {
+    const res = await apiFetch(`${API_URL}/booking/save/${id}`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -91,6 +99,27 @@ export default function ProviderProfile() {
     });
     toast.info('Review submitted for moderation. Thank you!');
   };
+
+  if (fetchError) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
+        <div className="text-center max-w-sm">
+          <p className="text-5xl mb-4">{fetchError === 'not_found' ? '404' : '500'}</p>
+          <h1 className="text-xl font-bold text-slate-800 mb-2">
+            {fetchError === 'not_found' ? 'Provider not found' : 'Something went wrong'}
+          </h1>
+          <p className="text-sm text-slate-500 mb-6">
+            {fetchError === 'not_found'
+              ? 'This provider profile may have been removed or the link is incorrect.'
+              : 'We had trouble loading this profile. Please try again.'}
+          </p>
+          <a href="/" className="inline-block px-5 py-2.5 bg-primary text-primary-foreground font-semibold rounded-xl hover:bg-[oklch(0.78_0.17_84.429)] transition-colors">
+            Back to search
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   if (!provider) {
     return (
