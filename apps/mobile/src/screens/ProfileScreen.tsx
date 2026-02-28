@@ -126,7 +126,7 @@ export default function ProfileScreen({
           <VerificationBadge tier={provider.verification_tier} />
           {provider.telehealth_url ? (
             <View style={styles.telehealthBadge}>
-              <Video size={12} color="#1d4ed8" />
+              <Video size={12} stroke="#1d4ed8" />
               <Text style={styles.telehealthText}>Telehealth Available</Text>
             </View>
           ) : null}
@@ -140,13 +140,13 @@ export default function ProfileScreen({
             disabled={savingToggle}
           >
             {saved
-              ? <HeartOff size={18} color="#ef4444" />
-              : <Heart size={18} color="#64748b" />
+              ? <HeartOff size={18} stroke="#ef4444" />
+              : <Heart size={18} stroke="#64748b" />
             }
             <Text style={styles.actionSaveText}>{saved ? 'Saved' : 'Save'}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionBook} onPress={handleBook}>
-            <Calendar size={18} color="#0f172a" />
+            <Calendar size={18} stroke="#0f172a" />
             <Text style={styles.actionBookText}>Book Appointment</Text>
           </TouchableOpacity>
         </View>
@@ -165,7 +165,7 @@ export default function ProfileScreen({
         <Text style={styles.sectionTitle}>Practice Information</Text>
         {provider.address && (
           <View style={styles.infoRow}>
-            <MapPin size={16} color="#64748b" />
+            <MapPin size={16} stroke="#64748b" />
             <Text style={styles.infoText}>
               {provider.address.street}, {provider.address.city}, {provider.address.state} {provider.address.zip}
             </Text>
@@ -173,13 +173,13 @@ export default function ProfileScreen({
         )}
         {provider.languages?.length > 0 && (
           <View style={styles.infoRow}>
-            <Globe size={16} color="#64748b" />
+            <Globe size={16} stroke="#64748b" />
             <Text style={styles.infoText}>Languages: {provider.languages.join(', ')}</Text>
           </View>
         )}
         {provider.insurance && (
           <View style={styles.infoRow}>
-            <Phone size={16} color="#64748b" />
+            <Phone size={16} stroke="#64748b" />
             <Text style={styles.infoText}>Insurance: {provider.insurance}</Text>
           </View>
         )}

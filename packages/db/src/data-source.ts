@@ -25,4 +25,10 @@ export const AppDataSource = new DataSource({
   entities: [Provider, User, Review, VerificationRecord, AnalyticsEvent, Appointment, SavedProvider, CareHistory, ProviderInvitation],
   migrations: [__dirname + '/migrations/*.ts'],
   subscribers: [],
+  extra: {
+    max: parseInt(process.env.DB_POOL_MAX || '20', 10),
+    min: parseInt(process.env.DB_POOL_MIN || '2', 10),
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 5000,
+  },
 });

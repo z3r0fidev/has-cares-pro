@@ -37,7 +37,7 @@ export default function ProviderCard({ provider, onPress }: Props) {
           )}
 
           <View style={styles.meta}>
-            <MapPin size={12} color="#64748b" />
+            <MapPin size={12} stroke="#64748b" />
             <Text style={styles.metaText}>
               {provider.address?.city}, {provider.address?.state}
               {provider.distance !== undefined ? `  ·  ${provider.distance.toFixed(1)} mi` : ''}
@@ -49,7 +49,7 @@ export default function ProviderCard({ provider, onPress }: Props) {
             <VerificationBadge tier={provider.verification_tier} size="sm" />
             {provider.telehealth_url ? (
               <View style={styles.telehealthBadge}>
-                <Video size={10} color="#1d4ed8" />
+                <Video size={10} stroke="#1d4ed8" />
                 <Text style={styles.telehealthText}>Telehealth</Text>
               </View>
             ) : null}

@@ -55,7 +55,7 @@ export default function FilterSheet({ visible, current, onApply, onClose }: Prop
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Filters</Text>
           <TouchableOpacity onPress={onClose} hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}>
-            <X size={22} color="#0f172a" />
+            <X size={22} stroke="#0f172a" />
           </TouchableOpacity>
         </View>
 
@@ -84,7 +84,7 @@ export default function FilterSheet({ visible, current, onApply, onClose }: Prop
                 onPress={() => setRadius(r)}
               >
                 <Text style={styles.radiusLabel}>{r} miles</Text>
-                {radius === r && <Check size={18} color="#ca8a04" />}
+                {radius === r && <Check size={18} stroke="#ca8a04" />}
               </TouchableOpacity>
             ))}
           </View>
@@ -105,7 +105,7 @@ export default function FilterSheet({ visible, current, onApply, onClose }: Prop
                   <Text style={[styles.listLabel, selected && styles.listLabelActive]}>
                     {label}
                   </Text>
-                  {selected && <Check size={16} color="#ca8a04" />}
+                  {selected && <Check size={16} stroke="#ca8a04" />}
                 </TouchableOpacity>
               );
             }}

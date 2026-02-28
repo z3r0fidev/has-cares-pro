@@ -38,7 +38,7 @@ export class SearchService implements OnApplicationBootstrap {
     
     if (cachedResult) {
       const responseTime = Date.now() - startTime;
-      this.analyticsService.recordSearchEvent(responseTime, { ...filters, cached: true }).catch(() => {});
+      this.analyticsService.recordSearchEvent(responseTime, { ...filters, cached: true, result_count: (cachedResult as unknown[]).length }).catch(() => {});
       return cachedResult;
     }
 
@@ -126,7 +126,7 @@ export class SearchService implements OnApplicationBootstrap {
     }));
 
     const responseTime = Date.now() - startTime;
-    this.analyticsService.recordSearchEvent(responseTime, { ...filters, cached: false }).catch(() => {});
+    this.analyticsService.recordSearchEvent(responseTime, { ...filters, cached: false, result_count: result.length }).catch(() => {});
 
     this.cache.set(cacheKey, result);
     return result;

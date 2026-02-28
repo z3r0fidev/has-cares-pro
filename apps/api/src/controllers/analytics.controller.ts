@@ -38,4 +38,18 @@ export class AnalyticsController {
     if (req.user.role !== 'admin') throw new ForbiddenException();
     return this.analyticsService.getClaimRateStats();
   }
+
+  @Get('admin/search-filters')
+  @UseGuards(JwtAuthGuard)
+  async getSearchFilters(@Request() req: AuthenticatedRequest) {
+    if (req.user.role !== 'admin') throw new ForbiddenException();
+    return this.analyticsService.getTopSearchFilters();
+  }
+
+  @Get('admin/zero-results')
+  @UseGuards(JwtAuthGuard)
+  async getZeroResults(@Request() req: AuthenticatedRequest) {
+    if (req.user.role !== 'admin') throw new ForbiddenException();
+    return this.analyticsService.getZeroResultQueries();
+  }
 }

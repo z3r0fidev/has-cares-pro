@@ -23,7 +23,7 @@ export default function SavedProviderCard({ provider, onPress }: Props) {
         <Text style={styles.specialty} numberOfLines={1}>{provider.specialties?.join(', ')}</Text>
         {provider.address && (
           <View style={styles.location}>
-            <MapPin size={11} color="#94a3b8" />
+            <MapPin size={11} stroke="#94a3b8" />
             <Text style={styles.locationText}>{provider.address.city}, {provider.address.state}</Text>
           </View>
         )}

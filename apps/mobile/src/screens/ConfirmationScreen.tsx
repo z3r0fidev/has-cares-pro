@@ -36,7 +36,7 @@ export default function ConfirmationScreen({
 
   return (
     <View style={styles.container}>
-      <CheckCircle size={72} color="#16a34a" style={styles.icon} />
+      <CheckCircle size={72} stroke="#16a34a" style={styles.icon} />
       <Text style={styles.title}>Appointment Requested</Text>
       <Text style={styles.subtitle}>
         Your request has been submitted. The physician's office will contact you to confirm.

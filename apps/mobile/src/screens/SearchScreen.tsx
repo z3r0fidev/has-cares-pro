@@ -17,7 +17,6 @@ import { AppStackParamList } from '../types/navigation';
 import { apiFetch } from '../lib/apiClient';
 import { resolveZip } from '../lib/zipCoords';
 import { TimedCache } from '../lib/storage';
-import { useAuth } from '../context/AuthContext';
 import ProviderCard from '../components/ProviderCard';
 import FilterSheet from '../components/FilterSheet';
 import EmptyState from '../components/EmptyState';
@@ -33,7 +32,6 @@ interface FilterState {
 type ProviderWithExtras = Provider & { rating?: number; reviewCount?: number; distance?: number };
 
 export default function SearchScreen({ navigation }: { navigation: NavProp }) {
-  const { token, logout } = useAuth();
   const [zip, setZip] = useState('');
   const [providers, setProviders] = useState<ProviderWithExtras[]>([]);
   const [loading, setLoading] = useState(false);
@@ -50,7 +48,7 @@ export default function SearchScreen({ navigation }: { navigation: NavProp }) {
             <Text style={hdrStyles.careTeamText}>My Care</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setFilterVisible(true)} style={hdrStyles.btn}>
-            <SlidersHorizontal size={22} color="#0f172a" />
+            <SlidersHorizontal size={22} stroke="#0f172a" />
           </TouchableOpacity>
         </View>
       ),
@@ -136,7 +134,7 @@ export default function SearchScreen({ navigation }: { navigation: NavProp }) {
           <Text style={styles.searchBtnText}>Search</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.gpsBtn} onPress={handleGpsSearch}>
-          <MapPin size={20} color="#0f172a" />
+          <MapPin size={20} stroke="#0f172a" />
         </TouchableOpacity>
       </View>
 

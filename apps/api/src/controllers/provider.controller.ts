@@ -1,4 +1,6 @@
 import { Controller, Get, Post, Patch, Body, Param, Query, NotFoundException, UseGuards, Request, ForbiddenException } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
+import { CreateReviewDto } from '../dto/review.dto';
 import { SearchService } from '../services/search.service';
 import { ProviderService } from '../services/provider.service';
 import { ReviewService } from '../services/review.service';
@@ -20,6 +22,7 @@ export class ProviderController {
   ) {}
 
   @Get()
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
   async findAll(
     @Query('lat') lat: string,
     @Query('lon') lon: string,
@@ -127,7 +130,7 @@ export class ProviderController {
   }
 
   @Post(':id/reviews')
-  async createReview(@Param('id') id: string, @Body() reviewData: { rating_total: number; content: string }) {
+  async createReview(@Param('id') id: string, @Body() reviewData: CreateReviewDto) {
     return this.reviewService.create(id, reviewData);
   }
 
