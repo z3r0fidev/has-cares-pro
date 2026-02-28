@@ -13,13 +13,6 @@
 - [ ] **`docker-compose up --build` browser smoke test** — full stack build + NYC provider ingest via CLI + visual confirmation that search and profile pages render. Needs a human in a browser; infra confirmed healthy locally.
 - [ ] **SMTP tested end-to-end** — `NotificationService` cron fires in production but has never sent a real email. Point `SMTP_*` env vars at Resend / Mailgun / SMTP4Dev and trigger a test send before launch.
 
-### Should-fix before launch — won't crash the app but will hurt users
-
-- [ ] **JWT expiry not enforced on frontend** — expired tokens live in `localStorage` indefinitely; the API returns 401 with no UX recovery (no re-login redirect, no toast). Add a `fetch` wrapper that catches 401 and redirects to `/login`.
-- [ ] **`PATCH /providers/:id` dual-write to Elasticsearch** — profile edits persist to PostgreSQL but the ES index is never updated. Providers who edit their name, specialty, or insurance appear stale in search results until a full re-index.
-- [ ] **Error boundary on provider profile page** — `apps/web/src/app/[locale]/providers/[id]/page.tsx` has no error handling; a 404/500 from the API renders a blank page with no message or redirect.
-- [ ] **Env var validation on API startup** — missing `POSTGRES_HOST`, `JWT_SECRET`, etc. cause runtime failures deep inside requests rather than a clear boot-time error. Add a `zod` or `envalid` check in `apps/api/src/main.ts`.
-
 ---
 
 ## Open Technical Debt
@@ -78,3 +71,7 @@
 - [x] Empty search state (SearchX icon + suggestions)
 - [x] Legal disclaimer for insurance logos (footer in `layout.tsx`)
 - [x] `@nestjs/schedule` bumped ^4 → ^6 for NestJS 11 compatibility
+- [x] JWT expiry handling — `apiFetch` wrapper clears token and redirects to `/login` on 401; used in provider profile page and AppointmentForm
+- [x] Error boundary on provider profile page — 404 shows "Provider not found", 5xx shows "Something went wrong", both with back-to-search link
+- [x] `PATCH /providers/:id` ES dual-write — already implemented in `ProviderController` (lines 92–108); TODO item was stale
+- [x] Env var validation at API boot — `validateEnv()` in `main.ts` exits with clear message if any required var is missing
