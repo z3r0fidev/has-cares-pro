@@ -27,6 +27,13 @@ COPY --from=builder /app/apps/web/public ./apps/web/public
 COPY --from=builder /app/apps/web/.next ./apps/web/.next
 COPY --from=builder /app/apps/web/package.json ./apps/web/package.json
 
+RUN apk add --no-cache wget
+RUN addgroup -S careequity && adduser -S careequity -G careequity && chown -R careequity:careequity /app
+USER careequity
+
 EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD wget -qO- http://localhost:3000 || exit 1
 
 CMD ["npm", "start", "--workspace=@careequity/web"]

@@ -25,6 +25,13 @@ COPY --from=builder /app/apps/api/dist ./apps/api/dist
 COPY --from=builder /app/apps/api/package.json ./apps/api/package.json
 COPY --from=builder /app/packages ./packages
 
+RUN apk add --no-cache wget
+RUN addgroup -S careequity && adduser -S careequity -G careequity && chown -R careequity:careequity /app
+USER careequity
+
 EXPOSE 3001
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD wget -qO- http://localhost:3001/health || exit 1
 
 CMD ["node", "apps/api/dist/main.js"]

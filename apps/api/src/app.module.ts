@@ -1,5 +1,7 @@
 import { Module, OnModuleInit, Global } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 import { ProviderController } from './controllers/provider.controller';
 import { AdminController } from './controllers/admin.controller';
 import { AuthController } from './controllers/auth.controller';
@@ -21,9 +23,10 @@ import { AppDataSource } from '@careequity/db';
 
 @Global()
 @Module({
-  imports: [ScheduleModule.forRoot()],
+  imports: [ScheduleModule.forRoot(), ThrottlerModule.forRoot([{ ttl: 60000, limit: 60 }])],
   controllers: [ProviderController, AdminController, AuthController, AnalyticsController, BookingController, HealthController, InvitationController],
   providers: [
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
     SearchService,
     ProviderService,
     ReviewService,

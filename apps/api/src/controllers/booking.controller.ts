@@ -3,6 +3,7 @@ import { BookingService } from '../services/booking.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { AppointmentStatus } from '@careequity/db';
 import { AuthenticatedRequest } from '../types/request.interface';
+import { CreateAppointmentDto } from '../dto/booking.dto';
 
 @Controller('booking')
 @UseGuards(JwtAuthGuard)
@@ -10,8 +11,8 @@ export class BookingController {
   constructor(private readonly bookingService: BookingService) {}
 
   @Post('appointment')
-  async create(@Request() req: AuthenticatedRequest, @Body() body: { providerId: string, date: string, reason: string }) {
-    return this.bookingService.createAppointment(req.user.sub, body.providerId, new Date(body.date), body.reason);
+  async create(@Request() req: AuthenticatedRequest, @Body() body: CreateAppointmentDto) {
+    return this.bookingService.createAppointment(req.user.sub, body.providerId, new Date(body.date), body.reason ?? '');
   }
 
   @Get('my-appointments')
