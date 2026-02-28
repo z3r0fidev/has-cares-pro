@@ -72,5 +72,27 @@
     "loginPrompt": "Inicia sesión para reclamar este perfil",
     "expired": "Este enlace de invitación ha caducado o ya fue utilizado.",
     "success": "¡Perfil reclamado! Vamos a configurarlo."
+  },
+  "Register": {
+    "title": "Crear una cuenta",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "submit": "Crear cuenta",
+    "loginLink": "¿Ya tienes una cuenta? Iniciar sesión",
+    "errorMismatch": "Las contraseñas no coinciden",
+    "errorExists": "Ya existe una cuenta con este correo electrónico",
+    "errorGeneric": "El registro falló. Por favor, inténtalo de nuevo."
+  },
+  "Patient": {
+    "careTeamTitle": "Mi equipo de atención",
+    "savedProviders": "Médicos guardados",
+    "appointments": "Próximas citas",
+    "myReviews": "Mis reseñas",
+    "noSaved": "Aún no has guardado ningún proveedor.",
+    "noAppointments": "No hay citas programadas.",
+    "noReviews": "Aún no has enviado ninguna reseña.",
+    "cancelAppointment": "Cancelar cita",
+    "cancelConfirm": "¿Estás seguro de que deseas cancelar esta cita?"
   }
 }

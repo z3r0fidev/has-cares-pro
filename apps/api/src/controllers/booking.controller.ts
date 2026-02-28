@@ -27,6 +27,11 @@ export class BookingController {
     return this.bookingService.updateStatus(id, body.status);
   }
 
+  @Patch('appointment/:id/cancel')
+  async cancel(@Param('id') id: string, @Request() req: AuthenticatedRequest) {
+    return this.bookingService.cancelAppointment(id, req.user.sub);
+  }
+
   @Post('save/:providerId')
   async toggleSave(@Param('providerId') providerId: string, @Request() req: AuthenticatedRequest) {
     return this.bookingService.toggleSavedProvider(req.user.sub, providerId);

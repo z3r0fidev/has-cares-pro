@@ -6,27 +6,39 @@ import { SPECIALTIES, INSURANCE_PROVIDERS } from "@careequity/core/src/types/ind
 import { useTranslations } from "next-intl";
 
 interface HorizontalSearchBarProps {
-  onSearch: (filters: { zip: string; specialty: string; insurance: string }) => void;
+  onSearch: (filters: { zip: string; specialty: string; insurance: string; radius: number }) => void;
   defaultInsurance?: string;
+  defaultZip?: string;
+  defaultSpecialty?: string;
+  defaultRadius?: number;
 }
 
 export default function HorizontalSearchBar({
   onSearch,
   defaultInsurance = "",
+  defaultZip = "",
+  defaultSpecialty = "",
+  defaultRadius = 50,
 }: HorizontalSearchBarProps) {
   const t = useTranslations("Search");
-  const [zip, setZip] = useState("");
-  const [specialty, setSpecialty] = useState("");
+  const [zip, setZip] = useState(defaultZip);
+  const [specialty, setSpecialty] = useState(defaultSpecialty);
   const [insurance, setInsurance] = useState(defaultInsurance);
+  const [radius, setRadius] = useState(defaultRadius);
 
   // Sync when parent pre-selects insurance via hero pills
   useEffect(() => {
     setInsurance(defaultInsurance);
   }, [defaultInsurance]);
 
+  // Sync URL-restored values on initial mount
+  useEffect(() => { setZip(defaultZip); }, [defaultZip]);
+  useEffect(() => { setSpecialty(defaultSpecialty); }, [defaultSpecialty]);
+  useEffect(() => { setRadius(defaultRadius); }, [defaultRadius]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSearch({ zip, specialty, insurance });
+    onSearch({ zip, specialty, insurance, radius });
   };
 
   return (
@@ -100,6 +112,30 @@ export default function HorizontalSearchBar({
             {INSURANCE_PROVIDERS.sort().map((i) => (
               <option key={i} value={i}>{i}</option>
             ))}
+          </select>
+        </div>
+        <ChevronDown className="text-slate-400 flex-shrink-0 absolute right-3" size={16} aria-hidden="true" />
+      </div>
+
+      <div className="hidden md:block w-px bg-slate-200 self-stretch" aria-hidden="true" />
+
+      {/* Radius */}
+      <div className="flex items-center gap-2 min-w-0 px-3 py-2 border border-slate-200 rounded-xl md:border-0 md:rounded-none focus-within:ring-2 focus-within:ring-primary/30 relative">
+        <div className="min-w-0">
+          <label htmlFor="search-radius" className="block text-[10px] font-bold text-slate-400 uppercase tracking-wide">
+            Radius
+          </label>
+          <select
+            id="search-radius"
+            value={radius}
+            onChange={(e) => setRadius(Number(e.target.value))}
+            className="text-sm text-slate-900 bg-transparent outline-none appearance-none pr-6 cursor-pointer"
+            aria-label="Search radius in miles"
+          >
+            <option value={5}>5 mi</option>
+            <option value={10}>10 mi</option>
+            <option value={25}>25 mi</option>
+            <option value={50}>50 mi</option>
           </select>
         </div>
         <ChevronDown className="text-slate-400 flex-shrink-0 absolute right-3" size={16} aria-hidden="true" />

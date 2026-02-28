@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import HeroBanner from "../../components/Search/HeroBanner";
 import HorizontalSearchBar from "../../components/Search/HorizontalSearchBar";
 import ResultsList from "../../components/Search/ResultsList";
@@ -20,14 +21,23 @@ const ZIP_MAP: Record<string, { lat: number; lon: number }> = {
   "08103": { lat: 39.9341, lon: -75.1185 },
 };
 
-export default function Home() {
+function HomeContent() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const [providers, setProviders] = useState<ProviderCardData[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [searchLocation, setSearchLocation] = useState('');
   const [selectedInsurance, setSelectedInsurance] = useState('');
-  const [lastSearchParams, setLastSearchParams] = useState<{ zip: string; specialty: string; insurance: string } | null>(null);
+  const [radius, setRadius] = useState(50);
   const [apiUrl, setApiUrl] = useState('http://localhost:3001');
+
+  // Initial URL param values for pre-populating the search bar
+  const [initZip, setInitZip] = useState('');
+  const [initSpecialty, setInitSpecialty] = useState('');
+  const [initRadius, setInitRadius] = useState(50);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -36,16 +46,42 @@ export default function Home() {
     }
   }, []);
 
-  const handleSearch = async (filters: { zip: string; specialty: string; insurance: string }) => {
+  // On mount: read URL params and auto-trigger search if any present
+  useEffect(() => {
+    const zip = searchParams.get('zip') ?? '';
+    const specialty = searchParams.get('specialty') ?? '';
+    const insurance = searchParams.get('insurance') ?? '';
+    const rad = parseInt(searchParams.get('radius') ?? '50', 10);
+
+    setInitZip(zip);
+    setInitSpecialty(specialty);
+    setInitRadius(rad);
+    setSelectedInsurance(insurance);
+    setRadius(rad);
+
+    if (zip || specialty || insurance) {
+      handleSearch({ zip, specialty, insurance, radius: rad });
+    }
+  }, []); // run once on mount — intentional, handleSearch captured at mount
+
+  const handleSearch = async (filters: { zip: string; specialty: string; insurance: string; radius: number }) => {
     setLoading(true);
     setHasSearched(true);
-    setLastSearchParams(filters);
+    setRadius(filters.radius);
     if (filters.zip) setSearchLocation(filters.zip);
+
+    // Update URL params
+    const params = new URLSearchParams();
+    if (filters.zip) params.set('zip', filters.zip);
+    if (filters.specialty) params.set('specialty', filters.specialty);
+    if (filters.insurance) params.set('insurance', filters.insurance);
+    params.set('radius', String(filters.radius));
+    router.replace(`${pathname}?${params.toString()}`);
 
     try {
       const coords = ZIP_MAP[filters.zip] || { lat: 40.7128, lon: -74.0060 };
       const res = await fetch(
-        `${apiUrl}/providers?lat=${coords.lat}&lon=${coords.lon}&radius=50&specialty=${filters.specialty}&insurance=${filters.insurance}`
+        `${apiUrl}/providers?lat=${coords.lat}&lon=${coords.lon}&radius=${filters.radius}&specialty=${filters.specialty}&insurance=${filters.insurance}`
       );
       const data = await res.json();
       setProviders(data);
@@ -59,9 +95,9 @@ export default function Home() {
   const handleInsuranceSelect = (insurance: string) => {
     const next = selectedInsurance === insurance ? '' : insurance;
     setSelectedInsurance(next);
-    // Re-run the last search with the new insurance filter if results are already shown
-    if (lastSearchParams) {
-      handleSearch({ ...lastSearchParams, insurance: next });
+    // Re-run last search with new insurance filter if already showing results
+    if (hasSearched) {
+      handleSearch({ zip: initZip || searchLocation, specialty: initSpecialty, insurance: next, radius });
     }
   };
 
@@ -75,6 +111,9 @@ export default function Home() {
         <HorizontalSearchBar
           onSearch={handleSearch}
           defaultInsurance={selectedInsurance}
+          defaultZip={initZip}
+          defaultSpecialty={initSpecialty}
+          defaultRadius={initRadius}
         />
       </div>
 
@@ -89,5 +128,13 @@ export default function Home() {
         </div>
       )}
     </main>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense>
+      <HomeContent />
+    </Suspense>
   );
 }

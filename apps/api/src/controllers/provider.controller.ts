@@ -5,7 +5,7 @@ import { ReviewService } from '../services/review.service';
 import { ClaimService } from '../services/claim.service';
 import { ImageScraperService } from '../services/image-scraper.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import { AppDataSource, Provider, VerificationRecord, VerificationStatus, Point } from '@careequity/db';
+import { AppDataSource, Provider, VerificationRecord, VerificationStatus, Point, Review } from '@careequity/db';
 import { esClient, INDEX_NAME } from '@careequity/core';
 import { AuthenticatedRequest } from '../types/request.interface';
 
@@ -37,6 +37,17 @@ export class ProviderController {
       parseInt(radius || '25', 10),
       filters,
     );
+  }
+
+  @Get('my-reviews')
+  @UseGuards(JwtAuthGuard)
+  async getMyReviews(@Request() req: AuthenticatedRequest) {
+    const reviewRepo = AppDataSource.getRepository(Review);
+    return reviewRepo.find({
+      where: { patient_id: req.user.sub },
+      relations: ['provider'],
+      order: { created_at: 'DESC' },
+    });
   }
 
   @Get('profile')

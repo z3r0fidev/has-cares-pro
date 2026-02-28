@@ -72,5 +72,27 @@
     "loginPrompt": "Sign in to claim this profile",
     "expired": "This invitation link has expired or been used.",
     "success": "Profile claimed! Let's set it up."
+  },
+  "Register": {
+    "title": "Create an Account",
+    "email": "Email address",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "submit": "Create account",
+    "loginLink": "Already have an account? Sign in",
+    "errorMismatch": "Passwords do not match",
+    "errorExists": "An account with this email already exists",
+    "errorGeneric": "Registration failed. Please try again."
+  },
+  "Patient": {
+    "careTeamTitle": "My Care Team",
+    "savedProviders": "Saved Physicians",
+    "appointments": "Upcoming Appointments",
+    "myReviews": "My Reviews",
+    "noSaved": "You haven't saved any providers yet.",
+    "noAppointments": "No upcoming appointments.",
+    "noReviews": "You haven't submitted any reviews yet.",
+    "cancelAppointment": "Cancel Appointment",
+    "cancelConfirm": "Are you sure you want to cancel this appointment?"
   }
 }
