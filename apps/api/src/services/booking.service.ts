@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { AppDataSource, Appointment, AppointmentStatus, SavedProvider, User, Provider } from '@careequity/db';
 
 @Injectable()
@@ -30,6 +30,15 @@ export class BookingService {
     const appt = await repo.findOneBy({ id });
     if (!appt) throw new NotFoundException();
     appt.status = status;
+    return repo.save(appt);
+  }
+
+  async cancelAppointment(appointmentId: string, userId: string) {
+    const repo = AppDataSource.getRepository(Appointment);
+    const appt = await repo.findOne({ where: { id: appointmentId }, relations: ['patient'] });
+    if (!appt) throw new NotFoundException();
+    if (appt.patient.id !== userId) throw new ForbiddenException();
+    appt.status = AppointmentStatus.CANCELLED;
     return repo.save(appt);
   }
 

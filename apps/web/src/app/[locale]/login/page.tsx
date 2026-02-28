@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Button } from "@careequity/ui";
 
 export default function LoginPage() {
@@ -75,7 +76,13 @@ export default function LoginPage() {
           />
         </div>
         <Button className="w-full" type="submit">Log In</Button>
-        <div className="mt-6 p-4 bg-slate-50 rounded text-xs text-slate-500 space-y-1">
+        <p className="mt-4 text-center text-sm text-slate-500">
+          New patient?{' '}
+          <Link href="/register" className="text-primary font-medium hover:underline">
+            Create an account →
+          </Link>
+        </p>
+        <div className="mt-4 p-4 bg-slate-50 rounded text-xs text-slate-500 space-y-1">
           <p><span className="font-bold">Admin:</span> admin@careequity.com / admin123</p>
           <p><span className="font-bold">Physician:</span> drjoserodriguez@example.com / password123</p>
         </div>

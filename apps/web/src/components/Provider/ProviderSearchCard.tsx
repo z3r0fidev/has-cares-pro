@@ -5,6 +5,7 @@ import { MapPin, Clock, Video } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import VerificationBadge from "./Badge";
 import StarRating from "./StarRating";
+import InsuranceLogo from "../Insurance/InsuranceLogo";
 import { trackEvent, EventType } from "../../lib/analytics";
 
 export interface ProviderCardData {
@@ -25,6 +26,7 @@ export interface ProviderCardData {
   distance?: number;
   identity_tags?: string[];
   telehealth_url?: string;
+  insurance?: string;
   nextAvailable?: string;
   availableSlots?: Array<{ date: string; times: string[] }>;
 }
@@ -135,6 +137,23 @@ export default function ProviderSearchCard({ provider }: ProviderSearchCardProps
               ))}
             </div>
           )}
+
+          {/* Insurance logos */}
+          {provider.insurance && (() => {
+            const plans = provider.insurance.split(',').map(s => s.trim()).filter(Boolean);
+            const visible = plans.slice(0, 3);
+            const overflow = plans.length - 3;
+            return visible.length > 0 ? (
+              <div className="flex items-center gap-1.5 mt-2">
+                {visible.map((plan) => (
+                  <InsuranceLogo key={plan} name={plan} size={14} />
+                ))}
+                {overflow > 0 && (
+                  <span className="text-[10px] text-slate-500 font-medium">+{overflow} more</span>
+                )}
+              </div>
+            ) : null;
+          })()}
         </div>
 
         {/* Zone 3: Availability slots */}

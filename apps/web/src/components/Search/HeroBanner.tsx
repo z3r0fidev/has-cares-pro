@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import InsuranceLogo from "@/components/Insurance/InsuranceLogo";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface InsurancePill {
   label: string;
@@ -36,31 +37,37 @@ export default function HeroBanner({ onInsuranceSelect, selectedInsurance = '' }
         <p className="text-lg text-slate-500 mb-6">{t("heroSubtitle")}</p>
 
         {/* Insurance filter pills */}
-        <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
-          {INSURANCE_PILLS.map((pill) => (
+        <TooltipProvider>
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
+            {INSURANCE_PILLS.map((pill) => (
+              <Tooltip key={pill.value}>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => onInsuranceSelect(pill.value)}
+                    className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all whitespace-nowrap border ${
+                      selectedInsurance === pill.value
+                        ? 'bg-primary/10 border-primary text-slate-900 font-semibold ring-2 ring-primary/30'
+                        : 'bg-white border-slate-200 text-slate-700 hover:border-primary hover:shadow-sm'
+                    }`}
+                    aria-pressed={selectedInsurance === pill.value}
+                    aria-label={`Filter by ${pill.label} insurance`}
+                  >
+                    <InsuranceLogo name={pill.value} size={16} />
+                    {pill.label}
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>{pill.label}</TooltipContent>
+              </Tooltip>
+            ))}
             <button
-              key={pill.value}
-              onClick={() => onInsuranceSelect(pill.value)}
-              className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all whitespace-nowrap border ${
-                selectedInsurance === pill.value
-                  ? 'bg-primary/10 border-primary text-slate-900 font-semibold ring-2 ring-primary/30'
-                  : 'bg-white border-slate-200 text-slate-700 hover:border-primary hover:shadow-sm'
-              }`}
-              aria-pressed={selectedInsurance === pill.value}
-              aria-label={`Filter by ${pill.label} insurance`}
+              className="flex-shrink-0 px-4 py-2 text-sm font-medium text-primary hover:underline whitespace-nowrap"
+              onClick={() => {}}
+              aria-label="Add your insurance plan"
             >
-              <InsuranceLogo name={pill.value} size={16} />
-              {pill.label}
+              + {t("addInsurance")}
             </button>
-          ))}
-          <button
-            className="flex-shrink-0 px-4 py-2 text-sm font-medium text-primary hover:underline whitespace-nowrap"
-            onClick={() => {}}
-            aria-label="Add your insurance plan"
-          >
-            + {t("addInsurance")}
-          </button>
-        </div>
+          </div>
+        </TooltipProvider>
       </div>
     </section>
   );
