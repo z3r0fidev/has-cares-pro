@@ -49,10 +49,10 @@ export async function createEligibilityAdapter(): Promise<IEligibilityAdapter> {
   const clientSecret = process.env['AVAILITY_CLIENT_SECRET'];
 
   if (clientId && clientSecret) {
-    const { AvailityEligibilityAdapter } = await import('./AvailityEligibilityAdapter.js');
+    const { AvailityEligibilityAdapter } = await import('./AvailityEligibilityAdapter');
     return new AvailityEligibilityAdapter(clientId, clientSecret);
   }
 
-  const { MockEligibilityAdapter } = await import('./MockEligibilityAdapter.js');
+  const { MockEligibilityAdapter } = await import('./MockEligibilityAdapter');
   return new MockEligibilityAdapter();
 }
