@@ -1,7 +1,7 @@
 # CareEquity — Product Roadmap
 
 > Strategic development plan for the CareEquity minority physician locator platform.
-> Last updated: 2026-02-27
+> Last updated: 2026-02-28
 
 ---
 
@@ -15,7 +15,12 @@ CareEquity connects patients from underserved communities with minority and cult
 
 | Milestone | Branch | Status | Shipped |
 |---|---|---|---|
-| **001 — Physician Locator MVP** | `001-physician-locator` | Feature-complete, pre-merge | 2026-02-27 |
+| **001 — Physician Locator MVP** | `001-physician-locator` | Merged to main | 2026-02-27 |
+| **002 — Provider Growth & Trust** | — | Not started | — |
+| **003 — Patient Experience** | — | Partially complete (see below) | — |
+| **004 — Mobile Parity** | — | Not started | — |
+| **005 — Platform & Scale** | — | Partially complete (see below) | — |
+| **006 — Community & Growth** | — | Not started | — |
 
 ---
 
@@ -41,13 +46,18 @@ CareEquity connects patients from underserved communities with minority and cult
 | FR-009 | 90-day insurance re-verification email notifications | Done |
 | Onboarding | `.env.example`, quickstart.md fix | Done |
 
-### Pre-Merge Remaining
+### Post-Launch Polish (from 001 branch, merged to main)
 
-See `TODO.md` → *Branch: 001-physician-locator — Pre-Merge Checklist* for the full list. Key items:
-- Remote push (SSH/HTTPS)
-- End-to-end Docker smoke test
-- Contract tests against live environment
-- Selected-state for insurance filter pills
+- CI pipeline (lint, type-check, unit tests, e2e tests with Postgres + ES)
+- ES index auto-creation on bootstrap (`onApplicationBootstrap`)
+- `GET /health` endpoint (`{ status, db, es }`)
+- JWT expiry handling (`apiFetch` wrapper → redirect to `/login` on 401)
+- Provider profile error boundary (404 / 5xx screens with back-to-search)
+- Env var boot validation (`validateEnv()` in `main.ts`)
+- Insurance filter pills wired to search (active state + auto-re-run)
+- Booking confirmation page (`/[locale]/booking/confirmation`)
+- Empty search state (icon + suggestions)
+- Legal disclaimer for insurance logos (footer)
 
 ---
 
@@ -84,16 +94,16 @@ See `TODO.md` → *Branch: 001-physician-locator — Pre-Merge Checklist* for th
 ### Features
 
 #### Search & Discovery
-- [ ] **Active insurance filter pill state** — selected pills show visual confirmation (ring, filled-gold variant)
-- [ ] **Insurance tooltip on pills** — shadcn `<Tooltip>` showing full plan name on hover
+- [x] **Active insurance filter pill state** — selected pills show gold ring + tint + `aria-pressed`; clicking again deselects
+- [x] **Search results empty state** — `SearchX` icon + heading + actionable suggestions when zero results returned
+- [ ] **Insurance tooltip on pills** — shadcn `<Tooltip>` showing full plan name on hover/focus
 - [ ] **`ProviderSearchCard` insurance row** — show 2–3 accepted insurance logos inline on the search result card
-- [ ] **Search results empty state** — friendly "No providers found" UI with suggestions (expand radius, remove filters)
 - [ ] **Search URL persistence** — current search state (location, specialty, insurance) encoded in URL params for sharing and back-navigation
 - [ ] **Map view** — optional map alongside results list showing provider pins (Mapbox or Leaflet)
 - [ ] **Radius selector** — slider to adjust search radius (5 / 10 / 25 / 50 miles)
 
 #### Booking & Appointments
-- [ ] **Booking confirmation page** — dedicated `/booking/confirmation` page with appointment summary and iCal download
+- [x] **Booking confirmation page** — `/[locale]/booking/confirmation` with provider name, date, reason, and back-to-profile link (EN/ES/AR)
 - [ ] **Appointment status management** — patients can view, reschedule, and cancel upcoming appointments from `/patient/care-team`
 - [ ] **SMS appointment reminders** — integrate Twilio to send confirmation + 24h reminder texts
 - [ ] **Calendar sync** — Google Calendar / iCal export for confirmed appointments
@@ -102,7 +112,7 @@ See `TODO.md` → *Branch: 001-physician-locator — Pre-Merge Checklist* for th
 - [ ] **Patient registration** — currently only provider and admin roles exist in the portal; add patient self-registration flow
 - [ ] **Care team page** — `/patient/care-team` shows saved providers; currently scaffolded but not fully wired
 - [ ] **Review history** — patients can view and manage their own submitted reviews
-- [ ] **JWT token refresh** — implement refresh token flow; expired access tokens currently return 401 with no UX recovery
+- [x] **JWT expiry handling** — `apiFetch` wrapper clears token and redirects to `/<locale>/login` on 401 (full refresh token flow still pending)
 
 ---
 
@@ -128,9 +138,11 @@ See `TODO.md` → *Branch: 001-physician-locator — Pre-Merge Checklist* for th
 
 ### Infrastructure
 
-- [ ] **CI/CD pipeline** — GitHub Actions: lint, type-check, unit tests, build, and Docker image publish on every PR
+- [x] **CI/CD pipeline** — `.github/workflows/ci.yml`: lint/type-check, unit tests (packages/core), e2e tests (API + Postgres + ES) on every PR
+- [x] **Health check endpoint** — `GET /health` returns `{ status, db, es }` via `HealthController`
+- [x] **Elasticsearch index auto-creation** — `SearchService.onApplicationBootstrap` creates `providers` index if absent
+- [x] **Env var boot validation** — `validateEnv()` in `main.ts` exits with clear error if required vars are missing
 - [ ] **Staging environment** — isolated staging stack mirroring production; automated deployments on merge to `main`
-- [ ] **Health check endpoint** — `GET /health` returning `{ status, db, es, uptime }` for uptime monitoring
 - [ ] **Rate limiting** — per-IP rate limiting on search endpoints via `@nestjs/throttler`
 - [ ] **Elasticsearch index versioning** — blue-green index aliases for zero-downtime re-indexing
 - [ ] **Database connection pooling** — configure TypeORM pooling for production concurrent load
