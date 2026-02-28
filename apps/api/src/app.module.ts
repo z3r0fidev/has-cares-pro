@@ -9,6 +9,10 @@ import { AnalyticsController } from './controllers/analytics.controller';
 import { BookingController } from './controllers/booking.controller';
 import { HealthController } from './controllers/health.controller';
 import { InvitationController } from './controllers/invitation.controller';
+import { MessagingController } from './controllers/messaging.controller';
+import { ReferralController } from './controllers/referral.controller';
+import { EligibilityController } from './controllers/eligibility.controller';
+import { FhirController } from './controllers/fhir.controller';
 import { SearchService } from './services/search.service';
 import { ProviderService } from './services/provider.service';
 import { ReviewService } from './services/review.service';
@@ -20,12 +24,15 @@ import { BookingService } from './services/booking.service';
 import { NotificationService } from './services/notification.service';
 import { SmsService } from './services/sms.service';
 import { InvitationService } from './services/invitation.service';
+import { MessagingService } from './services/messaging.service';
+import { EligibilityService } from './services/eligibility.service';
+import { FhirService } from './services/fhir.service';
 import { AppDataSource } from '@careequity/db';
 
 @Global()
 @Module({
   imports: [ScheduleModule.forRoot(), ThrottlerModule.forRoot([{ ttl: 60000, limit: 60 }])],
-  controllers: [ProviderController, AdminController, AuthController, AnalyticsController, BookingController, HealthController, InvitationController],
+  controllers: [ProviderController, AdminController, AuthController, AnalyticsController, BookingController, HealthController, InvitationController, MessagingController, ReferralController, EligibilityController, FhirController],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     SearchService,
@@ -39,6 +46,9 @@ import { AppDataSource } from '@careequity/db';
     NotificationService,
     SmsService,
     InvitationService,
+    MessagingService,
+    EligibilityService,
+    FhirService,
     {
       provide: 'DATA_SOURCE',
       useFactory: async () => {

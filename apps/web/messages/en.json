@@ -85,6 +85,51 @@
     "errorExists": "An account with this email already exists",
     "errorGeneric": "Registration failed. Please try again."
   },
+  "Messaging": {
+    "title": "Messages",
+    "send": "Send",
+    "placeholder": "Type a message… (Ctrl+Enter to send)",
+    "noMessages": "No messages yet",
+    "unread": "{count} unread",
+    "phiRedacted": "(PHI redacted)"
+  },
+  "Directory": {
+    "title": "{specialty} Doctors in {state}",
+    "subtitle": "Browse culturally competent {specialty} physicians in {state}, verified by CareEquity. Find a doctor who understands your background.",
+    "searchLink": "Search {specialty} Physicians Near You",
+    "noProviders": "No providers found in this area yet. Use the live search to find physicians near you."
+  },
+  "Resources": {
+    "title": "Community Health Resources",
+    "subtitle": "Culturally relevant health education for the communities we serve — from heart health to mental wellness.",
+    "readMore": "Read article",
+    "relatedProviders": "Find Related Physicians",
+    "filterBySpecialty": "Filter by specialty",
+    "noArticles": "No articles found for this specialty.",
+    "backToResources": "Back to Resources",
+    "share": "Share"
+  },
+  "Eligibility": {
+    "checkCoverage": "Check My Coverage",
+    "covered": "You're covered",
+    "notCovered": "Not in network",
+    "copay": "Copay",
+    "deductible": "Deductible"
+  },
+  "Fhir": {
+    "liveAvailability": "Live availability from {source}"
+  },
+  "Review": {
+    "verifiedPatient": "Verified Patient"
+  },
+  "Referral": {
+    "title": "Refer a Patient",
+    "toProvider": "Refer to Provider (search by name)",
+    "patient": "Patient Email",
+    "note": "Optional note",
+    "submit": "Send Referral",
+    "success": "Referral sent successfully!"
+  },
   "Patient": {
     "careTeamTitle": "My Care Team",
     "savedProviders": "Saved Physicians",
