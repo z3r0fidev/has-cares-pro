@@ -18,13 +18,13 @@ export default function StarRating({ rating, count, size = 16 }: Props) {
         {/* Gray background stars */}
         <View style={styles.starsRow}>
           {[...Array(5)].map((_, i) => (
-            <Star key={i} size={size} color="#94a3b8" fill="#e2e8f0" />
+            <Star key={i} size={size} stroke="#94a3b8" fill="#e2e8f0" />
           ))}
         </View>
         {/* Amber overlay stars, clipped by width */}
         <View style={[styles.starsRow, styles.overlay, { width: `${fillPercent}%` }]}>
           {[...Array(5)].map((_, i) => (
-            <Star key={i} size={size} color="#F59E0B" fill="#F59E0B" />
+            <Star key={i} size={size} stroke="#F59E0B" fill="#F59E0B" />
           ))}
         </View>
       </View>

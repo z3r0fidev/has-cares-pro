@@ -19,7 +19,7 @@ export default function VerificationBadge({ tier, size = 'md' }: Props) {
 
   return (
     <View style={[styles.badge, { backgroundColor: config.bg }, isSmall && styles.sm]}>
-      <ShieldCheck size={isSmall ? 10 : 14} color={config.color} />
+      <ShieldCheck size={isSmall ? 10 : 14} stroke={config.color} />
       {!isSmall && <Text style={[styles.label, { color: config.color }]}>{config.label}</Text>}
     </View>
   );

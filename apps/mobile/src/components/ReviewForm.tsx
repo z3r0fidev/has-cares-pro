@@ -39,7 +39,7 @@ export default function ReviewForm({ onSubmit }: Props) {
           <TouchableOpacity key={n} onPress={() => setRating(n)} hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}>
             <Star
               size={28}
-              color={n <= rating ? '#F59E0B' : '#cbd5e1'}
+              stroke={n <= rating ? '#F59E0B' : '#cbd5e1'}
               fill={n <= rating ? '#F59E0B' : 'transparent'}
             />
           </TouchableOpacity>

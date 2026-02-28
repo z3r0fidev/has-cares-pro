@@ -15,7 +15,6 @@ import { AppStackParamList } from '../types/navigation';
 import { apiFetch } from '../lib/apiClient';
 import { useAuth } from '../context/AuthContext';
 import LoadingSpinner from '../components/LoadingSpinner';
-import EmptyState from '../components/EmptyState';
 import AppointmentCard from '../components/AppointmentCard';
 import SavedProviderCard from '../components/SavedProviderCard';
 
@@ -43,7 +42,7 @@ export default function CareTeamScreen({ navigation }: { navigation: NavProp }) 
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity onPress={handleLogout} style={{ paddingRight: 4 }}>
-          <LogOut size={22} color="#0f172a" />
+          <LogOut size={22} stroke="#0f172a" />
         </TouchableOpacity>
       ),
     });

@@ -111,7 +111,7 @@ export default function BookingScreen({
         {/* Selected slot summary */}
         {selectedDate && selectedTime && (
           <View style={styles.selectedBox}>
-            <Calendar size={16} color="#ca8a04" />
+            <Calendar size={16} stroke="#ca8a04" />
             <Text style={styles.selectedText}>{selectedTime} · {selectedDate}</Text>
           </View>
         )}
