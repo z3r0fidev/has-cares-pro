@@ -2,8 +2,95 @@
 
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { CheckCircle, CalendarDays, FileText, User } from "lucide-react";
+import { CheckCircle, CalendarDays, FileText, User, Calendar, Download } from "lucide-react";
 import { Link } from "../../../../i18n/routing";
+
+/**
+ * Formats a Date into the iCalendar date-time string format (UTC).
+ * Example output: "20260301T140000Z"
+ */
+function toICSDate(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return (
+    date.getUTCFullYear().toString() +
+    pad(date.getUTCMonth() + 1) +
+    pad(date.getUTCDate()) +
+    "T" +
+    pad(date.getUTCHours()) +
+    pad(date.getUTCMinutes()) +
+    pad(date.getUTCSeconds()) +
+    "Z"
+  );
+}
+
+/**
+ * Builds a minimal RFC 5545-compliant .ics string for a single appointment
+ * event, then triggers a browser Blob download.
+ */
+function downloadICS(params: {
+  providerName: string;
+  startDate: Date;
+  endDate: Date;
+  reason: string;
+}) {
+  const uid = `${Date.now()}-careequity@careequity.app`;
+  const now = toICSDate(new Date());
+  const start = toICSDate(params.startDate);
+  const end = toICSDate(params.endDate);
+  const summary = `Appointment with ${params.providerName}`;
+  const description = params.reason ? params.reason.replace(/\n/g, "\\n") : "";
+
+  // Each line in an .ics file must be at most 75 octets; long lines are folded
+  // with CRLF + single space. For simplicity we keep values short here.
+  const ics = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//CareEquity//CareEquity//EN",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+    "BEGIN:VEVENT",
+    `UID:${uid}`,
+    `DTSTAMP:${now}`,
+    `DTSTART:${start}`,
+    `DTEND:${end}`,
+    `SUMMARY:${summary}`,
+    `DESCRIPTION:${description}`,
+    "STATUS:TENTATIVE",
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].join("\r\n");
+
+  const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "appointment.ics";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/**
+ * Builds a Google Calendar deep-link URL for the given appointment details.
+ * No API key is required — this uses the public "render" endpoint.
+ */
+function buildGoogleCalendarUrl(params: {
+  providerName: string;
+  startDate: Date;
+  endDate: Date;
+  reason: string;
+}): string {
+  const fmt = (d: Date) => toICSDate(d);
+  const base = "https://calendar.google.com/calendar/render";
+  const query = new URLSearchParams({
+    action: "TEMPLATE",
+    text: `Appointment with ${params.providerName}`,
+    dates: `${fmt(params.startDate)}/${fmt(params.endDate)}`,
+    details: params.reason,
+  });
+  return `${base}?${query.toString()}`;
+}
 
 export default function BookingConfirmationPage() {
   const t = useTranslations("Booking");
@@ -12,7 +99,7 @@ export default function BookingConfirmationPage() {
   const providerName = params.get("providerName");
   const providerId = params.get("providerId");
   const rawDate = params.get("date");
-  const reason = params.get("reason");
+  const reason = params.get("reason") ?? "";
 
   const formattedDate = rawDate
     ? new Date(rawDate).toLocaleString(undefined, {
@@ -23,6 +110,21 @@ export default function BookingConfirmationPage() {
         hour: "2-digit",
         minute: "2-digit",
       })
+    : null;
+
+  // Derive start/end dates for calendar integrations (default to 1-hour slot)
+  const startDate = rawDate ? new Date(rawDate) : null;
+  const endDate = startDate ? new Date(startDate.getTime() + 60 * 60 * 1000) : null;
+
+  const showCalendar = !!(providerName && startDate && endDate);
+
+  const calendarParams = showCalendar
+    ? {
+        providerName: providerName!,
+        startDate: startDate!,
+        endDate: endDate!,
+        reason,
+      }
     : null;
 
   return (
@@ -78,8 +180,40 @@ export default function BookingConfirmationPage() {
           )}
         </div>
 
+        {/* Add to Calendar */}
+        {showCalendar && calendarParams && (
+          <div className="mt-6 p-4 rounded-xl border border-slate-100 bg-slate-50">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
+              {t("addToCalendar")}
+            </p>
+            <div className="flex flex-col gap-2">
+              {/* Google Calendar */}
+              <a
+                href={buildGoogleCalendarUrl(calendarParams)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-slate-300 hover:bg-slate-50 transition-colors"
+                aria-label="Add to Google Calendar (opens in new tab)"
+              >
+                <Calendar size={16} className="text-[#1A73E8] flex-shrink-0" aria-hidden="true" />
+                Google Calendar
+              </a>
+
+              {/* Download .ics */}
+              <button
+                onClick={() => downloadICS(calendarParams)}
+                className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:border-slate-300 hover:bg-slate-50 transition-colors w-full text-left"
+                aria-label="Download iCalendar file (.ics) for Apple Calendar, Outlook, and others"
+              >
+                <Download size={16} className="text-slate-500 flex-shrink-0" aria-hidden="true" />
+                Download .ics (Apple Calendar, Outlook)
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Actions */}
-        <div className="mt-8 flex flex-col gap-3">
+        <div className="mt-6 flex flex-col gap-3">
           {providerId && (
             <Link
               href={`/providers/${providerId}`}

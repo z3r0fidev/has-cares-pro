@@ -35,7 +35,8 @@
     "confirmationDate": "Requested date & time",
     "confirmationReason": "Reason for visit",
     "confirmationBackSearch": "Back to search",
-    "confirmationBackProfile": "Back to provider profile"
+    "confirmationBackProfile": "Back to provider profile",
+    "addToCalendar": "Add to your calendar"
   },
   "Dashboard": {
     "title": "Provider Dashboard",

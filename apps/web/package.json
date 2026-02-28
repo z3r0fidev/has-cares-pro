@@ -14,6 +14,7 @@
     "@hookform/resolvers": "^5.2.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "leaflet": "^1.9.4",
     "lucide-react": "^0.468.0",
     "next": "^16.1.6",
     "next-intl": "^3.26.1",
@@ -22,12 +23,14 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.71.2",
+    "react-leaflet": "^4.2.1",
     "sonner": "^2.0.7",
     "tailwind-merge": "^2.6.1",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.0",
+    "@types/leaflet": "^1.9.14",
     "@types/node": "^20.17.9",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.1",

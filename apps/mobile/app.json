@@ -7,12 +7,14 @@
     "userInterfaceStyle": "light",
     "icon": "./assets/icon.png",
     "splash": {
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "org.careequity.app",
+      "buildNumber": "1",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "CareEquity uses your location to find nearby physicians.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "CareEquity uses your location to find nearby physicians."
@@ -20,9 +22,11 @@
     },
     "android": {
       "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#F5BE00"
       },
       "package": "org.careequity.app",
+      "versionCode": 1,
       "permissions": [
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
@@ -45,7 +49,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "careequity-app"
+        "projectId": "REPLACE_WITH_EAS_PROJECT_ID"
       }
     }
   }

@@ -2,10 +2,13 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import * as nodemailer from 'nodemailer';
 import { AppDataSource, User, Provider } from '@careequity/db';
+import { SmsService } from './sms.service';
 
 @Injectable()
 export class NotificationService {
   private readonly logger = new Logger(NotificationService.name);
+
+  constructor(private readonly smsService: SmsService) {}
 
   async sendInsuranceVerificationEmail(email: string, name: string): Promise<void> {
     const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD, SMTP_FROM } = process.env;
@@ -15,10 +18,12 @@ export class NotificationService {
       return;
     }
 
+    const port = Number(SMTP_PORT) || 587;
     const transporter = nodemailer.createTransport({
       host: SMTP_HOST,
-      port: Number(SMTP_PORT) || 587,
-      secure: false,
+      port,
+      // Use implicit TLS on port 465; STARTTLS on all other ports
+      secure: port === 465,
       auth: { user: SMTP_USER, pass: SMTP_PASSWORD },
     });
 
@@ -62,6 +67,11 @@ export class NotificationService {
     for (const user of users) {
       try {
         await this.sendInsuranceVerificationEmail(user.email, user.provider!.name);
+
+        if (user.phone) {
+          await this.smsService.sendAppointmentReminder(user.phone, user.provider!.name, 'tomorrow');
+        }
+
         await AppDataSource.getRepository(Provider).update(user.provider!.id, {
           last_insurance_notified_at: new Date(),
         });

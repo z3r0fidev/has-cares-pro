@@ -19,6 +19,9 @@ export class User {
   })
   role!: 'patient' | 'provider' | 'admin';
 
+  @Column({ type: 'varchar', length: 20, nullable: true })
+  phone!: string | null;
+
   @OneToOne(() => Provider, { nullable: true })
   @JoinColumn()
   provider!: Provider | null;

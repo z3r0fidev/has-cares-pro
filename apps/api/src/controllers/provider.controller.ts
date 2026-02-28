@@ -78,6 +78,13 @@ export class ProviderController {
       throw new ForbiddenException('You can only update your own profile');
     }
 
+    // Prevent providers from overwriting privilege-sensitive fields.
+    // Only admins may change verification_tier or is_claimed.
+    if (req.user.role !== 'admin') {
+      delete updateData.verification_tier;
+      delete updateData.is_claimed;
+    }
+
     const repo = AppDataSource.getRepository(Provider);
     const provider = await repo.findOneBy({ id });
     if (!provider) throw new NotFoundException();
@@ -130,8 +137,14 @@ export class ProviderController {
   }
 
   @Post(':id/reviews')
-  async createReview(@Param('id') id: string, @Body() reviewData: CreateReviewDto) {
-    return this.reviewService.create(id, reviewData);
+  @UseGuards(JwtAuthGuard)
+  async createReview(
+    @Param('id') id: string,
+    @Body() reviewData: CreateReviewDto,
+    @Request() req: AuthenticatedRequest,
+  ) {
+    // Attach the authenticated patient's ID to the review so it is traceable
+    return this.reviewService.create(id, { ...reviewData, patient_id: req.user.sub });
   }
 
   @Post(':id/claim')

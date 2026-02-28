@@ -1,11 +1,23 @@
 "use client";
 
 import { useState, useEffect, Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { List, Map as MapIcon } from 'lucide-react';
 import HeroBanner from "../../components/Search/HeroBanner";
 import HorizontalSearchBar from "../../components/Search/HorizontalSearchBar";
 import ResultsList from "../../components/Search/ResultsList";
 import { ProviderCardData } from "../../components/Provider/ProviderSearchCard";
+
+// Dynamic import with ssr:false because Leaflet requires window
+const MapView = dynamic(
+  () => import("../../components/Search/MapView"),
+  { ssr: false, loading: () => (
+    <div className="h-[520px] w-full rounded-xl overflow-hidden shadow bg-slate-100 flex items-center justify-center">
+      <span className="text-sm text-slate-500">Loading map…</span>
+    </div>
+  )}
+);
 
 // Local ZIP to Coordinate mapping for prototype regions
 const ZIP_MAP: Record<string, { lat: number; lon: number }> = {
@@ -33,6 +45,7 @@ function HomeContent() {
   const [selectedInsurance, setSelectedInsurance] = useState('');
   const [radius, setRadius] = useState(50);
   const [apiUrl, setApiUrl] = useState('http://localhost:3001');
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
 
   // Initial URL param values for pre-populating the search bar
   const [initZip, setInitZip] = useState('');
@@ -101,6 +114,13 @@ function HomeContent() {
     }
   };
 
+  const handleProviderSelect = (id: string) => {
+    // pathname for the home page is "/en" (or "/es", "/ar").
+    // Extract the locale segment so the navigation respects i18n prefixes.
+    const localeSegment = pathname.split('/')[1] ?? 'en';
+    router.push(`/${localeSegment}/providers/${id}`);
+  };
+
   return (
     <main>
       {/* Hero banner with insurance pills */}
@@ -120,11 +140,48 @@ function HomeContent() {
       {/* Results */}
       {(hasSearched || loading) && (
         <div className="container mx-auto max-w-4xl px-4 pb-12">
-          <ResultsList
-            providers={providers}
-            loading={loading}
-            location={searchLocation}
-          />
+          {/* List / Map toggle — only shown when there are results */}
+          {!loading && providers.length > 0 && (
+            <div className="flex gap-2 mb-4" role="group" aria-label="Results view">
+              <button
+                onClick={() => setViewMode('list')}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold border transition-colors ${
+                  viewMode === 'list'
+                    ? 'bg-[#F5BE00] text-slate-900 border-[#F5BE00] shadow-sm'
+                    : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
+                }`}
+                aria-pressed={viewMode === 'list'}
+              >
+                <List size={15} aria-hidden="true" />
+                List
+              </button>
+              <button
+                onClick={() => setViewMode('map')}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold border transition-colors ${
+                  viewMode === 'map'
+                    ? 'bg-[#F5BE00] text-slate-900 border-[#F5BE00] shadow-sm'
+                    : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
+                }`}
+                aria-pressed={viewMode === 'map'}
+              >
+                <MapIcon size={15} aria-hidden="true" />
+                Map
+              </button>
+            </div>
+          )}
+
+          {viewMode === 'list' || loading ? (
+            <ResultsList
+              providers={providers}
+              loading={loading}
+              location={searchLocation}
+            />
+          ) : (
+            <MapView
+              providers={providers}
+              onProviderSelect={handleProviderSelect}
+            />
+          )}
         </div>
       )}
     </main>

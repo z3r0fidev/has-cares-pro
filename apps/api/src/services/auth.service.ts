@@ -4,7 +4,7 @@ import { AuthUtils } from '@careequity/core';
 
 @Injectable()
 export class AuthService {
-  async register(email: string, password: string, role: 'patient' | 'provider' | 'admin' = 'patient') {
+  async register(email: string, password: string, role: 'patient' | 'provider' = 'patient') {
     const repo = AppDataSource.getRepository(User);
     const exists = await repo.findOneBy({ email });
     if (exists) throw new ConflictException('User already exists');
