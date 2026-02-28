@@ -86,6 +86,7 @@ export interface User {
   id: string;
   email: string;
   role: 'patient' | 'admin' | 'provider';
+  phone?: string | null;
 }
 
 export interface AuthPayload {

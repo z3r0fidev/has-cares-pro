@@ -35,7 +35,8 @@
     "confirmationDate": "Fecha y hora solicitadas",
     "confirmationReason": "Motivo de la visita",
     "confirmationBackSearch": "Volver a la búsqueda",
-    "confirmationBackProfile": "Volver al perfil del proveedor"
+    "confirmationBackProfile": "Volver al perfil del proveedor",
+    "addToCalendar": "Añadir a tu calendario"
   },
   "Dashboard": {
     "title": "Panel del Proveedor",

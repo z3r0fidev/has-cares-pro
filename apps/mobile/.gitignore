@@ -1,0 +1,19 @@
+# Sensitive credentials — never commit these
+google-play-key.json
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Expo / Metro
+.expo/
+web-build/
+*.orig.*
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db

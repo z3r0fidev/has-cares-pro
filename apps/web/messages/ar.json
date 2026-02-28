@@ -35,7 +35,8 @@
     "confirmationDate": "التاريخ والوقت المطلوبان",
     "confirmationReason": "سبب الزيارة",
     "confirmationBackSearch": "العودة إلى البحث",
-    "confirmationBackProfile": "العودة إلى ملف مزود الخدمة"
+    "confirmationBackProfile": "العودة إلى ملف مزود الخدمة",
+    "addToCalendar": "إضافة إلى التقويم"
   },
   "Dashboard": {
     "title": "لوحة تحكم مزود الخدمة",

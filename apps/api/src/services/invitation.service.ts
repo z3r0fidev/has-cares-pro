@@ -74,10 +74,12 @@ export class InvitationService {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
     const claimUrl = `${baseUrl}/en/claim/${token}`;
 
+    const port = Number(SMTP_PORT) || 587;
     const transporter = nodemailer.createTransport({
       host: SMTP_HOST,
-      port: Number(SMTP_PORT) || 587,
-      secure: false,
+      port,
+      // Use implicit TLS on port 465; STARTTLS on all other ports (587, 25, etc.)
+      secure: port === 465,
       auth: { user: SMTP_USER, pass: SMTP_PASS },
     });
 

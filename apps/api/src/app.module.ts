@@ -18,6 +18,7 @@ import { ImageScraperService } from './services/image-scraper.service';
 import { AnalyticsService } from './services/analytics.service';
 import { BookingService } from './services/booking.service';
 import { NotificationService } from './services/notification.service';
+import { SmsService } from './services/sms.service';
 import { InvitationService } from './services/invitation.service';
 import { AppDataSource } from '@careequity/db';
 
@@ -36,6 +37,7 @@ import { AppDataSource } from '@careequity/db';
     AnalyticsService,
     BookingService,
     NotificationService,
+    SmsService,
     InvitationService,
     {
       provide: 'DATA_SOURCE',
