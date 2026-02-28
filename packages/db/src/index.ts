@@ -7,3 +7,4 @@ export * from './entities/AnalyticsEvent';
 export * from './entities/Appointment';
 export * from './entities/SavedProvider';
 export * from './entities/CareHistory';
+export * from './entities/ProviderInvitation';

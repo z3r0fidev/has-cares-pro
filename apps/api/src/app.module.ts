@@ -6,6 +6,7 @@ import { AuthController } from './controllers/auth.controller';
 import { AnalyticsController } from './controllers/analytics.controller';
 import { BookingController } from './controllers/booking.controller';
 import { HealthController } from './controllers/health.controller';
+import { InvitationController } from './controllers/invitation.controller';
 import { SearchService } from './services/search.service';
 import { ProviderService } from './services/provider.service';
 import { ReviewService } from './services/review.service';
@@ -15,12 +16,13 @@ import { ImageScraperService } from './services/image-scraper.service';
 import { AnalyticsService } from './services/analytics.service';
 import { BookingService } from './services/booking.service';
 import { NotificationService } from './services/notification.service';
+import { InvitationService } from './services/invitation.service';
 import { AppDataSource } from '@careequity/db';
 
 @Global()
 @Module({
   imports: [ScheduleModule.forRoot()],
-  controllers: [ProviderController, AdminController, AuthController, AnalyticsController, BookingController, HealthController],
+  controllers: [ProviderController, AdminController, AuthController, AnalyticsController, BookingController, HealthController, InvitationController],
   providers: [
     SearchService,
     ProviderService,
@@ -31,6 +33,7 @@ import { AppDataSource } from '@careequity/db';
     AnalyticsService,
     BookingService,
     NotificationService,
+    InvitationService,
     {
       provide: 'DATA_SOURCE',
       useFactory: async () => {

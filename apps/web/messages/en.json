@@ -46,5 +46,31 @@
     "verStatus": "Verification Status",
     "upgrade": "Request Tier Upgrade",
     "maxVer": "Maximum Verification Reached"
+  },
+  "Portal": {
+    "completeness": "Profile {score}% complete",
+    "completeProfile": "Complete your profile",
+    "missingFields": "Missing: {fields}",
+    "bio": "About You",
+    "bioPlaceholder": "Tell patients about your background and approach to care",
+    "identityTags": "Cultural Competency",
+    "telehealthBadge": "Telehealth"
+  },
+  "Onboarding": {
+    "title": "Complete Your Profile",
+    "step1": "Profile Photo",
+    "step2": "Your Story",
+    "step3": "Availability",
+    "step4": "Insurance & Specialties",
+    "saveAndContinue": "Save & Continue",
+    "skip": "Skip for now",
+    "finish": "Finish"
+  },
+  "Claim": {
+    "title": "Claim Your Profile",
+    "cta": "Claim this profile",
+    "loginPrompt": "Sign in to claim this profile",
+    "expired": "This invitation link has expired or been used.",
+    "success": "Profile claimed! Let's set it up."
   }
 }

@@ -75,6 +75,9 @@ export class Provider {
     sunday?: string;
   };
 
+  @Column({ type: 'text', nullable: true })
+  bio!: string | null;
+
   @Column({ type: 'timestamptz', nullable: true, default: null })
   last_insurance_notified_at!: Date | null;
 

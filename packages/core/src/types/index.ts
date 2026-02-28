@@ -16,6 +16,21 @@ export const SPECIALTIES = [
   "Pediatric Surgery",
 ];
 
+export const IDENTITY_TAGS = [
+  'Black/African American',
+  'Hispanic/Latino',
+  'Asian American',
+  'Middle Eastern/Arab American',
+  'Native American',
+  'LGBTQ+ Affirming',
+  "Women's Health Focus",
+  'Bilingual (Spanish)',
+  'Bilingual (Arabic)',
+  'Muslim-Friendly',
+  'Faith-Based Practice',
+  'Culturally Sensitive Care',
+];
+
 export const INSURANCE_PROVIDERS = [
   "Aetna",
   "Blue Cross Blue Shield",
@@ -49,6 +64,7 @@ export interface Provider {
   };
   verification_tier: VerificationTier;
   is_claimed: boolean;
+  bio?: string;
   identity_tags: string[];
   telehealth_url?: string;
   website_url?: string;

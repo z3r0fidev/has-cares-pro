@@ -9,6 +9,7 @@ import { AnalyticsEvent } from './entities/AnalyticsEvent';
 import { Appointment } from './entities/Appointment';
 import { SavedProvider } from './entities/SavedProvider';
 import { CareHistory } from './entities/CareHistory';
+import { ProviderInvitation } from './entities/ProviderInvitation';
 
 dotenv.config();
 
@@ -21,7 +22,7 @@ export const AppDataSource = new DataSource({
   database: process.env.POSTGRES_DB || 'careequity',
   synchronize: false,
   logging: process.env.NODE_ENV === 'development',
-  entities: [Provider, User, Review, VerificationRecord, AnalyticsEvent, Appointment, SavedProvider, CareHistory],
+  entities: [Provider, User, Review, VerificationRecord, AnalyticsEvent, Appointment, SavedProvider, CareHistory, ProviderInvitation],
   migrations: [__dirname + '/migrations/*.ts'],
   subscribers: [],
 });
