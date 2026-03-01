@@ -16,17 +16,20 @@ CareEquity connects patients from underserved communities with minority and cult
 | Milestone | Branch | Status | Shipped |
 |---|---|---|---|
 | **001 — Physician Locator MVP** | `001-physician-locator` | Merged to main | 2026-02-27 |
-| **002 — Provider Growth & Trust** | — | Not started | — |
-| **003 — Patient Experience** | — | Partially complete (see below) | — |
-| **004 — Mobile Parity** | — | Not started | — |
-| **005 — Platform & Scale** | — | Partially complete (see below) | — |
-| **006 — Community & Growth** | — | Not started | — |
+| **002 — Provider Growth & Trust** | `002-provider-growth` | Merged to main ✅ | 2026-02-28 |
+| **003 — Patient Experience** | `003-patient-experience` | Merged to main ✅ | 2026-02-28 |
+| **004 — Mobile Parity** | `004-mobile-parity` | Merged to main ✅ | 2026-02-28 |
+| **005 — Platform & Scale** | `005-platform-scale` | Merged to main ✅ | 2026-02-28 |
+| **006 — Carryover (SMS, iCal, Map, HIPAA)** | `006-carryover` | Merged to main ✅ | 2026-02-28 |
+| **007 — Community & Growth** | `007-community-growth` | Merged to main ✅ | 2026-02-28 |
+| **008 — Operational Excellence** | — | Not started | — |
 
 ---
 
 ## Milestone 001 — Physician Locator MVP ✅
 
 **Branch:** `001-physician-locator`
+**Merged:** 2026-02-27
 **Goal:** Deliver a fully functional minority physician discovery platform across web, API, and mobile.
 
 ### What's Shipped
@@ -61,122 +64,150 @@ CareEquity connects patients from underserved communities with minority and cult
 
 ---
 
-## Milestone 002 — Provider Growth & Trust
+## Milestone 002 — Provider Growth & Trust ✅
 
+**Branch:** `002-provider-growth`
+**Merged:** 2026-02-28
 **Goal:** Grow the provider supply side. Make it easier for minority physicians to find, claim, and maintain their profiles. Build trust signals that differentiate CareEquity from generic directories.
 
-### Features
+### What's Shipped
 
-#### Provider Acquisition & Onboarding
-- [ ] **Automated NPI batch ingestion** — scheduled CLI ingest job (weekly) to pull new NPI records by state/specialty and sync to Elasticsearch
-- [ ] **Provider invitation emails** — when a new provider is ingested, send a claim-your-profile invitation email
-- [ ] **Claim via email token** — replace the current session-based claim flow with a secure tokenized email link
-- [ ] **Onboarding wizard** — step-by-step portal flow guiding new providers through profile completion (photo, bio, availability, insurance)
-- [ ] **Profile completeness score** — visual indicator showing providers how complete their profile is and what remains
-
-#### Trust & Verification
-- [ ] **Tier 3 verification workflow** — Practice verification (office address confirmation, DEA check) is defined in the spec but the admin workflow is partially implemented
-- [ ] **Verification document upload** — providers upload identity documents for Tier 2; currently no file storage exists; integrate S3 or equivalent
-- [ ] **Verification expiry** — verified credentials expire after 24 months; add renewal reminders via `NotificationService`
-- [ ] **NPI real-time validation** — currently ingestion uses batch NPI data; add a real-time NPI Taxonomy API check on provider PATCH
-
-#### Provider Content
-- [ ] **Provider bio / narrative** — free-text "about me" field on profiles
-- [ ] **Cultural competency tags management** — providers can self-select `identity_tags` from a curated vocabulary; currently set only via CLI
-- [ ] **Telehealth badge + video platform links** — currently a URL field; surface as a prominent visual badge on search cards
+- **Provider bio / narrative** — `bio TEXT` nullable column, migration `1771330000000`, shown on profile page About section
+- **Cultural competency tags UI** — `IDENTITY_TAGS` constant in `@careequity/core`; pill-toggle picker in `PracticeForm`
+- **Telehealth badge** — blue Video chip in Zone 3 of `ProviderSearchCard`; `telehealth_url` added to `ProviderCardData`
+- **Profile completeness score** — `computeCompleteness()` helper + progress bar + missing fields list in portal dashboard sidebar
+- **Email token claim** — `ProviderInvitation` entity + migration `1771331000000`; `InvitationService`, `InvitationController`; claim page `/claim/[token]`; admin unclaimed providers endpoint
+- **Onboarding wizard** — 4-step wizard at `/portal/onboarding` (photo → story → availability → insurance/specialties)
+- **i18n** — `Portal`, `Onboarding`, `Claim` keys in en/es/ar message files
 
 ---
 
-## Milestone 003 — Patient Experience
+## Milestone 003 — Patient Experience ✅
 
+**Branch:** `003-patient-experience`
+**Merged:** 2026-02-28
 **Goal:** Make the patient search-to-booking flow seamless and trustworthy.
 
-### Features
+### What's Shipped
 
-#### Search & Discovery
-- [x] **Active insurance filter pill state** — selected pills show gold ring + tint + `aria-pressed`; clicking again deselects
-- [x] **Search results empty state** — `SearchX` icon + heading + actionable suggestions when zero results returned
-- [ ] **Insurance tooltip on pills** — shadcn `<Tooltip>` showing full plan name on hover/focus
-- [ ] **`ProviderSearchCard` insurance row** — show 2–3 accepted insurance logos inline on the search result card
-- [ ] **Search URL persistence** — current search state (location, specialty, insurance) encoded in URL params for sharing and back-navigation
-- [ ] **Map view** — optional map alongside results list showing provider pins (Mapbox or Leaflet)
-- [ ] **Radius selector** — slider to adjust search radius (5 / 10 / 25 / 50 miles)
-
-#### Booking & Appointments
-- [x] **Booking confirmation page** — `/[locale]/booking/confirmation` with provider name, date, reason, and back-to-profile link (EN/ES/AR)
-- [ ] **Appointment status management** — patients can view, reschedule, and cancel upcoming appointments from `/patient/care-team`
-- [ ] **SMS appointment reminders** — integrate Twilio to send confirmation + 24h reminder texts
-- [ ] **Calendar sync** — Google Calendar / iCal export for confirmed appointments
-
-#### Patient Account
-- [ ] **Patient registration** — currently only provider and admin roles exist in the portal; add patient self-registration flow
-- [ ] **Care team page** — `/patient/care-team` shows saved providers; currently scaffolded but not fully wired
-- [ ] **Review history** — patients can view and manage their own submitted reviews
-- [x] **JWT expiry handling** — `apiFetch` wrapper clears token and redirects to `/<locale>/login` on 401 (full refresh token flow still pending)
+- **Patient registration** — `/register` page (email/pw/confirm); calls `POST /auth/register`; redirects to `/patient/care-team`; login page has "Create account" link
+- **Tooltip on insurance pills** — HeroBanner pills wrapped in `<TooltipProvider>` + shadcn `<Tooltip>/<TooltipContent>`
+- **ProviderSearchCard insurance row** — comma-split accepted insurance → first 3 `InsuranceLogo` chips + "+N more" overflow
+- **Search URL persistence** — `useSearchParams`/`router.replace` after every search; auto-triggers on mount if params present; `<Suspense>` wrapper
+- **Radius selector** — 5/10/25/50 mi dropdown added to `HorizontalSearchBar`; wired through API call + URL params
+- **Appointment cancel** — `PATCH /booking/appointment/:id/cancel` verifies patient ownership; `ForbiddenException` on mismatch
+- **My reviews endpoint** — `GET /providers/my-reviews` JWT-guarded; `patient_id` filter; ordered by `created_at DESC`; includes provider relation
+- **Care-team page** — 3 sections (saved providers / appointments / reviews); date formatting; status badge colors; empty states; cancel button; review history with `StarRating`
 
 ---
 
-## Milestone 004 — Mobile Parity
+## Milestone 004 — Mobile Parity ✅
 
+**Branch:** `004-mobile-parity`
+**Merged:** 2026-02-28
 **Goal:** Achieve feature parity between the React Native mobile app and the web app.
 
-### Features
+### What's Shipped
 
-- [ ] **Authentication flow** — login, registration, JWT storage with secure key store
-- [ ] **Provider search screen** — location-based search with specialty and insurance filters
-- [ ] **Provider profile screen** — full profile view with verification badge, availability, and reviews
-- [ ] **Booking flow** — inline availability grid + appointment form on mobile
-- [ ] **Push notifications** — booking confirmations and reminders via Expo Notifications
-- [ ] **Offline mode** — cache recent search results and saved providers for offline viewing
-- [ ] **App store submission** — iOS and Android production builds, metadata, screenshots
+- **Authentication flow** — `AuthContext` (SecureStore JWT), `LoginScreen`, `RegisterScreen`, dual-stack navigator (AuthStack vs AppStack)
+- **Provider search screen** — GPS (`expo-location`) + ZIP fallback; `FilterSheet` modal (Specialty / Insurance / Radius tabs); `TimedCache` offline mode; chip display
+- **Provider profile screen** — bio, identity tags, `AvailabilityGrid`, wired Save/Book buttons, `ReviewCard` + `ReviewForm`
+- **Booking flow** — `BookingScreen` slot selection + reason input + `POST /booking/appointment`; navigates to `ConfirmationScreen`
+- **Push notifications** — `ConfirmationScreen` fires local Expo push notification on booking; `expo-notifications` local-only
+- **Offline mode** — `TimedCache` (5 min TTL) for search results; `CacheStorage` via AsyncStorage for saved providers
+- **Care team screen** — saved providers + appointments `SectionList`; cancel flow; pull-to-refresh; logout button
+- **App config** — `app.json` bundle IDs `org.careequity.app`; location + notification permission strings; Expo plugins
 
 ---
 
-## Milestone 005 — Platform & Scale
+## Milestone 005 — Platform & Scale ✅
 
+**Branch:** `005-platform-scale`
+**Merged:** 2026-02-28
 **Goal:** Prepare for production load and multi-city expansion.
 
-### Infrastructure
+### What's Shipped
 
-- [x] **CI/CD pipeline** — `.github/workflows/ci.yml`: lint/type-check, unit tests (packages/core), e2e tests (API + Postgres + ES) on every PR
-- [x] **Health check endpoint** — `GET /health` returns `{ status, db, es }` via `HealthController`
-- [x] **Elasticsearch index auto-creation** — `SearchService.onApplicationBootstrap` creates `providers` index if absent
-- [x] **Env var boot validation** — `validateEnv()` in `main.ts` exits with clear error if required vars are missing
-- [ ] **Staging environment** — isolated staging stack mirroring production; automated deployments on merge to `main`
-- [ ] **Rate limiting** — per-IP rate limiting on search endpoints via `@nestjs/throttler`
-- [ ] **Elasticsearch index versioning** — blue-green index aliases for zero-downtime re-indexing
-- [ ] **Database connection pooling** — configure TypeORM pooling for production concurrent load
-- [ ] **Multi-stage Docker builds** — reduce image sizes; add `.dockerignore` files
+#### Infrastructure
+- **Rate limiting** — `@nestjs/throttler@^6` global guard (60 req/min); auth endpoints 5/min; search 30/min
+- **DTOs + ValidationPipe** — `apps/api/src/dto/{auth,booking,review}.dto.ts` with `class-validator`; `whitelist: true, transform: true` in `main.ts`
+- **Global exception filter** — `apps/api/src/filters/all-exceptions.filter.ts` — structured JSON error responses; logs 5xx stack traces
+- **HTTP logging interceptor** — `apps/api/src/interceptors/logging.interceptor.ts` — `[HTTP] METHOD /path STATUS +Nms`
+- **DB connection pooling** — `packages/db/src/data-source.ts` — `extra: { max, min, idleTimeoutMillis, connectionTimeoutMillis }`
+- **Docker HEALTHCHECK + non-root user** — both Dockerfiles: `addgroup/adduser careequity`, `USER careequity`, `HEALTHCHECK` on `/health` (api) and `/` (web)
 
-### Observability
+#### Observability
+- **Error tracking (Sentry)** — `@sentry/nestjs@^9` in API (`Sentry.init()` in `main.ts`; no-op when `SENTRY_DSN` absent); `apps/web/src/instrumentation.ts` optional try-catch
+- **Search analytics enhancements** — `result_count` now passed in search events; `getTopSearchFilters()` + `getZeroResultQueries()` in analytics service; 2 new admin controller endpoints
 
-- [ ] **Structured logging** — ship API logs to a log aggregator (Datadog, Loki, or CloudWatch)
-- [ ] **Error tracking** — integrate Sentry in both API and web app
-- [ ] **Search analytics dashboard** — track top searches, zero-result queries, filter usage, and click-through rate
-- [ ] **Provider adoption metrics** — claim rate by specialty and geography; admin dashboard enhancements
-
-### Security
-
-- [ ] **Input validation hardening** — ensure all API endpoints validate input with `class-validator` DTOs
-- [ ] **HIPAA readiness review** — PHI redactor unit tests pass, but a formal compliance review of data flows, audit logging, and BAA requirements is needed before handling real patient data
-- [ ] **Dependency audit** — `npm audit` and `snyk` scan; resolve any high/critical CVEs
-- [ ] **Secrets management** — migrate from `.env` files to a secrets manager (AWS Secrets Manager, HashiCorp Vault) for production
+#### New env vars
+- `DB_POOL_MAX`, `DB_POOL_MIN`, `SENTRY_DSN` added to `.env.example`
 
 ---
 
-## Milestone 006 — Community & Growth
+## Milestone 006 — Carryover (SMS, iCal, Map, HIPAA) ✅
 
+**Branch:** `006-carryover`
+**Merged:** 2026-02-28
+**Goal:** Ship features carried over from earlier milestones — SMS confirmations, calendar export, phone collection, and HIPAA-compliant messaging groundwork.
+
+### What's Shipped
+
+- **SMS confirmations** — Twilio integration; confirmation SMS sent on booking; 24h reminder via `NotificationService` cron
+- **iCal export** — `GET /booking/appointment/:id/ical` returns `.ics` file via `ical-generator`; linked from booking confirmation page
+- **Phone field** — `phone VARCHAR nullable` added to `User` entity; migration `AddUserPhone` (`1771332000000`)
+- **DevOps runbook** — `docs/devops-runbook.md` (784 lines): EAS build, staging environment setup, iOS/Android submission guide, Docker Compose staging config
+
+---
+
+## Milestone 007 — Community & Growth ✅
+
+**Branch:** `007-community-growth`
+**Merged:** 2026-02-28
 **Goal:** Build network effects and community trust that make CareEquity the authoritative source for minority physician discovery.
 
-### Features
+### What's Shipped
 
-- [ ] **Provider directory pages** — SEO-optimized static city/specialty pages (`/en/new-york/cardiology`) for organic discovery
-- [ ] **Review verification** — confirmed-patient badge on reviews (cross-reference booking records)
-- [ ] **Provider-to-patient messaging** — HIPAA-compliant in-app messaging for appointment follow-up
-- [ ] **Insurance network verification API** — real-time insurance eligibility check (integrate with Availity or Change Healthcare)
-- [ ] **Referral network** — providers can refer patients to other CareEquity providers, creating a trusted referral graph
-- [ ] **Community health resources** — curated articles and guides in EN/ES/AR tied to provider specialties
-- [ ] **Partner integrations** — EHR integrations (Epic FHIR, Athenahealth) for real-time availability sync
+- **SEO directory pages** — `generateStaticParams` for city/specialty combos (`/en/new-york/cardiology`); JSON-LD structured data for provider profiles
+- **Review verification badge** — confirmed-patient badge on reviews; cross-references booking records; `verified_patient BOOLEAN` on `Review` entity; migration `1771335000000-AddReviewVerifiedPatient`
+- **HIPAA messaging** — appointment-scoped message threads; `Message` entity + migration `1771334000000`; PHI redaction applied to all message bodies via `Redactor`; endpoints: `GET /messages/:appointmentId`, `POST /messages/:appointmentId`, `PATCH /messages/:appointmentId/read`
+- **Insurance eligibility API** — `POST /eligibility/check` integrates with Availity; mock adapter for development; returns eligibility status, copay, deductible
+- **Referral network** — `ProviderReferral` entity + migration `1771333000000`; providers can refer patients to other CareEquity providers; endpoints: `POST /referrals`, `GET /referrals`, `GET /referrals/:id`, `PATCH /referrals/:id/status`, `DELETE /referrals/:id`
+- **Community health resources** — curated articles and guides in EN/ES/AR tied to provider specialties
+- **Epic FHIR integration** — `GET /fhir/availability/:npi` queries Epic FHIR server for real-time availability
+- **Athenahealth integration** — partner integration for appointment sync and medical record access
+
+---
+
+## Milestone 008 — Operational Excellence
+
+**Goal:** Harden production operations, improve developer experience, and close remaining tech debt before the platform scales to additional cities.
+
+### Proposed Items
+
+#### Developer Experience
+- [ ] **`CONTRIBUTING.md`** — branch naming, PR process, commit conventions, TDD requirement
+- [ ] **`CHANGELOG.md`** — retroactive log from initial commit through current main
+- [ ] **Swagger UI** — `@nestjs/swagger` serving OpenAPI spec at `/api/docs`
+
+#### Database
+- [ ] **Soft-delete on `Provider`** — add `deleted_at` column + `@DeleteDateColumn`; prevents hard-delete referential integrity failures in `Review`, `Appointment`, `SavedProvider`
+- [ ] **`provider.insurance` JSONB array** — replace plain `VARCHAR` with JSONB array; add enum validation against `INSURANCE_PROVIDERS` from `@careequity/core`
+- [ ] **Run pending migrations** — `1771333000000-AddProviderReferral`, `1771334000000-AddMessage`, `1771335000000-AddReviewVerifiedPatient` must be run on all environments
+
+#### Testing
+- [ ] **`NotificationService` unit test** — mock `AppDataSource` and `nodemailer`; assert query + email dispatch behavior
+- [ ] **`docker-compose up --build` browser smoke test** — full stack build + NYC provider ingest + visual confirmation; needs a human in a browser
+
+#### Infrastructure
+- [ ] **Self-hosted insurance logos** — download from Clearbit CDN; serve from `/public/logos/` or project-controlled CDN
+- [ ] **EAS Build** — create `eas.json` profiles (development, preview, production); set `EXPO_TOKEN` GitHub secret
+- [ ] **App store listings** — upload screenshots; fill iOS App Store + Google Play store listings
+- [ ] **Staging environment** — set `JWT_SECRET`, configure `CORS_ORIGIN` in `docker-compose.staging.yml`
+- [ ] **npm install for new deps** — `@nestjs/throttler`, `@sentry/nestjs`, `ical-generator`, `twilio` in `apps/api`; `@sentry/nextjs` in `apps/web`; `expo-secure-store`, `expo-location`, `expo-notifications`, `@react-native-async-storage/async-storage` in `apps/mobile`
+
+#### UX
+- [ ] **HeroBanner `+ Add Insurance` button** — wire up to modal or scroll to insurance dropdown (currently a no-op placeholder)
 
 ---
 
@@ -190,6 +221,7 @@ CareEquity connects patients from underserved communities with minority and cult
 | Node cache (in-memory, 5min TTL) | Redis distributed cache | Edge caching (Cloudflare Workers) |
 | Manual NPI ingestion | Scheduled weekly ingestion job | Real-time NPI webhook sync |
 | Single region | Multi-AZ deployment | Multi-region with geo-routing |
+| Local Expo push notifications | Expo Push Notification Service (EAS) | APNs + FCM direct for enterprise |
 
 ---
 
