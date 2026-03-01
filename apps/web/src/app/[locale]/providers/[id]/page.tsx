@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Provider, Review } from '@careequity/core';
+import { Provider, Review, type AvailabilitySlot } from '@careequity/core';
 import AppointmentForm from '../../../../components/Booking/AppointmentForm';
 import InlineAvailabilityGrid from '../../../../components/Booking/InlineAvailabilityGrid';
+import FhirAvailabilityGrid from '../../../../components/Booking/FhirAvailabilityGrid';
 import ReviewForm from '../../../../components/Reviews/ReviewForm';
 import VerificationBadge from '../../../../components/Provider/Badge';
 import StarRating from '../../../../components/Provider/StarRating';
 import InsuranceLogo from '../../../../components/Insurance/InsuranceLogo';
+import CoverageCheckWidget from '../../../../components/Insurance/CoverageCheckWidget';
 import { Heart, MapPin, Globe, Phone, ExternalLink, Video } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiFetch } from '../../../../lib/apiFetch';
@@ -33,6 +35,11 @@ export default function ProviderProfile() {
   const [selectedSlot, setSelectedSlot] = useState<string | undefined>(undefined);
   const [fetchError, setFetchError] = useState<'not_found' | 'server_error' | null>(null);
 
+  // FHIR live availability state
+  const [fhirSlots, setFhirSlots] = useState<AvailabilitySlot[]>([]);
+  const [fhirLive, setFhirLive] = useState(false);
+  const [fhirLoaded, setFhirLoaded] = useState(false);
+
   useEffect(() => {
     if (!id) return;
     const hostname = window.location.hostname;
@@ -44,7 +51,35 @@ export default function ProviderProfile() {
         if (!res.ok) { setFetchError('server_error'); return null; }
         return res.json();
       })
-      .then((data) => { if (data) setProvider(data); })
+      .then((data: Provider | null) => {
+        if (!data) return;
+        setProvider(data);
+
+        // After provider data loads, attempt FHIR availability if NPI available
+        if (data.npi) {
+          const token = localStorage.getItem('token');
+          if (token) {
+            fetch(`${API_URL}/fhir/availability/${data.npi}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            })
+              .then((res) => (res.ok ? res.json() : null))
+              .then((fhirData: { slots: AvailabilitySlot[]; live: boolean } | null) => {
+                if (fhirData) {
+                  setFhirSlots(fhirData.slots);
+                  setFhirLive(fhirData.live && fhirData.slots.length > 0);
+                }
+              })
+              .catch(() => {
+                // FHIR fetch failure is non-fatal — fall back to manual grid
+              })
+              .finally(() => setFhirLoaded(true));
+          } else {
+            setFhirLoaded(true);
+          }
+        } else {
+          setFhirLoaded(true);
+        }
+      })
       .catch(() => setFetchError('server_error'));
 
     fetch(`${API_URL}/providers/${id}/reviews`)
@@ -133,6 +168,11 @@ export default function ProviderProfile() {
   const insuranceList = provider.insurance
     ? provider.insurance.split(',').map((s) => s.trim()).filter(Boolean)
     : [];
+
+  // Determine which availability UI to render:
+  //   1. If FHIR loaded and returned live slots → FhirAvailabilityGrid
+  //   2. Otherwise → InlineAvailabilityGrid (static / manual)
+  const showFhirGrid = fhirLoaded && fhirLive && fhirSlots.length > 0;
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -295,10 +335,10 @@ export default function ProviderProfile() {
               </div>
             </section>
 
-            {/* Insurance */}
+            {/* Insurance + Coverage Check */}
             {insuranceList.length > 0 && (
-              <section className="bg-white rounded-xl border p-6">
-                <h2 className="text-lg font-semibold text-slate-800 mb-3">
+              <section className="bg-white rounded-xl border p-6 space-y-4">
+                <h2 className="text-lg font-semibold text-slate-800">
                   Insurance Accepted
                 </h2>
                 <div className="flex flex-wrap gap-2">
@@ -312,6 +352,14 @@ export default function ProviderProfile() {
                     </span>
                   ))}
                 </div>
+
+                {/* Coverage check accordion — only if there are plans and a NPI */}
+                {provider.npi && (
+                  <CoverageCheckWidget
+                    providerNpi={provider.npi}
+                    insuranceList={insuranceList}
+                  />
+                )}
               </section>
             )}
 
@@ -359,11 +407,18 @@ export default function ProviderProfile() {
           {/* ── Right / Booking Sidebar ── */}
           <div className="space-y-4">
             <div className="bg-white rounded-xl border p-5 shadow-sm sticky top-4 space-y-5">
-              {/* Availability grid */}
-              <InlineAvailabilityGrid
-                availability={provider.availability}
-                onSlotSelect={setSelectedSlot}
-              />
+              {/* Availability grid — FHIR live data takes priority */}
+              {showFhirGrid ? (
+                <FhirAvailabilityGrid
+                  slots={fhirSlots}
+                  onSlotSelect={setSelectedSlot}
+                />
+              ) : (
+                <InlineAvailabilityGrid
+                  availability={provider.availability}
+                  onSlotSelect={setSelectedSlot}
+                />
+              )}
 
               <div className="border-t border-slate-100 pt-4">
                 <AppointmentForm

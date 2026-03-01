@@ -85,6 +85,51 @@
     "errorExists": "يوجد حساب بهذا البريد الإلكتروني بالفعل",
     "errorGeneric": "فشل التسجيل. يرجى المحاولة مرة أخرى."
   },
+  "Messaging": {
+    "title": "الرسائل",
+    "send": "إرسال",
+    "placeholder": "اكتب رسالة… (Ctrl+Enter للإرسال)",
+    "noMessages": "لا توجد رسائل بعد",
+    "unread": "{count} غير مقروءة",
+    "phiRedacted": "(تم حذف المعلومات الصحية)"
+  },
+  "Directory": {
+    "title": "أطباء {specialty} في {state}",
+    "subtitle": "تصفح أطباء {specialty} ذوي الكفاءة الثقافية في {state}، الموثقين من قِبل CareEquity. ابحث عن طبيب يفهم خلفيتك.",
+    "searchLink": "ابحث عن أطباء {specialty} بالقرب منك",
+    "noProviders": "لم يتم العثور على مزودين في هذه المنطقة بعد. استخدم البحث المباشر للعثور على أطباء بالقرب منك."
+  },
+  "Resources": {
+    "title": "موارد الصحة المجتمعية",
+    "subtitle": "تثقيف صحي ذو صلة ثقافية للمجتمعات التي نخدمها — من صحة القلب إلى الصحة النفسية.",
+    "readMore": "اقرأ المقال",
+    "relatedProviders": "ابحث عن الأطباء ذوي الصلة",
+    "filterBySpecialty": "تصفية حسب التخصص",
+    "noArticles": "لم يتم العثور على مقالات لهذا التخصص.",
+    "backToResources": "العودة إلى الموارد",
+    "share": "مشاركة"
+  },
+  "Eligibility": {
+    "checkCoverage": "التحقق من تغطيتي",
+    "covered": "أنت مغطى",
+    "notCovered": "خارج الشبكة",
+    "copay": "الدفع المشترك",
+    "deductible": "المبلغ القابل للخصم"
+  },
+  "Fhir": {
+    "liveAvailability": "التوفر المباشر من {source}"
+  },
+  "Review": {
+    "verifiedPatient": "مريض موثق"
+  },
+  "Referral": {
+    "title": "إحالة مريض",
+    "toProvider": "إحالة إلى مزود (البحث بالاسم)",
+    "patient": "البريد الإلكتروني للمريض",
+    "note": "ملاحظة اختيارية",
+    "submit": "إرسال الإحالة",
+    "success": "تم إرسال الإحالة بنجاح!"
+  },
   "Patient": {
     "careTeamTitle": "فريق رعايتي",
     "savedProviders": "الأطباء المحفوظون",

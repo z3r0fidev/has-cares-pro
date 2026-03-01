@@ -85,6 +85,51 @@
     "errorExists": "Ya existe una cuenta con este correo electrónico",
     "errorGeneric": "El registro falló. Por favor, inténtalo de nuevo."
   },
+  "Messaging": {
+    "title": "Mensajes",
+    "send": "Enviar",
+    "placeholder": "Escribe un mensaje… (Ctrl+Enter para enviar)",
+    "noMessages": "Aún no hay mensajes",
+    "unread": "{count} no leídos",
+    "phiRedacted": "(información redactada)"
+  },
+  "Directory": {
+    "title": "Médicos de {specialty} en {state}",
+    "subtitle": "Explore médicos de {specialty} culturalmente competentes en {state}, verificados por CareEquity. Encuentre un médico que entienda su origen.",
+    "searchLink": "Buscar Médicos de {specialty} Cerca de Usted",
+    "noProviders": "Aún no se encontraron proveedores en esta área. Use la búsqueda en vivo para encontrar médicos cerca de usted."
+  },
+  "Resources": {
+    "title": "Recursos de Salud Comunitaria",
+    "subtitle": "Educación sobre salud culturalmente relevante para las comunidades a las que servimos — desde la salud cardíaca hasta el bienestar mental.",
+    "readMore": "Leer artículo",
+    "relatedProviders": "Encontrar Médicos Relacionados",
+    "filterBySpecialty": "Filtrar por especialidad",
+    "noArticles": "No se encontraron artículos para esta especialidad.",
+    "backToResources": "Volver a Recursos",
+    "share": "Compartir"
+  },
+  "Eligibility": {
+    "checkCoverage": "Verificar mi cobertura",
+    "covered": "Tienes cobertura",
+    "notCovered": "Fuera de la red",
+    "copay": "Copago",
+    "deductible": "Deducible"
+  },
+  "Fhir": {
+    "liveAvailability": "Disponibilidad en tiempo real de {source}"
+  },
+  "Review": {
+    "verifiedPatient": "Paciente verificado"
+  },
+  "Referral": {
+    "title": "Referir a un paciente",
+    "toProvider": "Referir al proveedor (buscar por nombre)",
+    "patient": "Correo electrónico del paciente",
+    "note": "Nota opcional",
+    "submit": "Enviar referencia",
+    "success": "¡Referencia enviada con éxito!"
+  },
   "Patient": {
     "careTeamTitle": "Mi equipo de atención",
     "savedProviders": "Médicos guardados",

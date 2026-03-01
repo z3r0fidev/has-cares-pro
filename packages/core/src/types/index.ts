@@ -50,6 +50,8 @@ export enum VerificationTier {
 
 export interface Provider {
   id: string;
+  /** 10-digit National Provider Identifier — used for FHIR EHR integration */
+  npi?: string;
   name: string;
   credentials: string[];
   specialties: string[];

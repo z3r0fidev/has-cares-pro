@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import PracticeForm from '../../../../components/Portal/PracticeForm';
 import StatsCard from './StatsCard';
+import ReferralModal from '../../../../components/Referral/ReferralModal';
 import { Provider } from '@careequity/core';
 
 function computeCompleteness(p: Provider): { score: number; missing: string[] } {
@@ -31,6 +32,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [referralOpen, setReferralOpen] = useState(false);
   const router = useRouter();
 
   const handleRequestVerification = async () => {
@@ -129,13 +131,22 @@ export default function Dashboard() {
           <h1 className="text-3xl font-bold text-slate-900">Provider Dashboard</h1>
           <p className="text-slate-500">Manage your practice and track patient engagement.</p>
         </div>
-        <button 
-          onClick={() => { localStorage.removeItem('token'); router.push('/login'); }}
-          className="text-sm text-red-700 font-bold hover:underline px-4 py-2 border border-red-200 rounded-md bg-red-50 hover:bg-red-100 transition-colors focus:ring-2 focus:ring-red-500"
-          aria-label="Log out of provider portal"
-        >
-          Logout
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setReferralOpen(true)}
+            className="text-sm font-bold text-primary hover:text-primary/80 px-4 py-2 border border-primary/30 rounded-md bg-primary/5 hover:bg-primary/10 transition-colors focus:ring-2 focus:ring-primary/40"
+            aria-label="Refer a patient to another provider"
+          >
+            Refer Patient
+          </button>
+          <button
+            onClick={() => { localStorage.removeItem('token'); router.push('/login'); }}
+            className="text-sm text-red-700 font-bold hover:underline px-4 py-2 border border-red-200 rounded-md bg-red-50 hover:bg-red-100 transition-colors focus:ring-2 focus:ring-red-500"
+            aria-label="Log out of provider portal"
+          >
+            Logout
+          </button>
+        </div>
       </header>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -233,6 +244,9 @@ export default function Dashboard() {
           </section>
         </aside>
       </div>
+
+      {/* Referral modal — mounted here so it can overlay the whole page */}
+      <ReferralModal open={referralOpen} onClose={() => setReferralOpen(false)} />
     </main>
   );
 }

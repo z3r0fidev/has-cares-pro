@@ -34,6 +34,10 @@ export class Review {
   })
   status!: string;
 
+  /** True when the reviewer has a confirmed or past-pending appointment with this provider. */
+  @Column({ type: 'boolean', default: false })
+  is_verified_patient!: boolean;
+
   @CreateDateColumn()
   created_at!: Date;
 
