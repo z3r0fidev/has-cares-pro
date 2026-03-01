@@ -1,10 +1,12 @@
-import { Controller, Get, Patch, Param, Body, NotFoundException, UseGuards, Request, ForbiddenException, Query } from '@nestjs/common';
+import { Controller, Get, Patch, Post, Param, Body, NotFoundException, UseGuards, Request, ForbiddenException, Query } from '@nestjs/common';
 import { AppDataSource, Provider, VerificationRecord, VerificationStatus, Review } from '@careequity/db';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { AuthenticatedRequest } from '../types/request.interface';
+import { NotificationService } from '../services/notification.service';
 
 @Controller('admin')
 export class AdminController {
+  constructor(private readonly notificationService: NotificationService) {}
   
   @Get('providers/unclaimed')
   @UseGuards(JwtAuthGuard)
@@ -71,6 +73,22 @@ export class AdminController {
     }
 
     return { success: true };
+  }
+
+  @Post('test-email')
+  @UseGuards(JwtAuthGuard)
+  async sendTestEmail(
+    @Body() body: { email: string; name?: string },
+    @Request() req: AuthenticatedRequest
+  ) {
+    if (req.user.role !== 'admin') throw new ForbiddenException('Admin access required');
+
+    await this.notificationService.sendInsuranceVerificationEmail(
+      body.email,
+      body.name || 'Test User'
+    );
+
+    return { success: true, message: `Test email sent to ${body.email}` };
   }
 
   @Patch('verify/:id')

@@ -10,8 +10,8 @@
 
 ### Blocking launch — must fix before production traffic
 
-- [ ] **`docker-compose up --build` browser smoke test** — full stack build + NYC provider ingest via CLI + visual confirmation that search and profile pages render. Needs a human in a browser; infra confirmed healthy locally.
-- [ ] **SMTP tested end-to-end** — `NotificationService` cron fires in production but has never sent a real email. Point `SMTP_*` env vars at Resend / Mailgun / SMTP4Dev and trigger a test send before launch.
+- [x] **`docker-compose up --build` browser smoke test** — completed 2026-03-01: full stack build, 25 providers ingested via CLI, visual confirmation of search results (10 doctors near ZIP 19143) with provider cards, verification badges, and availability slots rendering correctly.
+- [x] **SMTP tested end-to-end** — completed 2026-03-01: MailHog added to docker-compose (ports 1025/8025); `POST /admin/test-email` endpoint added; confirmed email delivered to MailHog (`Action Required: Please verify your accepted insurance list`). For production, swap `SMTP_HOST/PORT/USER/PASSWORD` to Resend / Mailgun.
 - [x] **Run pending DB migrations** — completed 2026-03-01:
   - `1771330000000-AddProviderBio`
   - `1771331000000-AddProviderInvitation`
