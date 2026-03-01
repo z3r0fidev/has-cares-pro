@@ -12,14 +12,16 @@
 
 - [ ] **`docker-compose up --build` browser smoke test** — full stack build + NYC provider ingest via CLI + visual confirmation that search and profile pages render. Needs a human in a browser; infra confirmed healthy locally.
 - [ ] **SMTP tested end-to-end** — `NotificationService` cron fires in production but has never sent a real email. Point `SMTP_*` env vars at Resend / Mailgun / SMTP4Dev and trigger a test send before launch.
-- [ ] **Run pending DB migrations** — the following migrations from milestones 006-007 must be run on all environments:
-  - `1771332000000-AddUserPhone` (phone field on User entity)
-  - `1771333000000-AddProviderReferral` (ProviderReferral entity)
-  - `1771334000000-AddMessage` (HIPAA message threads)
-  - `1771335000000-AddReviewVerifiedPatient` (verified_patient boolean on Review)
-- [ ] **npm install for new API deps** — `@nestjs/throttler`, `@sentry/nestjs`, `ical-generator`, `twilio` were added to `apps/api/package.json`; run `npm install --workspace=apps/api`
-- [ ] **npm install for new web deps** — `@sentry/nextjs` added to `apps/web/package.json`; run `npm install --workspace=apps/web`
-- [ ] **npm install for mobile deps** — run `npm install --workspace=apps/mobile` for: `expo-secure-store ~14`, `expo-location ~18`, `expo-notifications ~0.29`, `@react-native-async-storage/async-storage ^2.1`
+- [x] **Run pending DB migrations** — completed 2026-03-01:
+  - `1771330000000-AddProviderBio`
+  - `1771331000000-AddProviderInvitation`
+  - `1771332000000-AddUserPhone`
+  - `1771333000000-AddReviewVerifiedPatient`
+  - `1771334000000-CreateProviderReferral`
+  - `1771335000000-CreateMessage`
+- [x] **npm install for new API deps** — completed 2026-03-01
+- [x] **npm install for new web deps** — completed 2026-03-01
+- [x] **npm install for mobile deps** — completed 2026-03-01
 
 ---
 

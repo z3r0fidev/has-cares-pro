@@ -1,5 +1,5 @@
 import { Injectable, OnApplicationBootstrap, Logger } from '@nestjs/common';
-import { esClient, INDEX_NAME, providerMapping } from '@careequity/core/src/search/client';
+import { esClient, INDEX_NAME, providerMapping } from '@careequity/core';
 import NodeCache from 'node-cache';
 import { AnalyticsService } from './analytics.service';
 
