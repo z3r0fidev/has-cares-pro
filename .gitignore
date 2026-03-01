@@ -32,6 +32,9 @@ Thumbs.db
 .idea/
 *.swp
 
+# Claude Code
+.claude/worktrees/
+
 # Design reference screenshots (local only)
 *.jpeg
 *.jpg

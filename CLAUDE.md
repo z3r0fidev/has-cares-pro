@@ -132,3 +132,36 @@ tests/
 
 ### TypeScript Project References
 The root `tsconfig.json` uses project references. Each package/app has its own `tsconfig.json`. Run `npm run build` (which invokes `tsc -b`) to compile in dependency order. The `@careequity/*` path aliases are configured in `tsconfig.base.json`.
+
+## Session Close Workflow
+
+When using the `script-session-closer` agent to end a development session, perform these cleanup tasks:
+
+### Cleanup Steps
+1. **Purge agent worktrees**: Remove temporary agent working directories
+   ```bash
+   rm -rf .claude/worktrees/
+   ```
+2. **Sync Obsidian vault**: Update the CareEquity vault using MCP_DOCKER `obsidian_` tools
+3. **Update documentation**: Sync ROADMAP.md, TODO.md, and MEMORY.md with session changes
+4. **Commit changes**: Stage and commit all documentation updates
+
+### Obsidian Vault Structure
+The CareEquity knowledge base is maintained in the Obsidian vault with this structure:
+```
+CareEquity/
+  README.md                    # Project overview and navigation
+  Roadmap.md                   # Milestone status and deliverables
+  TODOs.md                     # Open items and tech debt
+  Environment Variables.md    # Complete env var reference
+  API/Endpoints.md            # REST endpoint documentation
+  Architecture/
+    System Overview.md        # Monorepo layout, data flow, patterns
+    Tech Stack.md             # Dependency inventory
+  Database/
+    Schema.md                 # TypeORM entities and relationships
+    Migrations.md             # Migration history
+  Infrastructure/DevOps.md    # CI/CD, Docker, EAS Build
+  Mobile/Expo App.md          # React Native app documentation
+  Milestones/001-007.md       # Individual milestone details
+```
