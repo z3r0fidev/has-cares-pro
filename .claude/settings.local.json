@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__MCP_DOCKER__obsidian_append_content",
+      "mcp__MCP_DOCKER__obsidian_list_files_in_dir"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "shadcn"
+  ]
+}
