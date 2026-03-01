@@ -21,7 +21,7 @@ export class EligibilityService implements OnModuleInit {
   private adapter!: IEligibilityAdapter;
 
   async onModuleInit(): Promise<void> {
-    this.adapter = await createEligibilityAdapter();
+    this.adapter = createEligibilityAdapter();
     const isReal =
       Boolean(process.env['AVAILITY_CLIENT_ID']) &&
       Boolean(process.env['AVAILITY_CLIENT_SECRET']);

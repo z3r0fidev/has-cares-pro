@@ -8,6 +8,8 @@
  *  - Otherwise the MockEligibilityAdapter is used, which is deterministic and
  *    safe for development / CI.
  */
+import { AvailityEligibilityAdapter } from './AvailityEligibilityAdapter';
+import { MockEligibilityAdapter } from './MockEligibilityAdapter';
 
 export interface EligibilityRequest {
   /** Payer-issued member ID */
@@ -41,18 +43,14 @@ export interface IEligibilityAdapter {
 
 /**
  * Factory that returns the appropriate adapter based on env vars.
- * Import the concrete adapters lazily so that modules without the optional
- * Availity dependency do not fail at import time.
  */
-export async function createEligibilityAdapter(): Promise<IEligibilityAdapter> {
+export function createEligibilityAdapter(): IEligibilityAdapter {
   const clientId = process.env['AVAILITY_CLIENT_ID'];
   const clientSecret = process.env['AVAILITY_CLIENT_SECRET'];
 
   if (clientId && clientSecret) {
-    const { AvailityEligibilityAdapter } = await import('./AvailityEligibilityAdapter');
     return new AvailityEligibilityAdapter(clientId, clientSecret);
   }
 
-  const { MockEligibilityAdapter } = await import('./MockEligibilityAdapter');
   return new MockEligibilityAdapter();
 }
