@@ -7,6 +7,9 @@ module.exports = {
       tsconfig: {
         module: 'CommonJS',
         moduleResolution: 'Node',
+        experimentalDecorators: true,
+        emitDecoratorMetadata: true,
+        esModuleInterop: true,
       },
     }],
   },

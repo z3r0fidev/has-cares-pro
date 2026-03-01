@@ -17,12 +17,15 @@ import {
   BadGatewayException,
   Logger,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { EligibilityService } from '../services/eligibility.service';
 import { CheckEligibilityDto } from '../dto/eligibility.dto';
 import type { EligibilityResponse } from '@careequity/core';
 
+@ApiTags('eligibility')
+@ApiBearerAuth()
 @Controller('eligibility')
 @UseGuards(JwtAuthGuard)
 export class EligibilityController {
@@ -39,6 +42,10 @@ export class EligibilityController {
    */
   @Post('check')
   @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @ApiOperation({ summary: 'Check real-time insurance eligibility via Availity' })
+  @ApiResponse({ status: 200, description: 'Eligibility result from Availity' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 502, description: 'Upstream eligibility service unavailable' })
   async check(@Body() dto: CheckEligibilityDto): Promise<EligibilityResponse> {
     try {
       return await this.eligibilityService.checkEligibility({

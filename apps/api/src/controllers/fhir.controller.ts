@@ -11,10 +11,13 @@
  */
 
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { FhirService } from '../services/fhir.service';
 import type { AvailabilitySlot } from '@careequity/core';
 
+@ApiTags('fhir')
+@ApiBearerAuth()
 @Controller('fhir')
 @UseGuards(JwtAuthGuard)
 export class FhirController {
@@ -27,6 +30,9 @@ export class FhirController {
    * @returns    Chronologically sorted, deduplicated AvailabilitySlot[]
    */
   @Get('availability/:npi')
+  @ApiOperation({ summary: 'Get live appointment slots from Epic/Athena for a provider NPI' })
+  @ApiResponse({ status: 200, description: 'Availability slots and live flag' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async getAvailability(
     @Param('npi') npi: string,
   ): Promise<{ slots: AvailabilitySlot[]; live: boolean }> {

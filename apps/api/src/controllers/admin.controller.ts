@@ -1,15 +1,21 @@
 import { Controller, Get, Patch, Post, Param, Body, NotFoundException, UseGuards, Request, ForbiddenException, Query } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AppDataSource, Provider, VerificationRecord, VerificationStatus, Review } from '@careequity/db';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { AuthenticatedRequest } from '../types/request.interface';
 import { NotificationService } from '../services/notification.service';
 
+@ApiTags('admin')
+@ApiBearerAuth()
 @Controller('admin')
 export class AdminController {
   constructor(private readonly notificationService: NotificationService) {}
   
   @Get('providers/unclaimed')
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'List unclaimed provider profiles (admin)' })
+  @ApiResponse({ status: 200, description: 'Paginated list of unclaimed providers' })
+  @ApiResponse({ status: 403, description: 'Admin access required' })
   async getUnclaimedProviders(
     @Request() req: AuthenticatedRequest,
     @Query('page') page = '1',
@@ -33,6 +39,9 @@ export class AdminController {
 
   @Get('verifications/pending')
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get all pending verification requests (admin)' })
+  @ApiResponse({ status: 200, description: 'List of pending verification records' })
+  @ApiResponse({ status: 403, description: 'Admin access required' })
   async getPendingVerifications(@Request() req: AuthenticatedRequest) {
     if (req.user.role !== 'admin') throw new ForbiddenException('Admin access required');
     
@@ -45,6 +54,9 @@ export class AdminController {
 
   @Get('reviews/flagged')
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get flagged reviews awaiting moderation (admin)' })
+  @ApiResponse({ status: 200, description: 'List of flagged reviews' })
+  @ApiResponse({ status: 403, description: 'Admin access required' })
   async getFlaggedReviews(@Request() req: AuthenticatedRequest) {
     if (req.user.role !== 'admin') throw new ForbiddenException('Admin access required');
 
@@ -54,6 +66,10 @@ export class AdminController {
 
   @Patch('reviews/:id/moderate')
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Publish or delete a flagged review (admin)' })
+  @ApiResponse({ status: 200, description: 'Review moderated' })
+  @ApiResponse({ status: 403, description: 'Admin access required' })
+  @ApiResponse({ status: 404, description: 'Review not found' })
   async moderateReview(
     @Param('id') id: string,
     @Body() body: { action: 'publish' | 'delete' },
@@ -77,6 +93,9 @@ export class AdminController {
 
   @Post('test-email')
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Send a test insurance-verification email (admin)' })
+  @ApiResponse({ status: 201, description: 'Test email dispatched' })
+  @ApiResponse({ status: 403, description: 'Admin access required' })
   async sendTestEmail(
     @Body() body: { email: string; name?: string },
     @Request() req: AuthenticatedRequest
@@ -93,6 +112,10 @@ export class AdminController {
 
   @Patch('verify/:id')
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Approve or reject a provider verification request (admin)' })
+  @ApiResponse({ status: 200, description: 'Verification record updated' })
+  @ApiResponse({ status: 403, description: 'Admin access required' })
+  @ApiResponse({ status: 404, description: 'Provider not found' })
   async verifyProvider(
     @Param('id') id: string,
     @Body() body: { tier: number; status: string; notes: string },

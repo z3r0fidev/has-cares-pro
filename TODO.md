@@ -2,7 +2,7 @@
 
 > Living task list. Tracks open work, known gaps, and tech debt across the monorepo.
 > Completed feature tasks live in `specs/001-physician-locator/tasks.md`.
-> Last updated: 2026-02-28
+> Last updated: 2026-03-01
 
 ---
 
@@ -29,7 +29,7 @@
 
 ### API (`apps/api`)
 
-- [ ] **`NotificationService` unit test** — no test for `notifyOverdueProviders()`; mock `AppDataSource` and `nodemailer`, assert query + email dispatch behavior.
+- [x] **`NotificationService` unit test** — completed 2026-03-01: 16 cases covering `sendInsuranceVerificationEmail` (no-op when SMTP absent, port 465 → secure:true, from-address fallback, name in text+html) and `notifyOverdueProviders` (empty list, where-clause assertions, SMS skip on null phone, `last_insurance_notified_at` update, per-user error isolation, multiple-user processing).
 - [ ] **`notification.service.ts` TypeScript error** — `last_insurance_notified_at` is not typed on `_QueryDeepPartialEntity<Provider>`; pre-existing, does not block build but should be fixed.
 - [ ] **Twilio SMS tested end-to-end** — SMS confirmations added in milestone 006 but not confirmed against a live Twilio account; set `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER` env vars and trigger a test booking.
 
@@ -45,7 +45,7 @@
 
 ### Mobile (`apps/mobile`)
 
-- [ ] **App store submission** — EAS build profiles (`eas.json`) not yet created; `EXPO_TOKEN` GitHub secret not configured; store listings (screenshots, descriptions) not filled for iOS App Store or Google Play.
+- [x] **EAS Build profiles** — `apps/mobile/eas.json` created with development, preview, and production profiles; `eas-build` GitHub Actions job added to `.github/workflows/ci.yml` (triggers on `push/main` and `workflow_dispatch`). Remaining: set `EXPO_TOKEN` secret in GitHub repo Settings → Secrets; fill store listings (screenshots, descriptions) for iOS App Store and Google Play.
 
 ---
 
@@ -56,17 +56,17 @@
 - [x] **Health check endpoint** — `GET /health` returns `{ status, db, es }` via `HealthController`.
 - [x] **Rate limiting** — `@nestjs/throttler@^6` global guard (60/min); auth 5/min; search 30/min — shipped in milestone 005.
 - [x] **Docker HEALTHCHECK + non-root user** — both Dockerfiles updated; `USER careequity`; `HEALTHCHECK` directives — shipped in milestone 005.
-- [ ] **Staging environment** — set `JWT_SECRET`, configure `CORS_ORIGIN` in `docker-compose.staging.yml`; staging stack not yet deployed.
-- [ ] **EAS Build** — create `eas.json` profiles (development, preview, production); set `EXPO_TOKEN` GitHub secret.
+- [x] **Staging environment** — completed 2026-03-01: `docker-compose.staging.yml` was already well-structured; added `CORS_ORIGIN` env var to the api service (was the only gap). Stack requires `JWT_SECRET` to be set in environment (enforced via `:?` syntax). Not yet deployed to a cloud host.
+- [x] **EAS Build** — `eas.json` profiles exist; CI job added; see Mobile section above for remaining steps.
 - [ ] **Self-hosted insurance logos** — Clearbit has no SLA guarantee; download logos and serve from `/public/logos/` or a project-controlled CDN.
 
 ---
 
 ## Documentation
 
-- [ ] **`CONTRIBUTING.md`** — branch naming, PR process, commit conventions, TDD requirement.
+- [x] **`CONTRIBUTING.md`** — completed 2026-03-01: branch naming, commit conventions, PR process, TDD requirement, test-running instructions, dev setup, and code style guide.
 - [ ] **`CHANGELOG.md`** — retroactive log from initial commit through current main.
-- [ ] **Swagger UI** — OpenAPI spec exists in `specs/001-physician-locator/contracts/` but is not served at runtime; add `@nestjs/swagger` and expose at `/api/docs`.
+- [x] **Swagger UI** — completed 2026-03-01: `@nestjs/swagger@^8` added; `SwaggerModule` wired in `main.ts`; all 11 controllers decorated with `@ApiTags`, `@ApiBearerAuth`, `@ApiOperation`, `@ApiResponse`; all 6 DTOs decorated with `@ApiProperty`. Accessible at `http://localhost:3001/api/docs`.
 - [ ] **`.env.example` comments** — document each `SMTP_*`, `TWILIO_*`, and `SENTRY_DSN` variable and its accepted values inline.
 - [ ] **Obsidian vault sync** — after each session, update the Obsidian vault at `/mnt/c/Users/isaiah.muhammad/obsidian/CareEquity/` using MCP_DOCKER obsidian_ tools.
 

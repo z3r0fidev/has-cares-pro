@@ -27,6 +27,7 @@ services:
       - DB_POOL_MAX=${DB_POOL_MAX:-20}
       - DB_POOL_MIN=${DB_POOL_MIN:-2}
       - SENTRY_DSN=${SENTRY_DSN:-}
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3010}
     depends_on:
       staging_postgres:
         condition: service_healthy

@@ -8,6 +8,7 @@ import {
   UseGuards,
   Request,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { MessagingService } from '../services/messaging.service';
 import { SendMessageDto } from '../dto/message.dto';
@@ -21,6 +22,8 @@ import { AuthenticatedRequest } from '../types/request.interface';
  * access) is enforced inside MessagingService, keeping HTTP concerns
  * separate from business rules.
  */
+@ApiTags('messages')
+@ApiBearerAuth()
 @Controller('messages')
 @UseGuards(JwtAuthGuard)
 export class MessagingController {
@@ -36,6 +39,8 @@ export class MessagingController {
    * Express does not misinterpret "unread-count" as an appointmentId param.
    */
   @Get('unread-count')
+  @ApiOperation({ summary: 'Get the count of unread messages for the current user' })
+  @ApiResponse({ status: 200, description: 'Unread message count' })
   async getUnreadCount(@Request() req: AuthenticatedRequest) {
     return this.messagingService.getUnreadCount(req.user.sub);
   }
@@ -47,6 +52,8 @@ export class MessagingController {
    * and unread count) accessible to the current user.
    */
   @Get()
+  @ApiOperation({ summary: 'List all message threads accessible to the current user' })
+  @ApiResponse({ status: 200, description: 'Thread list with last-message preview' })
   async getThreadList(@Request() req: AuthenticatedRequest) {
     return this.messagingService.getThreadList(
       req.user.sub,
@@ -61,6 +68,9 @@ export class MessagingController {
    * Only the patient or treating provider on that appointment may access.
    */
   @Get('thread/:appointmentId')
+  @ApiOperation({ summary: 'Get all messages in an appointment thread' })
+  @ApiResponse({ status: 200, description: 'Ordered list of messages' })
+  @ApiResponse({ status: 403, description: 'Not a participant in this thread' })
   async getThread(
     @Param('appointmentId') appointmentId: string,
     @Request() req: AuthenticatedRequest,
@@ -80,6 +90,9 @@ export class MessagingController {
    * may send messages in the thread.
    */
   @Post('thread/:appointmentId')
+  @ApiOperation({ summary: 'Send a PHI-redacted message in an appointment thread' })
+  @ApiResponse({ status: 201, description: 'Message sent' })
+  @ApiResponse({ status: 403, description: 'Not a participant in this thread' })
   async sendMessage(
     @Param('appointmentId') appointmentId: string,
     @Body() dto: SendMessageDto,
@@ -100,6 +113,8 @@ export class MessagingController {
    * the message) may invoke this.
    */
   @Patch(':id/read')
+  @ApiOperation({ summary: 'Mark a message as read' })
+  @ApiResponse({ status: 200, description: 'Message marked as read' })
   async markRead(
     @Param('id') id: string,
     @Request() req: AuthenticatedRequest,

@@ -10,6 +10,7 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { AuthenticatedRequest } from '../types/request.interface';
 import { AppDataSource, ProviderReferral, Provider, User } from '@careequity/db';
@@ -23,11 +24,17 @@ import { CreateReferralDto, UpdateReferralStatusDto } from '../dto/referral.dto'
  *  - Accepting / declining: only the receiving provider (toProvider)
  *  - Viewing patient's own referrals: patient role
  */
+@ApiTags('referrals')
+@ApiBearerAuth()
 @Controller('referrals')
 @UseGuards(JwtAuthGuard)
 export class ReferralController {
   /** POST /referrals — provider creates a referral */
   @Post()
+  @ApiOperation({ summary: 'Create a provider-to-provider patient referral' })
+  @ApiResponse({ status: 201, description: 'Referral created' })
+  @ApiResponse({ status: 403, description: 'Provider role required' })
+  @ApiResponse({ status: 404, description: 'Target provider or patient not found' })
   async create(
     @Request() req: AuthenticatedRequest,
     @Body() body: CreateReferralDto,
@@ -67,6 +74,8 @@ export class ReferralController {
 
   /** GET /referrals/sent — referrals sent by this provider */
   @Get('sent')
+  @ApiOperation({ summary: 'Get referrals sent by the current provider' })
+  @ApiResponse({ status: 200, description: 'List of sent referrals' })
   async getSent(@Request() req: AuthenticatedRequest) {
     if (req.user.role !== 'provider') {
       throw new ForbiddenException('Only providers can view sent referrals');
@@ -85,6 +94,8 @@ export class ReferralController {
 
   /** GET /referrals/received — referrals received by this provider */
   @Get('received')
+  @ApiOperation({ summary: 'Get referrals received by the current provider' })
+  @ApiResponse({ status: 200, description: 'List of received referrals' })
   async getReceived(@Request() req: AuthenticatedRequest) {
     if (req.user.role !== 'provider') {
       throw new ForbiddenException('Only providers can view received referrals');
@@ -103,6 +114,8 @@ export class ReferralController {
 
   /** GET /referrals/my-referrals — patient views their own referrals */
   @Get('my-referrals')
+  @ApiOperation({ summary: "Get the current patient's received referrals" })
+  @ApiResponse({ status: 200, description: 'List of patient referrals' })
   async getMyReferrals(@Request() req: AuthenticatedRequest) {
     if (req.user.role !== 'patient') {
       throw new ForbiddenException('Only patients can view their own referrals');
@@ -117,6 +130,10 @@ export class ReferralController {
 
   /** PATCH /referrals/:id/status — toProvider accepts or declines */
   @Patch(':id/status')
+  @ApiOperation({ summary: 'Accept or decline a referral (receiving provider)' })
+  @ApiResponse({ status: 200, description: 'Referral status updated' })
+  @ApiResponse({ status: 403, description: 'Not the receiving provider' })
+  @ApiResponse({ status: 404, description: 'Referral not found' })
   async updateStatus(
     @Param('id') id: string,
     @Body() body: UpdateReferralStatusDto,
