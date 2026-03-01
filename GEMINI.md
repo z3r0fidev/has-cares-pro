@@ -56,26 +56,26 @@ TypeScript / Node.js 20+: Follow standard conventions. All shared logic in `pack
 
 ## Obsidian Knowledge Base
 
-The CareEquity project maintains a live Obsidian knowledge base in the `CareEquity` vault.
-Notes are organized by domain and should be kept in sync with code changes.
+The CareEquity project maintains a live Obsidian knowledge base in the `CareEquity` vault
+located at `/mnt/c/Users/isaiah.muhammad/obsidian/CareEquity/`.
 
-### Updating Obsidian Notes (using MCP_DOCKER obsidian_ tools)
+Notes are organized by domain and should be kept in sync with code changes using the
+MCP_DOCKER `obsidian_` tools available in Claude Code sessions.
 
-When making significant changes to the codebase, update the corresponding Obsidian note:
+### Note Map
 
-| Domain | Obsidian Note | When to Update |
+| Domain | File | Update When |
 |---|---|---|
-| Architecture | `CareEquity/Architecture/System Overview.md` | Major structural changes |
-| API | `CareEquity/API/Endpoints.md` | New endpoints, auth changes |
-| Database | `CareEquity/Database/Schema.md` | New entities or migrations |
-| Mobile | `CareEquity/Mobile/Expo App.md` | New screens or native features |
-| Infrastructure | `CareEquity/Infrastructure/DevOps.md` | CI/CD, Docker, deployment changes |
-| Milestones | `CareEquity/Milestones/[milestone].md` | After each milestone merge |
-| TODOs | `CareEquity/TODOs.md` | After session close |
-| Roadmap | `CareEquity/Roadmap.md` | After roadmap updates |
+| Architecture | `Architecture/System Overview.md` | Major structural changes |
+| API | `API/Endpoints.md` | New endpoints added |
+| Database | `Database/Schema.md` | New entities or migrations |
+| Mobile | `Mobile/Expo App.md` | New screens or native features |
+| Infrastructure | `Infrastructure/DevOps.md` | CI/CD, Docker, deployment changes |
+| Milestones | `Milestones/[N - Name].md` | After each milestone PR merges |
+| TODOs | `TODOs.md` | After each session close |
+| Roadmap | `Roadmap.md` | After roadmap updates |
 
-### Workflow
-After each Claude Code session that ships features:
-1. Run the `script-session-closer` agent — it updates docs and Obsidian notes automatically
-2. The agent uses MCP_DOCKER `obsidian_` tools to write/update vault files
-3. All changes are committed and pushed to origin
+### Session Close Workflow
+1. Run `script-session-closer` agent — updates docs, MEMORY.md, and Obsidian notes
+2. Agent uses MCP_DOCKER `obsidian_` tools to write/update vault files
+3. All doc changes committed and pushed to `origin/main`
