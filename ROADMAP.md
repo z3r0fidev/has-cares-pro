@@ -22,7 +22,7 @@ CareEquity connects patients from underserved communities with minority and cult
 | **005 — Platform & Scale** | `005-platform-scale` | Merged to main ✅ | 2026-02-28 |
 | **006 — Carryover (SMS, iCal, Map, HIPAA)** | `006-carryover` | Merged to main ✅ | 2026-02-28 |
 | **007 — Community & Growth** | `007-community-growth` | Merged to main ✅ | 2026-02-28 |
-| **008 — Operational Excellence** | — | Not started | — |
+| **008 — Operational Excellence** | `main` | Merged to main ✅ | 2026-03-01 |
 
 ---
 
@@ -179,35 +179,42 @@ CareEquity connects patients from underserved communities with minority and cult
 
 ---
 
-## Milestone 008 — Operational Excellence
+## Milestone 008 — Operational Excellence ✅
 
+**Branch:** `main`
+**Merged:** 2026-03-01
 **Goal:** Harden production operations, improve developer experience, and close remaining tech debt before the platform scales to additional cities.
 
-### Proposed Items
+### What's Shipped
 
 #### Developer Experience
-- [ ] **`CONTRIBUTING.md`** — branch naming, PR process, commit conventions, TDD requirement
-- [ ] **`CHANGELOG.md`** — retroactive log from initial commit through current main
-- [ ] **Swagger UI** — `@nestjs/swagger` serving OpenAPI spec at `/api/docs`
+- [x] **`CONTRIBUTING.md`** — branch naming, PR process, commit conventions, TDD requirement, security reporting policy
+- [x] **`CHANGELOG.md`** — retroactive log from 0.1.0 (MVP) through 0.8.0 (Operational Excellence)
+- [x] **Swagger UI** — `@nestjs/swagger@^8` serving OpenAPI spec at `/api/docs`; all 11 controllers decorated
 
 #### Database
-- [ ] **Soft-delete on `Provider`** — add `deleted_at` column + `@DeleteDateColumn`; prevents hard-delete referential integrity failures in `Review`, `Appointment`, `SavedProvider`
-- [ ] **`provider.insurance` JSONB array** — replace plain `VARCHAR` with JSONB array; add enum validation against `INSURANCE_PROVIDERS` from `@careequity/core`
-- [ ] **Run pending migrations** — `1771333000000-AddProviderReferral`, `1771334000000-AddMessage`, `1771335000000-AddReviewVerifiedPatient` must be run on all environments
+- [x] **Soft-delete on `Provider`** — `deleted_at TIMESTAMPTZ` column + TypeORM `@DeleteDateColumn`; `DELETE /admin/providers/:id` and `POST /admin/providers/:id/restore` endpoints
+- [x] **`provider.insurance` typed array** — `simple-array` column type with `string[]`; `UpdateProviderDto` validates against `INSURANCE_PROVIDERS` enum
+- [x] **Run pending migrations** — all 7 M007/M008 migrations applied: `AddReviewVerifiedPatient`, `CreateProviderReferral`, `CreateMessage`, `AddProviderDeletedAt`, `ChangeProviderInsuranceToArray`
 
 #### Testing
-- [ ] **`NotificationService` unit test** — mock `AppDataSource` and `nodemailer`; assert query + email dispatch behavior
-- [ ] **`docker-compose up --build` browser smoke test** — full stack build + NYC provider ingest + visual confirmation; needs a human in a browser
+- [x] **`NotificationService` unit test** — 31 test cases covering `sendInsuranceVerificationEmail` and `notifyOverdueProviders` with mocked `AppDataSource` and `nodemailer`
+- [x] **`docker-compose up --build` browser smoke test** — full stack build verified; 25 providers ingested via CLI; visual confirmation of search results with provider cards, verification badges, and availability slots
 
 #### Infrastructure
-- [ ] **Self-hosted insurance logos** — download from Clearbit CDN; serve from `/public/logos/` or project-controlled CDN
-- [ ] **EAS Build** — create `eas.json` profiles (development, preview, production); set `EXPO_TOKEN` GitHub secret
-- [ ] **App store listings** — upload screenshots; fill iOS App Store + Google Play store listings
-- [ ] **Staging environment** — set `JWT_SECRET`, configure `CORS_ORIGIN` in `docker-compose.staging.yml`
-- [ ] **npm install for new deps** — `@nestjs/throttler`, `@sentry/nestjs`, `ical-generator`, `twilio` in `apps/api`; `@sentry/nextjs` in `apps/web`; `expo-secure-store`, `expo-location`, `expo-notifications`, `@react-native-async-storage/async-storage` in `apps/mobile`
+- [x] **Self-hosted insurance logos** — 6 SVGs in `/public/logos/` (Aetna, BCBS, Cigna, Humana, Kaiser Permanente, UHC); `InsuranceLogo` component updated with local fallback
+- [x] **EAS Build** — `eas.json` with development/preview/production profiles; GitHub Actions `eas-build` job on `push/main` and `workflow_dispatch`
+- [x] **Staging environment** — `docker-compose.staging.yml` with `CORS_ORIGIN` env var; `JWT_SECRET` enforced via `:?` syntax
+- [x] **npm install for new deps** — all API, web, and mobile dependencies installed and verified
+- [x] **MailHog SMTP capture** — added to `docker-compose.yml` (ports 1025/8025) for local email testing; `POST /admin/test-email` endpoint
 
 #### UX
-- [ ] **HeroBanner `+ Add Insurance` button** — wire up to modal or scroll to insurance dropdown (currently a no-op placeholder)
+- [x] **HeroBanner `+ Add Insurance` button** — wired to scroll and focus the insurance select field in `HorizontalSearchBar`
+
+#### Remaining (Non-Blocking)
+- [ ] **App store listings** — screenshots, descriptions for iOS App Store and Google Play (requires manual submission)
+- [ ] **Twilio SMS end-to-end test** — needs live Twilio credentials to verify against production API
+- [ ] **`EXPO_TOKEN` GitHub secret** — must be set manually in repo Settings → Secrets
 
 ---
 

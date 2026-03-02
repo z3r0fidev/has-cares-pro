@@ -7,7 +7,7 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ---
 
-## [Unreleased] — Milestone 008 (Tech Debt & Data Integrity)
+## [0.8.0] — 2026-03-01 (Milestone 008: Operational Excellence)
 
 ### Added
 - Provider soft-delete: `deleted_at TIMESTAMPTZ` column with TypeORM `@DeleteDateColumn`; `DELETE /admin/providers/:id` and `POST /admin/providers/:id/restore` endpoints

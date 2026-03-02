@@ -30,18 +30,18 @@
 ### API (`apps/api`)
 
 - [x] **`NotificationService` unit test** — completed 2026-03-01: 16 cases covering `sendInsuranceVerificationEmail` (no-op when SMTP absent, port 465 → secure:true, from-address fallback, name in text+html) and `notifyOverdueProviders` (empty list, where-clause assertions, SMS skip on null phone, `last_insurance_notified_at` update, per-user error isolation, multiple-user processing).
-- [ ] **`notification.service.ts` TypeScript error** — `last_insurance_notified_at` is not typed on `_QueryDeepPartialEntity<Provider>`; pre-existing, does not block build but should be fixed.
+- [x] **`notification.service.ts` TypeScript error** — completed 2026-03-01: `last_insurance_notified_at` typing fixed via proper entity typing.
 - [ ] **Twilio SMS tested end-to-end** — SMS confirmations added in milestone 006 but not confirmed against a live Twilio account; set `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER` env vars and trigger a test booking.
 
 ### Web (`apps/web`)
 
-- [ ] **`HeroBanner` `+ Add Insurance` button is a no-op** — `onClick={() => {}}` placeholder; should open a modal or scroll to the insurance dropdown in the search bar.
-- [ ] **InsuranceLogo: Tooltip on filter pills** — HeroBanner pills have no tooltip; wrap in shadcn `<Tooltip>` to surface full plan name on hover/focus.
+- [x] **`HeroBanner` `+ Add Insurance` button** — completed 2026-03-01: wired to scroll and focus the insurance select field in `HorizontalSearchBar` via `handleAddInsuranceClick()`.
+- [x] **InsuranceLogo: Tooltip on filter pills** — completed 2026-03-01: wrapped in shadcn `<Tooltip>` to surface full plan name on hover/focus.
 
 ### Database / Migrations
 
-- [ ] **`provider.insurance` is a plain `VARCHAR`** — accepts any string with no validation against `INSURANCE_PROVIDERS` from `@careequity/core`; should be a `simple-array` or JSONB column with enum enforcement.
-- [ ] **No soft-delete on `Provider`** — hard deletes break referential integrity in `Review`, `Appointment`, and `SavedProvider` tables. Add a `deleted_at` column and TypeORM `@DeleteDateColumn`.
+- [x] **`provider.insurance` typed array** — completed 2026-03-01: changed to `simple-array` column type with `string[]`; `UpdateProviderDto` validates against `INSURANCE_PROVIDERS` enum; migration `1771337000000-ChangeProviderInsuranceToArray`.
+- [x] **Provider soft-delete** — completed 2026-03-01: `deleted_at TIMESTAMPTZ` column with TypeORM `@DeleteDateColumn`; `DELETE /admin/providers/:id` and `POST /admin/providers/:id/restore` endpoints; migration `1771336000000-AddProviderDeletedAt`.
 
 ### Mobile (`apps/mobile`)
 
@@ -58,16 +58,16 @@
 - [x] **Docker HEALTHCHECK + non-root user** — both Dockerfiles updated; `USER careequity`; `HEALTHCHECK` directives — shipped in milestone 005.
 - [x] **Staging environment** — completed 2026-03-01: `docker-compose.staging.yml` was already well-structured; added `CORS_ORIGIN` env var to the api service (was the only gap). Stack requires `JWT_SECRET` to be set in environment (enforced via `:?` syntax). Not yet deployed to a cloud host.
 - [x] **EAS Build** — `eas.json` profiles exist; CI job added; see Mobile section above for remaining steps.
-- [ ] **Self-hosted insurance logos** — Clearbit has no SLA guarantee; download logos and serve from `/public/logos/` or a project-controlled CDN.
+- [x] **Self-hosted insurance logos** — completed 2026-03-01: 6 SVGs in `/public/logos/` (Aetna, BCBS, Cigna, Humana, Kaiser Permanente, UHC); `InsuranceLogo` component updated with local fallback.
 
 ---
 
 ## Documentation
 
 - [x] **`CONTRIBUTING.md`** — completed 2026-03-01: branch naming, commit conventions, PR process, TDD requirement, test-running instructions, dev setup, and code style guide.
-- [ ] **`CHANGELOG.md`** — retroactive log from initial commit through current main.
+- [x] **`CHANGELOG.md`** — completed 2026-03-01: retroactive log from 0.1.0 (MVP) through Unreleased (M008); follows Keep a Changelog format.
 - [x] **Swagger UI** — completed 2026-03-01: `@nestjs/swagger@^8` added; `SwaggerModule` wired in `main.ts`; all 11 controllers decorated with `@ApiTags`, `@ApiBearerAuth`, `@ApiOperation`, `@ApiResponse`; all 6 DTOs decorated with `@ApiProperty`. Accessible at `http://localhost:3001/api/docs`.
-- [ ] **`.env.example` comments** — document each `SMTP_*`, `TWILIO_*`, and `SENTRY_DSN` variable and its accepted values inline.
+- [x] **`.env.example` comments** — completed 2026-03-01: all `SMTP_*`, `TWILIO_*`, `SENTRY_DSN`, and database pool variables documented inline with accepted values.
 - [ ] **Obsidian vault sync** — after each session, update the Obsidian vault at `/mnt/c/Users/isaiah.muhammad/obsidian/CareEquity/` using MCP_DOCKER obsidian_ tools.
 
 ---
@@ -94,3 +94,4 @@
 - [x] **Milestone 005**: Rate limiting (@nestjs/throttler), DTOs + ValidationPipe, global exception filter, HTTP logging interceptor, DB connection pooling, analytics enhancements (top filters + zero-result queries), Sentry opt-in (API + web), Docker HEALTHCHECK + non-root user
 - [x] **Milestone 006**: SMS confirmations (Twilio), iCal export (ical-generator), phone field on User entity (migration AddUserPhone), DevOps runbook (docs/devops-runbook.md, 784 lines)
 - [x] **Milestone 007**: SEO directory pages (generateStaticParams + JSON-LD), review verification badge, HIPAA messaging (appointment-scoped threads + PHI redaction), insurance eligibility API (Availity + mock adapter), referral network, community health resources (EN/ES/AR), Epic FHIR integration, Athenahealth integration
+- [x] **Milestone 008**: Operational Excellence — CONTRIBUTING.md, CHANGELOG.md, Swagger UI, provider soft-delete, insurance typed array, self-hosted logos, NotificationService tests, HeroBanner UX fix, tooltip on filter pills, MailHog SMTP capture
