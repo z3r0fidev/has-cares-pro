@@ -45,7 +45,7 @@
 
 ### Mobile (`apps/mobile`)
 
-- [x] **EAS Build profiles** — `apps/mobile/eas.json` created with development, preview, and production profiles; `eas-build` GitHub Actions job added to `.github/workflows/ci.yml` (triggers on `push/main` and `workflow_dispatch`). Remaining: set `EXPO_TOKEN` secret in GitHub repo Settings → Secrets; fill store listings (screenshots, descriptions) for iOS App Store and Google Play.
+- [x] **EAS Build profiles** — `apps/mobile/eas.json` created with development, preview, and production profiles; `eas-build` GitHub Actions job added to `.github/workflows/ci.yml` (triggers on `push/main` and `workflow_dispatch`); `EXPO_TOKEN` secret configured in GitHub repo Settings → Secrets. Remaining: fill store listings (screenshots, descriptions) for iOS App Store and Google Play.
 
 ---
 

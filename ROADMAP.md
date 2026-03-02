@@ -214,7 +214,7 @@ CareEquity connects patients from underserved communities with minority and cult
 #### Remaining (Non-Blocking)
 - [ ] **App store listings** — screenshots, descriptions for iOS App Store and Google Play (requires manual submission)
 - [ ] **Twilio SMS end-to-end test** — needs live Twilio credentials to verify against production API
-- [ ] **`EXPO_TOKEN` GitHub secret** — must be set manually in repo Settings → Secrets
+- [x] **`EXPO_TOKEN` GitHub secret** — configured in repo Settings → Secrets (2026-03-01)
 
 ---
 
