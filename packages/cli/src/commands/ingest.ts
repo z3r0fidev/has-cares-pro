@@ -111,6 +111,7 @@ export function ingestCommand(program: Command) {
         if (!provider) {
           provider = new Provider();
           Object.assign(provider, p);
+          provider.insurance = [p.insurance];
           provider.location = { type: 'Point', coordinates: [p.location.lon, p.location.lat] };
           await providerRepo.save(provider);
 
@@ -129,7 +130,7 @@ export function ingestCommand(program: Command) {
         } else {
           // If already exists, ensure insurance is set if it was null
           if (!provider.insurance) {
-            provider.insurance = p.insurance;
+            provider.insurance = [p.insurance];
             await providerRepo.save(provider);
           }
         }
@@ -174,7 +175,7 @@ export function ingestCommand(program: Command) {
         provider.address = address;
         provider.verification_tier = Math.floor(Math.random() * 3) + 1;
         const insurance = INSURANCE_PROVIDERS[Math.floor(Math.random() * INSURANCE_PROVIDERS.length)];
-        provider.insurance = insurance;
+        provider.insurance = [insurance];
         
         await providerRepo.save(provider);
 
@@ -197,7 +198,7 @@ export function ingestCommand(program: Command) {
             languages: provider.languages,
             location: { lat, lon },
             address: address,
-            insurance: insurance,
+            insurance: [insurance],
             verification_tier: provider.verification_tier,
             profile_image_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`
           },

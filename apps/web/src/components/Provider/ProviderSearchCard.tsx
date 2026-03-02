@@ -26,7 +26,7 @@ export interface ProviderCardData {
   distance?: number;
   identity_tags?: string[];
   telehealth_url?: string;
-  insurance?: string;
+  insurance?: string[] | null;
   nextAvailable?: string;
   availableSlots?: Array<{ date: string; times: string[] }>;
 }
@@ -139,11 +139,10 @@ export default function ProviderSearchCard({ provider }: ProviderSearchCardProps
           )}
 
           {/* Insurance logos */}
-          {provider.insurance && (() => {
-            const plans = provider.insurance.split(',').map(s => s.trim()).filter(Boolean);
-            const visible = plans.slice(0, 3);
-            const overflow = plans.length - 3;
-            return visible.length > 0 ? (
+          {Array.isArray(provider.insurance) && provider.insurance.length > 0 && (() => {
+            const visible = provider.insurance.slice(0, 3);
+            const overflow = provider.insurance.length - 3;
+            return (
               <div className="flex items-center gap-1.5 mt-2">
                 {visible.map((plan) => (
                   <InsuranceLogo key={plan} name={plan} size={14} />
@@ -152,7 +151,7 @@ export default function ProviderSearchCard({ provider }: ProviderSearchCardProps
                   <span className="text-[10px] text-slate-500 font-medium">+{overflow} more</span>
                 )}
               </div>
-            ) : null;
+            );
           })()}
         </div>
 

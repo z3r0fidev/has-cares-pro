@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
 
 export enum VerificationTier {
   PROFESSIONAL = 1,
@@ -28,8 +28,8 @@ export class Provider {
   @Column('simple-array')
   languages!: string[];
 
-  @Column({ nullable: true })
-  insurance!: string;
+  @Column({ type: 'simple-array', nullable: true })
+  insurance!: string[] | null;
 
   @Column('geometry', { spatialFeatureType: 'Point', srid: 4326 })
   location!: Point; // PostGIS Point
@@ -80,6 +80,9 @@ export class Provider {
 
   @Column({ type: 'timestamptz', nullable: true, default: null })
   last_insurance_notified_at!: Date | null;
+
+  @DeleteDateColumn({ type: 'timestamptz', nullable: true })
+  deleted_at!: Date | null;
 
   @CreateDateColumn()
   created_at!: Date;

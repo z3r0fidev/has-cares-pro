@@ -65,15 +65,15 @@ export class SearchService implements OnApplicationBootstrap {
       });
     }
 
-    // 2. Insurance Boost (Medium Priority)
+    // 2. Insurance Boost (Medium Priority) — term query for keyword array field
     if (filters.insurance) {
       boolQuery.should.push({
-        match: {
+        term: {
           insurance: {
-            query: filters.insurance,
-            boost: 2.0
-          }
-        }
+            value: filters.insurance,
+            boost: 2.0,
+          },
+        },
       });
     }
 

@@ -12,6 +12,7 @@ interface InsurancePill {
 interface HeroBannerProps {
   onInsuranceSelect: (insurance: string) => void;
   selectedInsurance?: string;
+  onAddInsuranceClick?: () => void;
 }
 
 const INSURANCE_PILLS: InsurancePill[] = [
@@ -19,10 +20,10 @@ const INSURANCE_PILLS: InsurancePill[] = [
   { label: "Cigna", value: "Cigna" },
   { label: "UnitedHealthcare", value: "UnitedHealthcare" },
   { label: "Medicare", value: "Medicare" },
-  { label: "BlueCross BlueShield", value: "BlueCross BlueShield" },
+  { label: "Blue Cross Blue Shield", value: "Blue Cross Blue Shield" },
 ];
 
-export default function HeroBanner({ onInsuranceSelect, selectedInsurance = '' }: HeroBannerProps) {
+export default function HeroBanner({ onInsuranceSelect, selectedInsurance = '', onAddInsuranceClick }: HeroBannerProps) {
   const t = useTranslations("Home");
 
   return (
@@ -61,7 +62,7 @@ export default function HeroBanner({ onInsuranceSelect, selectedInsurance = '' }
             ))}
             <button
               className="flex-shrink-0 px-4 py-2 text-sm font-medium text-primary hover:underline whitespace-nowrap"
-              onClick={() => {}}
+              onClick={onAddInsuranceClick}
               aria-label="Add your insurance plan"
             >
               + {t("addInsurance")}

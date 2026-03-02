@@ -2,6 +2,7 @@ import { Controller, Get, Post, Patch, Body, Param, Query, NotFoundException, Us
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { CreateReviewDto } from '../dto/review.dto';
+import { UpdateProviderDto } from '../dto/provider.dto';
 import { SearchService } from '../services/search.service';
 import { ProviderService } from '../services/provider.service';
 import { ReviewService } from '../services/review.service';
@@ -100,16 +101,9 @@ export class ProviderController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   @ApiResponse({ status: 404, description: 'Provider not found' })
-  async update(@Param('id') id: string, @Body() updateData: Partial<Provider>, @Request() req: AuthenticatedRequest) {
+  async update(@Param('id') id: string, @Body() updateData: UpdateProviderDto, @Request() req: AuthenticatedRequest) {
     if (req.user.providerId !== id && req.user.role !== 'admin') {
       throw new ForbiddenException('You can only update your own profile');
-    }
-
-    // Prevent providers from overwriting privilege-sensitive fields.
-    // Only admins may change verification_tier or is_claimed.
-    if (req.user.role !== 'admin') {
-      delete updateData.verification_tier;
-      delete updateData.is_claimed;
     }
 
     const repo = AppDataSource.getRepository(Provider);

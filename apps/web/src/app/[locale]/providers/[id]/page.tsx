@@ -165,9 +165,7 @@ export default function ProviderProfile() {
   }
 
   const rating = avgRating(reviews);
-  const insuranceList = provider.insurance
-    ? provider.insurance.split(',').map((s) => s.trim()).filter(Boolean)
-    : [];
+  const insuranceList = Array.isArray(provider.insurance) ? provider.insurance : [];
 
   // Determine which availability UI to render:
   //   1. If FHIR loaded and returned live slots → FhirAvailabilityGrid

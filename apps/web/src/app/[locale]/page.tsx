@@ -114,6 +114,13 @@ function HomeContent() {
     }
   };
 
+  const handleAddInsuranceClick = () => {
+    const el = document.getElementById('search-insurance');
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    (el as HTMLSelectElement).focus();
+  };
+
   const handleProviderSelect = (id: string) => {
     // pathname for the home page is "/en" (or "/es", "/ar").
     // Extract the locale segment so the navigation respects i18n prefixes.
@@ -124,7 +131,7 @@ function HomeContent() {
   return (
     <main>
       {/* Hero banner with insurance pills */}
-      <HeroBanner onInsuranceSelect={handleInsuranceSelect} selectedInsurance={selectedInsurance} />
+      <HeroBanner onInsuranceSelect={handleInsuranceSelect} selectedInsurance={selectedInsurance} onAddInsuranceClick={handleAddInsuranceClick} />
 
       {/* Search bar */}
       <div className="container mx-auto max-w-4xl px-4 py-5">

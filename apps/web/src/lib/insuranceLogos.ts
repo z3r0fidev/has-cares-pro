@@ -27,12 +27,30 @@ export const NO_LOGO_SET = new Set<string>([
  */
 export const INSURER_DOMAIN_MAP: Record<string, string> = {
   'Aetna': 'aetna.com',
-  'BlueCross BlueShield': 'bcbs.com',
+  'Blue Cross Blue Shield': 'bcbs.com',
   'Cigna': 'cigna.com',
   'Humana': 'humana.com',
   'UnitedHealthcare': 'uhc.com',
   'Kaiser Permanente': 'kaiserpermanente.org',
 };
+
+/**
+ * Maps a canonical insurer name to a locally-hosted logo path served from /public.
+ * These take priority over Clearbit at runtime, eliminating the third-party CDN dependency.
+ */
+export const LOCAL_LOGO_PATH_MAP: Record<string, string> = {
+  'Aetna':                  '/logos/aetna.svg',
+  'Blue Cross Blue Shield': '/logos/bcbs.svg',
+  'Cigna':                  '/logos/cigna.svg',
+  'Humana':                 '/logos/humana.svg',
+  'UnitedHealthcare':       '/logos/uhc.svg',
+  'Kaiser Permanente':      '/logos/kaiser-permanente.svg',
+};
+
+/** Returns the local /public path for a given insurer, or null if not available locally. */
+export function getLocalLogoPath(name: string): string | null {
+  return LOCAL_LOGO_PATH_MAP[name] ?? null;
+}
 
 /**
  * Brand-matched fallback colors and initials for each insurer.
@@ -41,7 +59,7 @@ export const INSURER_DOMAIN_MAP: Record<string, string> = {
  */
 export const INSURER_FALLBACK_CONFIG: Record<string, InsuranceFallbackConfig> = {
   'Aetna': { bg: '#FEF3C7', text: '#92400E', initials: 'AE' },
-  'BlueCross BlueShield': { bg: '#EFF6FF', text: '#1D4ED8', initials: 'BC' },
+  'Blue Cross Blue Shield': { bg: '#EFF6FF', text: '#1D4ED8', initials: 'BC' },
   'Cigna': { bg: '#EFF6FF', text: '#1E40AF', initials: 'CI' },
   'Humana': { bg: '#FDF2F8', text: '#9D174D', initials: 'HU' },
   'Medicare': { bg: '#EFF6FF', text: '#1D4ED8', initials: 'MC' },

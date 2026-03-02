@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { NO_LOGO_SET, getClearbitLogoUrl, getFallbackConfig } from '@/lib/insuranceLogos';
+import { NO_LOGO_SET, getLocalLogoPath, getClearbitLogoUrl, getFallbackConfig } from '@/lib/insuranceLogos';
 
 interface InsuranceLogoProps {
   /** Canonical insurer name, e.g. "Aetna" or "BlueCross BlueShield" */
@@ -27,7 +27,7 @@ export default function InsuranceLogo({ name, size = 16 }: InsuranceLogoProps) {
   const [errored, setErrored] = useState(false);
 
   const fallback = getFallbackConfig(name);
-  const logoUrl = getClearbitLogoUrl(name);
+  const logoUrl = getLocalLogoPath(name) ?? getClearbitLogoUrl(name);
   const shouldAttemptLogo = logoUrl !== null && !NO_LOGO_SET.has(name);
 
   const containerStyle: React.CSSProperties = {

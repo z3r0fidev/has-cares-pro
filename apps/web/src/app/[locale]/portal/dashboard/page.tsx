@@ -14,7 +14,7 @@ function computeCompleteness(p: Provider): { score: number; missing: string[] } 
     [p.credentials?.length > 0, 'Credentials'],
     [p.specialties?.length > 0, 'Specialties'],
     [p.languages?.length > 0, 'Languages'],
-    [!!p.insurance, 'Insurance'],
+    [Array.isArray(p.insurance) && p.insurance.length > 0, 'Insurance'],
     [!!(p.address?.street), 'Address'],
     [!!p.bio, 'Bio'],
     [!!p.profile_image_url, 'Profile photo'],

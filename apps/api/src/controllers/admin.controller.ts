@@ -1,6 +1,7 @@
-import { Controller, Get, Patch, Post, Param, Body, NotFoundException, UseGuards, Request, ForbiddenException, Query } from '@nestjs/common';
+import { Controller, Get, Patch, Post, Delete, Param, Body, NotFoundException, UseGuards, Request, ForbiddenException, Query, HttpCode } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AppDataSource, Provider, VerificationRecord, VerificationStatus, Review } from '@careequity/db';
+import { esClient, INDEX_NAME } from '@careequity/core';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { AuthenticatedRequest } from '../types/request.interface';
 import { NotificationService } from '../services/notification.service';
@@ -108,6 +109,80 @@ export class AdminController {
     );
 
     return { success: true, message: `Test email sent to ${body.email}` };
+  }
+
+  @Delete('providers/:id')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(204)
+  @ApiOperation({ summary: 'Soft-delete a provider profile (admin)' })
+  @ApiResponse({ status: 204, description: 'Provider soft-deleted' })
+  @ApiResponse({ status: 403, description: 'Admin access required' })
+  @ApiResponse({ status: 404, description: 'Provider not found' })
+  async softDeleteProvider(
+    @Param('id') id: string,
+    @Request() req: AuthenticatedRequest,
+  ) {
+    if (req.user.role !== 'admin') throw new ForbiddenException('Admin access required');
+
+    const repo = AppDataSource.getRepository(Provider);
+    const provider = await repo.findOneBy({ id });
+    if (!provider) throw new NotFoundException();
+
+    await repo.softDelete(id);
+
+    // Remove from search index so it no longer appears in results
+    try {
+      await esClient.delete({ index: INDEX_NAME, id });
+    } catch {
+      // Not found in ES is acceptable
+    }
+  }
+
+  @Post('providers/:id/restore')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Restore a soft-deleted provider (admin)' })
+  @ApiResponse({ status: 200, description: 'Provider restored' })
+  @ApiResponse({ status: 403, description: 'Admin access required' })
+  @ApiResponse({ status: 404, description: 'Provider not found or not deleted' })
+  async restoreProvider(
+    @Param('id') id: string,
+    @Request() req: AuthenticatedRequest,
+  ) {
+    if (req.user.role !== 'admin') throw new ForbiddenException('Admin access required');
+
+    const repo = AppDataSource.getRepository(Provider);
+    const provider = await repo.findOne({ where: { id }, withDeleted: true });
+    if (!provider || !provider.deleted_at) throw new NotFoundException('Provider not found or not deleted');
+
+    await repo.restore(id);
+
+    // Re-index restored provider in Elasticsearch
+    let esLocation = null;
+    if (provider.location && (provider.location as { coordinates: number[] }).coordinates) {
+      esLocation = {
+        lon: (provider.location as { coordinates: number[] }).coordinates[0],
+        lat: (provider.location as { coordinates: number[] }).coordinates[1],
+      };
+    }
+
+    await esClient.index({
+      index: INDEX_NAME,
+      id: provider.id,
+      document: {
+        id: provider.id,
+        name: provider.name,
+        specialties: provider.specialties,
+        languages: provider.languages,
+        location: esLocation,
+        address: provider.address,
+        insurance: provider.insurance,
+        verification_tier: provider.verification_tier,
+        profile_image_url: provider.profile_image_url,
+        website_url: provider.website_url,
+      },
+    });
+
+    return { success: true, message: 'Provider restored' };
   }
 
   @Patch('verify/:id')

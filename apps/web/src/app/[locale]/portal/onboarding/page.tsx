@@ -18,7 +18,7 @@ interface ProviderData {
   credentials?: string[];
   profile_image_url?: string;
   availability?: Availability;
-  insurance?: string;
+  insurance?: string[] | null;
   specialties?: string[];
   identity_tags?: string[];
 }
@@ -63,7 +63,7 @@ export default function OnboardingPage() {
         setBio(data.bio || '');
         setCredentials(data.credentials?.join(', ') || '');
         setAvailability(data.availability || {});
-        setSelectedInsurance(data.insurance ? data.insurance.split(',').map((s) => s.trim()).filter(Boolean) : []);
+        setSelectedInsurance(Array.isArray(data.insurance) ? data.insurance : []);
         setSelectedSpecialties(data.specialties || []);
       })
       .catch(() => router.push('/login'))
@@ -95,7 +95,7 @@ export default function OnboardingPage() {
         await patch({ availability });
       } else if (step === 4) {
         await patch({
-          insurance: selectedInsurance.join(', '),
+          insurance: selectedInsurance,
           specialties: selectedSpecialties,
         });
       }

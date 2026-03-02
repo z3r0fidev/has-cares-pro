@@ -177,10 +177,10 @@ export default function ProfileScreen({
             <Text style={styles.infoText}>Languages: {provider.languages.join(', ')}</Text>
           </View>
         )}
-        {provider.insurance && (
+        {Array.isArray(provider.insurance) && provider.insurance.length > 0 && (
           <View style={styles.infoRow}>
             <Phone size={16} stroke="#64748b" />
-            <Text style={styles.infoText}>Insurance: {provider.insurance}</Text>
+            <Text style={styles.infoText}>Insurance: {provider.insurance.join(', ')}</Text>
           </View>
         )}
       </View>
