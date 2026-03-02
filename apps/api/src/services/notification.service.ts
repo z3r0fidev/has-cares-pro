@@ -72,9 +72,8 @@ export class NotificationService {
           await this.smsService.sendAppointmentReminder(user.phone, user.provider!.name, 'tomorrow');
         }
 
-        await AppDataSource.getRepository(Provider).update(user.provider!.id, {
-          last_insurance_notified_at: new Date(),
-        });
+        user.provider!.last_insurance_notified_at = new Date();
+        await AppDataSource.getRepository(Provider).save(user.provider!);
       } catch (err) {
         this.logger.error(`Failed to notify ${user.email}: ${(err as Error).message}`);
       }

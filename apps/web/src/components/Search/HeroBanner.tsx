@@ -57,7 +57,7 @@ export default function HeroBanner({ onInsuranceSelect, selectedInsurance = '', 
                     {pill.label}
                   </button>
                 </TooltipTrigger>
-                <TooltipContent>{pill.label}</TooltipContent>
+                <TooltipContent>Filter to providers who accept {pill.label}</TooltipContent>
               </Tooltip>
             ))}
             <button
