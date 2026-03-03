@@ -2,7 +2,7 @@
 
 > Living task list. Tracks open work, known gaps, and tech debt across the monorepo.
 > Completed feature tasks live in `specs/001-physician-locator/tasks.md`.
-> Last updated: 2026-03-01
+> Last updated: 2026-03-02
 
 ---
 
@@ -45,7 +45,7 @@
 
 ### Mobile (`apps/mobile`)
 
-- [x] **EAS Build profiles** — `apps/mobile/eas.json` created with development, preview, and production profiles; `eas-build` GitHub Actions job added to `.github/workflows/ci.yml` (triggers on `push/main` and `workflow_dispatch`); `EXPO_TOKEN` secret configured in GitHub repo Settings → Secrets. Remaining: fill store listings (screenshots, descriptions) for iOS App Store and Google Play.
+- [ ] **EAS Build profiles** — `apps/mobile/eas.json` created with development, preview, and production profiles; `eas-build` GitHub Actions job added to `.github/workflows/ci.yml`. **Blocking:** Run `cd apps/mobile && eas init` locally to register the project with Expo servers and replace the placeholder `projectId` in `app.json`. Then commit the updated `app.json`. After that, fill store listings (screenshots, descriptions) for iOS App Store and Google Play.
 
 ---
 

@@ -1,7 +1,7 @@
 # CareEquity — Product Roadmap
 
 > Strategic development plan for the CareEquity minority physician locator platform.
-> Last updated: 2026-02-28
+> Last updated: 2026-03-02
 
 ---
 
@@ -203,7 +203,7 @@ CareEquity connects patients from underserved communities with minority and cult
 
 #### Infrastructure
 - [x] **Self-hosted insurance logos** — 6 SVGs in `/public/logos/` (Aetna, BCBS, Cigna, Humana, Kaiser Permanente, UHC); `InsuranceLogo` component updated with local fallback
-- [x] **EAS Build** — `eas.json` with development/preview/production profiles; GitHub Actions `eas-build` job on `push/main` and `workflow_dispatch`
+- [ ] **EAS Build** — `eas.json` with development/preview/production profiles; GitHub Actions `eas-build` job on `push/main` and `workflow_dispatch`. **Blocking:** Run `eas init` to register project and get real `projectId`
 - [x] **Staging environment** — `docker-compose.staging.yml` with `CORS_ORIGIN` env var; `JWT_SECRET` enforced via `:?` syntax
 - [x] **npm install for new deps** — all API, web, and mobile dependencies installed and verified
 - [x] **MailHog SMTP capture** — added to `docker-compose.yml` (ports 1025/8025) for local email testing; `POST /admin/test-email` endpoint
