@@ -163,5 +163,16 @@ CareEquity/
     Migrations.md             # Migration history
   Infrastructure/DevOps.md    # CI/CD, Docker, EAS Build
   Mobile/Expo App.md          # React Native app documentation
-  Milestones/001-007.md       # Individual milestone details
+  Milestones/001-008.md       # Individual milestone details
 ```
+
+### Obsidian Tool Error Handling
+
+When using `obsidian_patch_content` and it fails with:
+```
+Error: Caught Exception. Error: Error 40080: The patch you provided could not be applied to the target content. invalid-target
+```
+
+**Workaround:** Delete the note and recreate it with the full updated content:
+1. Use `obsidian_delete_file` to remove the problematic note
+2. Use `obsidian_append_content` to create a new note with all content (creates file if it doesn't exist)
