@@ -3,9 +3,9 @@ export * from './search/client';
 export * from './utils/redactor';
 export * from './utils/auth';
 export * from './utils/scraper';
-export { AIModerator } from './utils/moderator';
+// AIModerator is server-only (uses TensorFlow) - import directly from '@careequity/core/src/utils/moderator'
+// logger is server-only (uses winston/fs) - import directly from '@careequity/core/src/logger'
 export * from './types/index';
-export * from './logger/index';
 
 // Insurance eligibility
 export type { EligibilityRequest, EligibilityResponse, IEligibilityAdapter } from './insurance/EligibilityService';

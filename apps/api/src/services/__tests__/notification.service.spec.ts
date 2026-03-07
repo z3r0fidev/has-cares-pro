@@ -31,13 +31,13 @@ const mockQueryBuilder = {
   andWhere: jest.fn().mockReturnThis(),
   getMany: mockGetMany,
 };
-const mockProviderUpdate = jest.fn().mockResolvedValue({ affected: 1 });
+const mockProviderSave = jest.fn().mockImplementation((provider) => Promise.resolve(provider));
 const mockGetRepository = jest.fn((entity: { name: string }) => {
   if (entity.name === 'User') {
     return { createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder) };
   }
   // Provider
-  return { update: mockProviderUpdate };
+  return { save: mockProviderSave };
 });
 
 jest.mock('@careequity/db', () => ({
@@ -234,7 +234,7 @@ describe('NotificationService', () => {
       await service.notifyOverdueProviders();
 
       expect(smsService.sendAppointmentReminder).not.toHaveBeenCalled();
-      expect(mockProviderUpdate).not.toHaveBeenCalled();
+      expect(mockProviderSave).not.toHaveBeenCalled();
     });
 
     it('builds query with correct where clauses', async () => {
@@ -292,9 +292,8 @@ describe('NotificationService', () => {
 
       await service.notifyOverdueProviders();
 
-      expect(mockProviderUpdate).toHaveBeenCalledWith(
-        'provider-1',
-        expect.objectContaining({ last_insurance_notified_at: expect.any(Date) }),
+      expect(mockProviderSave).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'provider-1', last_insurance_notified_at: expect.any(Date) }),
       );
     });
 
@@ -303,15 +302,15 @@ describe('NotificationService', () => {
       const user2 = buildUser({ id: 'user-2', email: 'c@d.com', provider: { id: 'p2', name: 'Dr. B' }, phone: null });
       mockGetMany.mockResolvedValueOnce([user1, user2]);
 
-      // Make the first provider update throw; second should still succeed
-      mockProviderUpdate
+      // Make the first provider save throw; second should still succeed
+      mockProviderSave
         .mockRejectedValueOnce(new Error('DB error'))
-        .mockResolvedValueOnce({ affected: 1 });
+        .mockResolvedValueOnce({ id: 'p2' });
 
       await expect(service.notifyOverdueProviders()).resolves.toBeUndefined();
 
-      // Second provider should still be updated
-      expect(mockProviderUpdate).toHaveBeenCalledTimes(2);
+      // Second provider should still be saved
+      expect(mockProviderSave).toHaveBeenCalledTimes(2);
     });
 
     it('processes multiple overdue users', async () => {
@@ -325,7 +324,7 @@ describe('NotificationService', () => {
       await service.notifyOverdueProviders();
 
       expect(smsService.sendAppointmentReminder).toHaveBeenCalledTimes(2);
-      expect(mockProviderUpdate).toHaveBeenCalledTimes(3);
+      expect(mockProviderSave).toHaveBeenCalledTimes(3);
     });
   });
 });

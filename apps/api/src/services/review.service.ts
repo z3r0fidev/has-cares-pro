@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { LessThanOrEqual, In } from 'typeorm';
 import { Review, AppDataSource, Provider, Appointment, AppointmentStatus } from '@careequity/db';
-import { Redactor, AIModerator } from '@careequity/core';
+import { Redactor } from '@careequity/core';
+import { AIModerator } from '@careequity/core/src/utils/moderator';
 
 @Injectable()
 export class ReviewService {
